@@ -1,0 +1,5 @@
+i32 main(const string[] args, const int arg_count)
+{
+printf("Hello, World!\n");
+return 0;
+}
