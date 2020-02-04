@@ -45,6 +45,8 @@ AND_AND = 283,
 OR = 284,
 OR_OR = 285,
 
+RETURN = 286,
+
 
 UNKNOWN = 999
 };
@@ -88,6 +90,8 @@ UNKNOWN = 999
 
 "|" { return OR; }
 "||" { return OR_OR; }
+
+"return" { return RETURN; }
 
 [a-zA-Z0-9]+ { return IDENTIFIER; }
 . { return UNKNOWN; }

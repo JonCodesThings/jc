@@ -1,4 +1,4 @@
 i32 main(const int argc, const string[] args)
 {
-printf("Hello, World!\n");
+return 1 + 2;
 }
