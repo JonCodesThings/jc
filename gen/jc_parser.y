@@ -3,34 +3,25 @@
 #include <math.h>
 #include "jc_lex.hpp"
 #include <include/AST.hpp>
+#include <vector>
 
 #ifdef PARSER_DRIVER
 
-#include <vector>
-
-ASTBlock *block;
+ASTBlock *base;
 extern int yylex();
 extern int yyparse();
 void yyerror (char *error)
 {
-printf(error);
+printf("%s\n", error);
 }
 int yywrap() { return 1; }
 int main(int argc, char *argv[])
 {
 yyin = fopen(argv[1], "r");
-int token = 0;
-std::vector<int> tokens;
-while (token = yylex())
-{
-if (token != 1)
-{
-printf("Token: %d  Text: %s\n", token, yytext);
-tokens.push_back(token);
-}
-}
-return 0;
 yyparse();
+if (base)
+base->EmitIR();
+return 0;
 }
 
 #endif
@@ -45,46 +36,57 @@ ASTConstant<const char *> *string_constant;
 ASTFunctionCall *function_call;
 ASTFunctionDeclaration *function_declaration;
 ASTFunctionDefinition *function_definition;
-ASTIdentifier *identifier;
+ASTBlock *scope_block;
+ASTIdentifier *id;
 const char *string;
+int integer;
 int token;
 }
 
-%token <string> STRING
-%token <token> COMMA SEMICOLON LEFT_BRACKET RIGHT_BRACKET LEFT_BRACE RIGHT_BRACE RETURN
+%token IDENTIFIER STRING INTEGER FLOAT
 
-%token <identifier> identifier
-%token <expression> expression
+%token LEFT_BRACKET RIGHT_BRACKET LEFT_BRACE RIGHT_BRACE LEFT_SQUARE_BRACKET RIGHT_SQUARE_BRACKET
+
+%token COMMA FSTOP SEMICOLON
+
+%token PLUS MINUS ASTERISK FORWARD_SLASH
+
+%token EQUAL EQUAL_EQUAL
+
+%token EXCLAMATION EXCLAMATION_EQUAL
+
+%token GREATER GREATER_EQUAL
+
+%token LESSER LESSER_EQUAL
+
+%token AND AND_AND
+
+%token OR OR_OR
+
+%token RETURN
+
+%token UNKNOWN
+
+%type<function_definition> function_def
+%type<statement> statement
+%type<id> id
+%type<string> IDENTIFIER
 
 %start module
 
 %%
 
-module: statements { block = $1; printf("oof\n"); };
+module: function_def { base = new ASTBlock(); base->block.push_back($1); };
+
+function_def: id id LEFT_BRACKET RIGHT_BRACKET scope { printf("Identifier 1: %p\n", $1);
+$$ = new ASTFunctionDefinition(*$1, *$2, *new std::vector<const char *>()); /*printf("New function defined!\n");*/ };
+
+scope: LEFT_BRACE RIGHT_BRACE;
 
 statements: statements statement | statement;
 
-statement: function_def | expr | function_call;
+statement: RETURN IDENTIFIER { $$ = new ASTReturnStatement($2); }
 
-expr: return_scope;
+id: IDENTIFIER { $$ = new ASTIdentifier($1); printf("%p\n", $$); };
 
-return_scope: RETURN identifier;
-
-function_def: identifier identifier arg_list block;
-
-function_call: identifier parameter_list;
-
-arg_list: arg
-| '(' arg ')';
-
-arg: identifier COMMA identifier
-	| arg COMMA arg;
-	
-parameter_list : parameter
-| '(' parameter ')';
-
-parameter: identifier
-	| arg COMMA parameter;
-
-block: LEFT_BRACE statements RIGHT_BRACE;
 %%

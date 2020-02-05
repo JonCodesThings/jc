@@ -1,4 +1,3 @@
-i32 main(int argc, string[] args)
+i32 main()
 {
-return 10;
 }

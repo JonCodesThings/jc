@@ -3,59 +3,15 @@
 %option outfile="gen/jc_lex.cpp"
 %option header-file= "gen/jc_lex.hpp"
 %{
-enum yytokentype
-{
-IDENTIFIER = 257,
-STRING = 258,
-INTEGER = 259,
-FLOAT = 260,
-
-
-LEFT_BRACKET = 261,
-RIGHT_BRACKET = 262,
-LEFT_BRACE = 263,
-RIGHT_BRACE = 264,
-LEFT_SQUARE_BRACKET = 265,
-RIGHT_SQUARE_BRACKET = 266,
-
-COMMA = 267,
-FSTOP = 268,
-SEMICOLON = 269,
-
-PLUS = 270,
-MINUS = 271,
-ASTERISK = 272,
-FORWARD_SLASH = 273,
-
-EQUAL = 274,
-EQUAL_EQUAL = 275,
-
-EXCLAMATION = 276,
-EXCLAMATION_EQUAL = 277,
-
-GREATER = 278,
-GREATER_EQUAL = 279,
-
-LESSER = 280,
-LESSER_EQUAL = 281,
-
-AND = 282,
-AND_AND = 283,
-
-OR = 284,
-OR_OR = 285,
-
-RETURN = 286,
-
-
-UNKNOWN = 999
-};
+#include <include/AST.hpp>
+#include "jc_parser.hpp"
 %}
 
 
 %%
-[[:space:]]+ { return 1; }
-\"[^"]*\" { return STRING; }
+[[:space:]]+ { /*printf("skipping whitespace\n");*/ }
+\"[^"]*\" { yylval.string = yytext; return STRING; }
+[0-9]+ { yylval.integer = atoi(yytext); return INTEGER; }
 
 "(" { return LEFT_BRACKET; }
 ")" { return RIGHT_BRACKET; }
@@ -92,8 +48,8 @@ UNKNOWN = 999
 "||" { return OR_OR; }
 
 "return" { return RETURN; }
+[a-zA-Z0-9]+ { yylval.string = yytext; return IDENTIFIER; }
 
-[a-zA-Z0-9]+ { return IDENTIFIER; }
 . { return UNKNOWN; }
 <<EOF>> { return 0; }
 %%
