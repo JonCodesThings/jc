@@ -5,6 +5,9 @@
 %{
 #include <include/AST.hpp>
 #include "jc_parser.hpp"
+extern "C" int yywrap() { printf("wrap\n"); return 1; }
+
+
 %}
 
 

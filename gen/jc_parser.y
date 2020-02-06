@@ -1,19 +1,22 @@
 %{
 #include <stdio.h>
 #include <math.h>
-#include "jc_lex.hpp"
-#include <include/AST.hpp>
 #include <vector>
-
-#ifdef PARSER_DRIVER
+#include <include/AST.hpp>
 
 ASTBlock *base;
+
 extern int yylex();
 extern int yyparse();
+
 void yyerror (char *error)
 {
 printf("%s\n", error);
 }
+
+
+#ifdef PARSER_DRIVER
+
 int yywrap() { return 1; }
 int main(int argc, char *argv[])
 {
