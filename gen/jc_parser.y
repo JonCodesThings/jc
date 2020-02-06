@@ -71,6 +71,8 @@ int token;
 %type<statement> statement
 %type<id> id
 %type<string> IDENTIFIER
+%type<statement> return_statement
+%type<scope_block> statements scope
 
 %start module
 
@@ -78,15 +80,18 @@ int token;
 
 module: function_def { base = new ASTBlock(); base->block.push_back($1); };
 
-function_def: id id LEFT_BRACKET RIGHT_BRACKET scope { printf("Identifier 1: %p\n", $1);
-$$ = new ASTFunctionDefinition(*$1, *$2, *new std::vector<const char *>()); /*printf("New function defined!\n");*/ };
+function_def: id id LEFT_BRACKET RIGHT_BRACKET scope { 
+$$ = new ASTFunctionDefinition(*$1, *$2, *new std::vector<const char *>(), *$5); };
 
-scope: LEFT_BRACE RIGHT_BRACE;
+scope: LEFT_BRACE statements RIGHT_BRACE { $$ = $2; } | LEFT_BRACE RIGHT_BRACE { $$ = new ASTBlock(); } ;
 
-statements: statements statement | statement;
+statements: statements statement { $1->block.push_back($2); } 
+| statement { $$ = new ASTBlock(); $$->block.push_back($1); };
 
-statement: RETURN IDENTIFIER { $$ = new ASTReturnStatement($2); }
+statement: return_statement;
 
-id: IDENTIFIER { $$ = new ASTIdentifier($1); printf("%p\n", $$); };
+return_statement: RETURN INTEGER SEMICOLON { auto integer_constant = new ASTConstant<int>(yylval.integer); $$ = new ASTReturnStatement(*integer_constant); }
+
+id: IDENTIFIER { $$ = new ASTIdentifier($1); };
 
 %%

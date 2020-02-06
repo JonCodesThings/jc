@@ -36,11 +36,11 @@ void *EmitIR() { return &constant; }
 class ASTReturnStatement : public ASTStatement
 {
 public:
-int constant;
-ASTReturnStatement(int val) : constant(val) {}
+ASTConstant<int> constant;
+ASTReturnStatement(ASTConstant<int> &val) : constant(val) {}
 void *EmitIR()
 {
-printf("returned %d\n", constant);
+printf("returned %d\n", constant.constant);
 return NULL;
 }
 };
@@ -104,7 +104,7 @@ public:
 ASTFunctionDeclaration &declaration;
 ASTBlock &block;
 ASTFunctionDefinition() : declaration(*new ASTFunctionDeclaration()), block(*new ASTBlock()) {}
-ASTFunctionDefinition(ASTIdentifier &id, ASTIdentifier &ret_type, std::vector<const char *> &args) : declaration(*new ASTFunctionDeclaration(id, ret_type, args)), block(*new ASTBlock()) {}
+ASTFunctionDefinition(ASTIdentifier &id, ASTIdentifier &ret_type, std::vector<const char *> &args, ASTBlock &block) : declaration(*new ASTFunctionDeclaration(id, ret_type, args)), block(block) {}
 void *EmitIR()
 {
 declaration.EmitIR();
