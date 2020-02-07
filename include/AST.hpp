@@ -37,6 +37,16 @@ public:
     virtual ~ASTExpression() {}
 };
 
+
+class ASTIdentifier : public ASTExpression
+{
+public:
+    std::string identifier;
+
+    ASTIdentifier(const char *identifier) : identifier(identifier) {}
+    void *EmitIR(llvm::IRBuilder<> &builder, llvm::LLVMContext &context, llvm::Module &module);
+};
+
 template <class T>
 class ASTConstant : public ASTNode
 {
@@ -51,21 +61,22 @@ public:
     }
 };
 
+class ASTVariableDeclaration : public ASTStatement
+{
+public:
+    ASTIdentifier &type;
+    ASTIdentifier &id;
+
+    ASTVariableDeclaration(ASTIdentifier &type, ASTIdentifier &id) : type(type), id(id) {}
+    void *EmitIR(llvm::IRBuilder<> &builder, llvm::LLVMContext &context, llvm::Module &module);
+};
+
 class ASTReturnStatement : public ASTStatement
 {
 public:
     ASTConstant<int> constant;
 
     ASTReturnStatement(ASTConstant<int> &val) : constant(val) {}
-    void *EmitIR(llvm::IRBuilder<> &builder, llvm::LLVMContext &context, llvm::Module &module);
-};
-
-class ASTIdentifier : public ASTExpression
-{
-public:
-    std::string identifier;
-
-    ASTIdentifier(const char *identifier) : identifier(identifier) {}
     void *EmitIR(llvm::IRBuilder<> &builder, llvm::LLVMContext &context, llvm::Module &module);
 };
 

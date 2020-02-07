@@ -1,5 +1,10 @@
 #include <include/AST.hpp>
 
+void *ASTVariableDeclaration::EmitIR(llvm::IRBuilder<> &builder, llvm::LLVMContext &context, llvm::Module &module)
+{
+    return NULL;
+}
+
 void *ASTReturnStatement::EmitIR(llvm::IRBuilder<> &builder, llvm::LLVMContext &context, llvm::Module &module)
 {
     return builder.CreateRet((llvm::Value*)constant.EmitIR(builder, context, module));
