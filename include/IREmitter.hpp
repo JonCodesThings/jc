@@ -15,21 +15,11 @@
 class IREmitter
 {
 public:
-IREmitter(llvm::Module &module, llvm::LLVMContext &context) : module(module), context(context), builder(context) {}
-bool EmitIR(ASTBlock &root)
-{
-for (auto statement : root.block)
-{
-statement->EmitIR(builder, context, module);
-}
-
-module.print(llvm::errs(), nullptr);
-
-return true;
-
-}
+    IREmitter(llvm::Module &module, llvm::LLVMContext &context) : module(module), context(context), builder(context) {}
+    bool EmitIR(ASTBlock &root);
+    
 private:
-llvm::Module &module;
-llvm::LLVMContext &context;
-llvm::IRBuilder<> builder;
+    llvm::Module &module;
+    llvm::LLVMContext &context;
+    llvm::IRBuilder<> builder;
 };
