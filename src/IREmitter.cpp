@@ -1,13 +1,19 @@
 #include <include/IREmitter.hpp>
+#include <include/AST.hpp>
 
-bool IREmitter::EmitIR(ASTBlock &root)
+bool IREmitter::EmitIR(ASTBlock *root)
 {
-    for (auto statement : root.block)
+    state.typeRegistry.SetupBuiltinJCTypes();
+
+    if (!root)
+        return false;
+
+    for (auto statement : root->block)
     {
-        statement->EmitIR(builder, context, module);
+        statement->EmitIR(state);
     }
 
-    module.print(llvm::errs(), nullptr);
+    state.module.print(llvm::errs(), nullptr);
 
     return true;
 }

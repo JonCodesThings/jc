@@ -13,10 +13,9 @@ FLEX_TARGET(jc_scanner gen/jc_lex.l gen/jc_lex.cpp)
 
 ADD_FLEX_BISON_DEPENDENCY(jc_scanner jc_parser)
 
-set(SOURCE_FILES src/main.cpp src/AST.cpp src/IREmitter.cpp src/TypeRegistry.cpp)
+set(SOURCE_FILES src/main.cpp src/AST.cpp src/IREmitter.cpp src/SymbolTable.cpp src/TypeRegistry.cpp)
 
 add_executable(jc ${SOURCE_FILES} ${BISON_jc_parser_OUTPUTS} ${FLEX_jc_scanner_OUTPUTS})
 include_directories(.)
-include_directories(../llvm/include)
 target_link_libraries(jc ${llvm_libs})
 

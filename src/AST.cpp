@@ -1,53 +1,79 @@
 #include <include/AST.hpp>
 
-void *ASTVariableDeclaration::EmitIR(llvm::IRBuilder<> &builder, llvm::LLVMContext &context, llvm::Module &module)
+void *ASTReturnStatement::EmitIR(IREmitter::EmitterState &state)
+{
+    switch (type)
+    {
+        case CONSTANT:
+        {
+            return state.builder.CreateRet((llvm::Value*)constant.EmitIR(state));
+        }
+        case ID:
+        {
+            Symbol *symbol = state.symbolTable.GetSymbolByIdentifier(id.identifier);
+            llvm::Value *retval = state.builder.CreateLoad(symbol->alloc_inst, "retval");
+            return state.builder.CreateRet(retval);
+        }
+    }
+    return NULL;
+}
+
+void *ASTIdentifier::EmitIR(IREmitter::EmitterState &state)
 {
     return NULL;
 }
 
-void *ASTReturnStatement::EmitIR(llvm::IRBuilder<> &builder, llvm::LLVMContext &context, llvm::Module &module)
+void * ASTVariableDeclaration::EmitIR(IREmitter::EmitterState &state)
 {
-    return builder.CreateRet((llvm::Value*)constant.EmitIR(builder, context, module));
+    Symbol symbol;
+    symbol.type = Symbol::VARIABLE;
+    symbol.identifier = id.identifier;
+    symbol.alloc_inst = state.builder.CreateAlloca(state.typeRegistry.GetType(type.identifier), NULL, id.identifier);
+    state.symbolTable.AddSymbol(symbol);
+
+    return symbol.alloc_inst;
 }
 
-void *ASTIdentifier::EmitIR(llvm::IRBuilder<> &builder, llvm::LLVMContext &context, llvm::Module &module)
+void *ASTVariableAssignment::EmitIR(IREmitter::EmitterState &state)
 {
-    return NULL;
+    Symbol *symbol = state.symbolTable.GetSymbolByIdentifier(id.identifier);
+
+    return state.builder.CreateStore((llvm::Value*)constant.EmitIR(state), symbol->alloc_inst);
 }
 
-void *ASTBlock::EmitIR(llvm::IRBuilder<> &builder, llvm::LLVMContext &context, llvm::Module &module)
+void *ASTBlock::EmitIR(IREmitter::EmitterState &state)
 {
-    auto llvmBlock = llvm::BasicBlock::Create(context, "temp", NULL);
+    auto llvmBlock = llvm::BasicBlock::Create(state.context, "temp", NULL);
     for (ASTStatement *statement : block)
-        statement->EmitIR(builder, context, module);
+        statement->EmitIR(state);
     return llvmBlock;
 }
 
-void *ASTBlock::EmitIR(llvm::IRBuilder<> &builder, llvm::LLVMContext &context, llvm::Module &module, llvm::Function &func)
+void *ASTBlock::EmitIR(IREmitter::EmitterState &state, llvm::Function &func)
 {        
-    auto llvmBlock = llvm::BasicBlock::Create(context, "entry", &func);
+    auto llvmBlock = llvm::BasicBlock::Create(state.context, "entry", &func);
  
-    builder.SetInsertPoint(llvmBlock);
+    state.builder.SetInsertPoint(llvmBlock);
     for (ASTStatement *statement : block)
-        statement->EmitIR(builder, context, module);
+        statement->EmitIR(state);
     return llvmBlock;
 }
 
-void *ASTFunctionDeclaration::EmitIR(llvm::IRBuilder<> &builder, llvm::LLVMContext &context, llvm::Module &module)
+void *ASTFunctionDeclaration::EmitIR(IREmitter::EmitterState &state)
 {
-    return_type.EmitIR(builder, context, module);
-    identifier.EmitIR(builder, context, module);
+    return_type.EmitIR(state);
+    identifier.EmitIR(state);
 
     std::vector<llvm::Type*> argTypeVector;
-    auto funcType = llvm::FunctionType::get(llvm::Type::getInt32Ty(context), argTypeVector, false);
+    auto funcType = llvm::FunctionType::get(llvm::Type::getInt32Ty(state.context), argTypeVector, false);
 
-    auto Func = llvm::Function::Create(funcType, llvm::GlobalValue::ExternalLinkage, identifier.identifier, module);
+    auto Func = llvm::Function::Create(funcType, llvm::GlobalValue::ExternalLinkage, identifier.identifier, state.module);
     return Func;
 }
 
-void *ASTFunctionDefinition::EmitIR(llvm::IRBuilder<> &builder, llvm::LLVMContext &context, llvm::Module &module)
+void *ASTFunctionDefinition::EmitIR(IREmitter::EmitterState &state)
 {
-    auto func = declaration.EmitIR(builder, context, module);
-    block.EmitIR(builder, context, module, *(llvm::Function*)func);
+    auto func = declaration.EmitIR(state);
+    block.EmitIR(state, *(llvm::Function*)func);
     return func;
 }

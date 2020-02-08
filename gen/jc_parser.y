@@ -70,7 +70,7 @@ int token;
 
 %token UNKNOWN
 
-%type<statement> statement function_def function_decl
+%type<statement> statement function_def function_decl variable_decl variable_assign
 %type<id> id
 %type<string> IDENTIFIER
 %type<statement> return_statement
@@ -89,13 +89,18 @@ scope: LEFT_BRACE statements RIGHT_BRACE { $$ = $2; } | LEFT_BRACE RIGHT_BRACE {
 statements: statements statement { $1->block.push_back($2); } 
 | statement { $$ = new ASTBlock(); $$->block.push_back($1); };
 
-statement: return_statement | function_def | function_decl;
+statement: return_statement | function_def | function_decl | variable_decl | variable_assign;
 
 function_def: id id LEFT_BRACKET RIGHT_BRACKET scope {  $$ = new ASTFunctionDefinition(*$1, *$2, *new std::vector<const char *>(), *$5); };
 
 function_decl: id id LEFT_BRACKET RIGHT_BRACKET SEMICOLON { $$ = new ASTFunctionDeclaration(*$1, *$2, *new std::vector<const char *>()); };
 
-return_statement: RETURN INTEGER SEMICOLON { auto integer_constant = new ASTConstant<int>(yylval.integer); $$ = new ASTReturnStatement(*integer_constant); };
+variable_decl: id id SEMICOLON { $$ = new ASTVariableDeclaration(*$1, *$2); };
+
+variable_assign: id EQUAL INTEGER SEMICOLON { auto integer_constant = new ASTConstant<int>(yylval.integer); $$ = new ASTVariableAssignment(*$1, *integer_constant); };
+
+return_statement: RETURN INTEGER SEMICOLON { auto integer_constant = new ASTConstant<int>(yylval.integer); $$ = new ASTReturnStatement(*integer_constant); }
+    | RETURN id SEMICOLON { $$ = new ASTReturnStatement(*$2); };
 
 id: IDENTIFIER { $$ = new ASTIdentifier($1); };
 

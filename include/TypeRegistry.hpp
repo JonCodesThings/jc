@@ -19,11 +19,10 @@ class TypeRegistry
 {
 public:
     TypeRegistry(llvm::LLVMContext &context) : context(context) {}
-    ~TypeRegistry();
+    ~TypeRegistry() {};
     void SetupBuiltinJCTypes();
     void AddType(const std::string &id, llvm::Type &type);
     llvm::Type *GetType(const std::string &id);
-    void PrintRegistry();
 private:
     llvm::LLVMContext &context;
 
