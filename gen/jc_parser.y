@@ -98,7 +98,8 @@ binary_op: add;
 
 assign_op: variable_assign;
 
-variable_assign: id EQUAL INTEGER SEMICOLON { auto integer_constant = new ASTConstant<int>(yylval.integer); $$ = new ASTVariableAssignment(*$1, *integer_constant); };
+variable_assign: id EQUAL INTEGER SEMICOLON { auto integer_constant = new ASTConstant<int>(yylval.integer); $$ = new ASTVariableAssignment(*$1, *integer_constant); }
+    | id EQUAL id SEMICOLON { $$ = new ASTVariableAssignment(*$1, *$3); };
 
 increment: id PLUS PLUS SEMICOLON { $$ = new ASTUnaryOperator(*$1, ASTUnaryOperator::INCREMENT); };
 

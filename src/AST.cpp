@@ -1,6 +1,6 @@
 #include <include/AST.hpp>
 
-void *ASTReturnStatement::EmitIR(IREmitter::EmitterState &state)
+llvm::Value *ASTReturnStatement::EmitIR(IREmitter::EmitterState &state)
 {
     switch (type)
     {
@@ -8,7 +8,7 @@ void *ASTReturnStatement::EmitIR(IREmitter::EmitterState &state)
             return NULL;
         case CONSTANT:
         {
-            return state.builder.CreateRet((llvm::Value*)constant.EmitIR(state));
+            return state.builder.CreateRet(constant.EmitIR(state));
         }
         case ID:
         {
@@ -20,7 +20,7 @@ void *ASTReturnStatement::EmitIR(IREmitter::EmitterState &state)
     return NULL;
 }
 
-void *ASTIdentifier::EmitIR(IREmitter::EmitterState &state)
+llvm::Value *ASTIdentifier::EmitIR(IREmitter::EmitterState &state)
 {
     const Symbol * s = state.symbolTable.GetSymbolByIdentifier(identifier);
     if (s)
@@ -28,7 +28,7 @@ void *ASTIdentifier::EmitIR(IREmitter::EmitterState &state)
     return NULL;
 }
 
-void *ASTUnaryOperator::EmitIR(IREmitter::EmitterState &state)
+llvm::Value *ASTUnaryOperator::EmitIR(IREmitter::EmitterState &state)
 {
     const std::string &type = operatee.GetType(state);
     const Symbol *s = operatee.GetSymbol(state);
@@ -84,13 +84,13 @@ void *ASTUnaryOperator::EmitIR(IREmitter::EmitterState &state)
     return NULL;
 }
 
-void *ASTBinaryOperator::EmitIR(IREmitter::EmitterState &state)
+llvm::Value *ASTBinaryOperator::EmitIR(IREmitter::EmitterState &state)
 {
     const std::string &ltype = left.GetType(state);
     const std::string &rtype = right.GetType(state);
 
-    llvm::Value *l_inst = (llvm::Value*)left.EmitIR(state);
-    llvm::Value *r_inst = (llvm::Value*)right.EmitIR(state);
+    llvm::Value *l_inst = left.EmitIR(state);
+    llvm::Value *r_inst = right.EmitIR(state);
 
     switch (op)
     {
@@ -104,7 +104,7 @@ void *ASTBinaryOperator::EmitIR(IREmitter::EmitterState &state)
     return NULL;
 }
 
-void * ASTVariableDeclaration::EmitIR(IREmitter::EmitterState &state)
+llvm::Value * ASTVariableDeclaration::EmitIR(IREmitter::EmitterState &state)
 {
     Symbol symbol;
     symbol.classification = Symbol::VARIABLE;
@@ -116,14 +116,21 @@ void * ASTVariableDeclaration::EmitIR(IREmitter::EmitterState &state)
     return symbol.alloc_inst;
 }
 
-void *ASTVariableAssignment::EmitIR(IREmitter::EmitterState &state)
+llvm::Value *ASTVariableAssignment::EmitIR(IREmitter::EmitterState &state)
 {
     Symbol *symbol = state.symbolTable.GetSymbolByIdentifier(id.identifier);
+    const Symbol *node_symbol = node.GetSymbol(state);
 
-    return state.builder.CreateStore((llvm::Value*)constant.EmitIR(state), symbol->alloc_inst);
+    if (node_symbol)
+    {
+        llvm::Value *temp = state.builder.CreateLoad(node_symbol->alloc_inst, "temp");
+        return state.builder.CreateStore(temp, symbol->alloc_inst);
+    }
+
+    return state.builder.CreateStore(node.EmitIR(state), symbol->alloc_inst);
 }
 
-void *ASTBlock::EmitIR(IREmitter::EmitterState &state)
+llvm::Value *ASTBlock::EmitIR(IREmitter::EmitterState &state)
 {
     auto llvmBlock = llvm::BasicBlock::Create(state.context, "temp", NULL);
     for (ASTStatement *statement : block)
@@ -131,7 +138,7 @@ void *ASTBlock::EmitIR(IREmitter::EmitterState &state)
     return llvmBlock;
 }
 
-void *ASTBlock::EmitIR(IREmitter::EmitterState &state, llvm::Function &func)
+llvm::Value *ASTBlock::EmitIR(IREmitter::EmitterState &state, llvm::Function &func)
 {        
     auto llvmBlock = llvm::BasicBlock::Create(state.context, "entry", &func);
  
@@ -141,7 +148,7 @@ void *ASTBlock::EmitIR(IREmitter::EmitterState &state, llvm::Function &func)
     return llvmBlock;
 }
 
-void *ASTFunctionDeclaration::EmitIR(IREmitter::EmitterState &state)
+llvm::Value *ASTFunctionDeclaration::EmitIR(IREmitter::EmitterState &state)
 {
     return_type.EmitIR(state);
     identifier.EmitIR(state);
@@ -153,7 +160,7 @@ void *ASTFunctionDeclaration::EmitIR(IREmitter::EmitterState &state)
     return Func;
 }
 
-void *ASTFunctionDefinition::EmitIR(IREmitter::EmitterState &state)
+llvm::Value *ASTFunctionDefinition::EmitIR(IREmitter::EmitterState &state)
 {
     auto func = declaration.EmitIR(state);
     block.EmitIR(state, *(llvm::Function*)func);
