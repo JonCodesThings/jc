@@ -77,7 +77,7 @@ int token;
 %type<string> IDENTIFIER
 %type<statement> return_statement
 %type<scope_block> statements scope
-%type<statement> add
+%type<statement> add subtract
 
 %start module
 
@@ -94,18 +94,21 @@ statement: return_statement | function_def | function_decl | variable_decl | ass
 
 unary_op: increment | decrement;
 
-binary_op: add;
+binary_op: add | subtract;
 
 assign_op: variable_assign;
 
 variable_assign: id EQUAL INTEGER SEMICOLON { auto integer_constant = new ASTConstant<int>(yylval.integer); $$ = new ASTVariableAssignment(*$1, *integer_constant); }
-    | id EQUAL id SEMICOLON { $$ = new ASTVariableAssignment(*$1, *$3); };
+    | id EQUAL id SEMICOLON { $$ = new ASTVariableAssignment(*$1, *$3); }
+    | id EQUAL statement { $$ = new ASTVariableAssignment(*$1, *$3); };
 
 increment: id PLUS PLUS SEMICOLON { $$ = new ASTUnaryOperator(*$1, ASTUnaryOperator::INCREMENT); };
 
 decrement: id MINUS MINUS SEMICOLON { $$ = new ASTUnaryOperator(*$1, ASTUnaryOperator::DECREMENT); };
 
 add: id PLUS id SEMICOLON { $$ = new ASTBinaryOperator(*$1, *$3, ASTBinaryOperator::ADD); };
+
+subtract: id MINUS id SEMICOLON { $$ = new ASTBinaryOperator(*$1, *$3, ASTBinaryOperator::SUBTRACT); };
 
 function_def: id id LEFT_BRACKET RIGHT_BRACKET scope {  $$ = new ASTFunctionDefinition(*$1, *$2, *new std::vector<const char *>(), *$5); };
 

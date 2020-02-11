@@ -100,6 +100,12 @@ llvm::Value *ASTBinaryOperator::EmitIR(IREmitter::EmitterState &state)
             llvm::Value *tempr = state.builder.CreateLoad(r_inst, "tempr");
             return state.builder.CreateAdd(templ, tempr);
         }
+        case SUBTRACT:
+        {
+            llvm::Value *templ = state.builder.CreateLoad(l_inst, "templ");
+            llvm::Value *tempr = state.builder.CreateLoad(r_inst, "tempr");
+            return state.builder.CreateSub(templ, tempr);
+        }
     }
     return NULL;
 }
