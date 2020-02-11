@@ -24,6 +24,8 @@ class ASTNode
 {
 public:
     virtual ~ASTNode() {}
+    virtual const Symbol *GetSymbol(IREmitter::EmitterState &state) { return NULL; };
+    virtual const std::string &GetType(IREmitter::EmitterState &state) { return "void"; };
     virtual void *EmitIR(IREmitter::EmitterState &state) = 0;
 };
 
@@ -46,7 +48,52 @@ public:
     std::string identifier;
 
     ASTIdentifier() {}
+    const std::string &GetType(IREmitter::EmitterState &state)
+    {
+        Symbol *symbol = state.symbolTable.GetSymbolByIdentifier(identifier);
+        printf("%s\n", symbol->type.c_str());
+        if (symbol)
+            return symbol->type;
+        return "void";
+    }
+    const Symbol *GetSymbol(IREmitter::EmitterState &state)
+    {
+        return state.symbolTable.GetSymbolByIdentifier(identifier);
+    }
     ASTIdentifier(const char *identifier) : identifier(identifier) {}
+    void *EmitIR(IREmitter::EmitterState &state);
+};
+
+class ASTUnaryOperator : public ASTExpression
+{
+public:
+    ASTNode &operatee;
+
+    enum OP
+    {
+        INCREMENT,
+        DECREMENT
+    } op;
+
+    ASTUnaryOperator(ASTNode &operatee, OP op) : operatee(operatee), op(op) {}
+    void *EmitIR(IREmitter::EmitterState &state);
+};
+
+class ASTBinaryOperator : public ASTExpression
+{
+public:
+    ASTNode &left;
+    ASTNode &right;
+
+    enum OP
+    {
+        ADD,
+        SUBTRACT,
+        MULTIPLE,
+        DIVIDE
+    } op;
+
+    ASTBinaryOperator(ASTNode &left, ASTNode &right, OP op) : left(left), right(right), op(op) {}
     void *EmitIR(IREmitter::EmitterState &state);
 };
 

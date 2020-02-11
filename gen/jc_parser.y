@@ -39,6 +39,7 @@ ASTConstant<const char *> *string_constant;
 ASTFunctionCall *function_call;
 ASTFunctionDeclaration *function_declaration;
 ASTFunctionDefinition *function_definition;
+ASTUnaryOperator *unary_operator;
 ASTBlock *scope_block;
 ASTIdentifier *id;
 const char *string;
@@ -70,11 +71,13 @@ int token;
 
 %token UNKNOWN
 
-%type<statement> statement function_def function_decl variable_decl variable_assign
+%type<statement> statement function_def function_decl variable_decl assign_op variable_assign unary_op binary_op
+%type<unary_operator> increment decrement
 %type<id> id
 %type<string> IDENTIFIER
 %type<statement> return_statement
 %type<scope_block> statements scope
+%type<statement> add
 
 %start module
 
@@ -82,22 +85,32 @@ int token;
 
 module: function_def { base = new ASTBlock(); base->block.push_back($1); };
 
-
-
 scope: LEFT_BRACE statements RIGHT_BRACE { $$ = $2; } | LEFT_BRACE RIGHT_BRACE { $$ = new ASTBlock(); } ;
 
 statements: statements statement { $1->block.push_back($2); } 
 | statement { $$ = new ASTBlock(); $$->block.push_back($1); };
 
-statement: return_statement | function_def | function_decl | variable_decl | variable_assign;
+statement: return_statement | function_def | function_decl | variable_decl | assign_op | unary_op | binary_op;
+
+unary_op: increment | decrement;
+
+binary_op: add;
+
+assign_op: variable_assign;
+
+variable_assign: id EQUAL INTEGER SEMICOLON { auto integer_constant = new ASTConstant<int>(yylval.integer); $$ = new ASTVariableAssignment(*$1, *integer_constant); };
+
+increment: id PLUS PLUS SEMICOLON { $$ = new ASTUnaryOperator(*$1, ASTUnaryOperator::INCREMENT); };
+
+decrement: id MINUS MINUS SEMICOLON { $$ = new ASTUnaryOperator(*$1, ASTUnaryOperator::DECREMENT); };
+
+add: id PLUS id SEMICOLON { $$ = new ASTBinaryOperator(*$1, *$3, ASTBinaryOperator::ADD); };
 
 function_def: id id LEFT_BRACKET RIGHT_BRACKET scope {  $$ = new ASTFunctionDefinition(*$1, *$2, *new std::vector<const char *>(), *$5); };
 
 function_decl: id id LEFT_BRACKET RIGHT_BRACKET SEMICOLON { $$ = new ASTFunctionDeclaration(*$1, *$2, *new std::vector<const char *>()); };
 
 variable_decl: id id SEMICOLON { $$ = new ASTVariableDeclaration(*$1, *$2); };
-
-variable_assign: id EQUAL INTEGER SEMICOLON { auto integer_constant = new ASTConstant<int>(yylval.integer); $$ = new ASTVariableAssignment(*$1, *integer_constant); };
 
 return_statement: RETURN INTEGER SEMICOLON { auto integer_constant = new ASTConstant<int>(yylval.integer); $$ = new ASTReturnStatement(*integer_constant); }
     | RETURN id SEMICOLON { $$ = new ASTReturnStatement(*$2); };

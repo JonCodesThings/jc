@@ -8,16 +8,15 @@
 
 struct Symbol
 {
-    enum Type
+    enum Classification
     {
         VARIABLE,
         FUNCTION
-    } type;
+    } classification;
+
     std::string identifier;
-    union
-    {
-        llvm::AllocaInst *alloc_inst;
-    };
+    std::string type;
+    llvm::AllocaInst *alloc_inst;
     
 };
 

@@ -1,0 +1,7 @@
+i32 main()
+{
+    i32 i;
+    i = 14;
+    i--;
+    return i;
+}

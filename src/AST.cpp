@@ -4,6 +4,8 @@ void *ASTReturnStatement::EmitIR(IREmitter::EmitterState &state)
 {
     switch (type)
     {
+        default:
+            return NULL;
         case CONSTANT:
         {
             return state.builder.CreateRet((llvm::Value*)constant.EmitIR(state));
@@ -20,13 +22,93 @@ void *ASTReturnStatement::EmitIR(IREmitter::EmitterState &state)
 
 void *ASTIdentifier::EmitIR(IREmitter::EmitterState &state)
 {
+    const Symbol * s = state.symbolTable.GetSymbolByIdentifier(identifier);
+    if (s)
+        return s->alloc_inst;
+    return NULL;
+}
+
+void *ASTUnaryOperator::EmitIR(IREmitter::EmitterState &state)
+{
+    const std::string &type = operatee.GetType(state);
+    const Symbol *s = operatee.GetSymbol(state);
+
+    switch (op)
+    {
+        default:
+            return NULL;
+        case INCREMENT:
+        {
+            if (type == "i8")
+            {
+                llvm::Value *temp = state.builder.CreateLoad(s->alloc_inst, "temp");
+                llvm::Value *added = state.builder.CreateAdd(temp, llvm::ConstantInt::get(llvm::IntegerType::get(state.context, 8), 1));
+                return state.builder.CreateStore(added, s->alloc_inst);
+            }
+            if (type == "i16")
+            {
+                llvm::Value *temp = state.builder.CreateLoad(s->alloc_inst, "temp");
+                llvm::Value *added = state.builder.CreateAdd(temp, llvm::ConstantInt::get(llvm::IntegerType::get(state.context, 16), 1));
+                return state.builder.CreateStore(added, s->alloc_inst);
+            }
+            if (type == "i32")
+            {
+                llvm::Value *temp = state.builder.CreateLoad(s->alloc_inst, "temp");
+                llvm::Value *added = state.builder.CreateAdd(temp, llvm::ConstantInt::get(llvm::IntegerType::get(state.context, 32), 1));
+                return state.builder.CreateStore(added, s->alloc_inst);
+            }
+        }
+        case DECREMENT:
+        {
+            if (type == "i8")
+            {
+                llvm::Value *temp = state.builder.CreateLoad(s->alloc_inst, "temp");
+                llvm::Value *added = state.builder.CreateSub(temp, llvm::ConstantInt::get(llvm::IntegerType::get(state.context, 8), 1));
+                return state.builder.CreateStore(added, s->alloc_inst);
+            }
+            if (type == "i16")
+            {
+                llvm::Value *temp = state.builder.CreateLoad(s->alloc_inst, "temp");
+                llvm::Value *added = state.builder.CreateSub(temp, llvm::ConstantInt::get(llvm::IntegerType::get(state.context, 16), 1));
+                return state.builder.CreateStore(added, s->alloc_inst);
+            }
+            if (type == "i32")
+            {
+                llvm::Value *temp = state.builder.CreateLoad(s->alloc_inst, "temp");
+                llvm::Value *added = state.builder.CreateSub(temp, llvm::ConstantInt::get(llvm::IntegerType::get(state.context, 32), 1));
+                return state.builder.CreateStore(added, s->alloc_inst);
+            }
+        }
+    }
+    
+    return NULL;
+}
+
+void *ASTBinaryOperator::EmitIR(IREmitter::EmitterState &state)
+{
+    const std::string &ltype = left.GetType(state);
+    const std::string &rtype = right.GetType(state);
+
+    llvm::Value *l_inst = (llvm::Value*)left.EmitIR(state);
+    llvm::Value *r_inst = (llvm::Value*)right.EmitIR(state);
+
+    switch (op)
+    {
+        case ADD:
+        {
+            llvm::Value *templ = state.builder.CreateLoad(l_inst, "templ");
+            llvm::Value *tempr = state.builder.CreateLoad(r_inst, "tempr");
+            return state.builder.CreateAdd(templ, tempr);
+        }
+    }
     return NULL;
 }
 
 void * ASTVariableDeclaration::EmitIR(IREmitter::EmitterState &state)
 {
     Symbol symbol;
-    symbol.type = Symbol::VARIABLE;
+    symbol.classification = Symbol::VARIABLE;
+    symbol.type = type.identifier;
     symbol.identifier = id.identifier;
     symbol.alloc_inst = state.builder.CreateAlloca(state.typeRegistry.GetType(type.identifier), NULL, id.identifier);
     state.symbolTable.AddSymbol(symbol);
