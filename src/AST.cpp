@@ -30,7 +30,7 @@ llvm::Value *ASTIdentifier::EmitIR(IREmitter::EmitterState &state)
 
 llvm::Value *ASTUnaryOperator::EmitIR(IREmitter::EmitterState &state)
 {
-    const std::string &type = operatee.GetType(state);
+    const std::string *type = operatee.GetType(state);
     const Symbol *s = operatee.GetSymbol(state);
 
     switch (op)
@@ -39,19 +39,19 @@ llvm::Value *ASTUnaryOperator::EmitIR(IREmitter::EmitterState &state)
             return NULL;
         case INCREMENT:
         {
-            if (type == "i8")
+            if ((*type) == "i8")
             {
                 llvm::Value *temp = state.builder.CreateLoad(s->alloc_inst, "temp");
                 llvm::Value *added = state.builder.CreateAdd(temp, llvm::ConstantInt::get(llvm::IntegerType::get(state.context, 8), 1));
                 return state.builder.CreateStore(added, s->alloc_inst);
             }
-            if (type == "i16")
+            if ((*type) == "i16")
             {
                 llvm::Value *temp = state.builder.CreateLoad(s->alloc_inst, "temp");
                 llvm::Value *added = state.builder.CreateAdd(temp, llvm::ConstantInt::get(llvm::IntegerType::get(state.context, 16), 1));
                 return state.builder.CreateStore(added, s->alloc_inst);
             }
-            if (type == "i32")
+            if ((*type) == "i32")
             {
                 llvm::Value *temp = state.builder.CreateLoad(s->alloc_inst, "temp");
                 llvm::Value *added = state.builder.CreateAdd(temp, llvm::ConstantInt::get(llvm::IntegerType::get(state.context, 32), 1));
@@ -60,19 +60,19 @@ llvm::Value *ASTUnaryOperator::EmitIR(IREmitter::EmitterState &state)
         }
         case DECREMENT:
         {
-            if (type == "i8")
+            if ((*type) == "i8")
             {
                 llvm::Value *temp = state.builder.CreateLoad(s->alloc_inst, "temp");
                 llvm::Value *added = state.builder.CreateSub(temp, llvm::ConstantInt::get(llvm::IntegerType::get(state.context, 8), 1));
                 return state.builder.CreateStore(added, s->alloc_inst);
             }
-            if (type == "i16")
+            if ((*type) == "i16")
             {
                 llvm::Value *temp = state.builder.CreateLoad(s->alloc_inst, "temp");
                 llvm::Value *added = state.builder.CreateSub(temp, llvm::ConstantInt::get(llvm::IntegerType::get(state.context, 16), 1));
                 return state.builder.CreateStore(added, s->alloc_inst);
             }
-            if (type == "i32")
+            if ((*type) == "i32")
             {
                 llvm::Value *temp = state.builder.CreateLoad(s->alloc_inst, "temp");
                 llvm::Value *added = state.builder.CreateSub(temp, llvm::ConstantInt::get(llvm::IntegerType::get(state.context, 32), 1));
@@ -86,24 +86,37 @@ llvm::Value *ASTUnaryOperator::EmitIR(IREmitter::EmitterState &state)
 
 llvm::Value *ASTBinaryOperator::EmitIR(IREmitter::EmitterState &state)
 {
-    const std::string &ltype = left.GetType(state);
-    const std::string &rtype = right.GetType(state);
+    const std::string *ltype = left.GetType(state);
+    const std::string *rtype = right.GetType(state);
 
     llvm::Value *l_inst = left.EmitIR(state);
     llvm::Value *r_inst = right.EmitIR(state);
+
+    const Symbol *l_symbol = left.GetSymbol(state);
+    const Symbol *r_symbol = right.GetSymbol(state);
+
+    llvm::Value *templ;
+    llvm::Value *tempr;
+
+    if (l_symbol)
+        templ = state.builder.CreateLoad(l_inst, "templ");
+    else
+        templ = l_inst;
+
+    if (r_symbol)
+        tempr = state.builder.CreateLoad(r_inst, "tempr");
+    else
+        tempr = r_inst;
+
 
     switch (op)
     {
         case ADD:
         {
-            llvm::Value *templ = state.builder.CreateLoad(l_inst, "templ");
-            llvm::Value *tempr = state.builder.CreateLoad(r_inst, "tempr");
             return state.builder.CreateAdd(templ, tempr);
         }
         case SUBTRACT:
         {
-            llvm::Value *templ = state.builder.CreateLoad(l_inst, "templ");
-            llvm::Value *tempr = state.builder.CreateLoad(r_inst, "tempr");
             return state.builder.CreateSub(templ, tempr);
         }
     }

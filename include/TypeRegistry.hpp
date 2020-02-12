@@ -23,6 +23,7 @@ public:
     void SetupBuiltinJCTypes();
     void AddType(const std::string &id, llvm::Type &type);
     llvm::Type *GetType(const std::string &id);
+    const std::string *GetLifetimeTypeString(const std::string &id);
 private:
     llvm::LLVMContext &context;
 

@@ -13,6 +13,8 @@ void TypeRegistry::SetupBuiltinJCTypes()
     AddType("u8", *llvm::Type::getInt8Ty(context));
     AddType("u16", *llvm::Type::getInt16Ty(context));
     AddType("u32", *llvm::Type::getInt32Ty(context));
+
+    AddType("void", *llvm::Type::getVoidTy(context));
 }
 
 void TypeRegistry::AddType(const std::string &id, llvm::Type &type)
@@ -28,6 +30,16 @@ llvm::Type *TypeRegistry::GetType(const std::string &id)
     {
         if (type_.first == id)
             return type_.second;
+    }
+    return NULL;
+}
+
+const std::string *TypeRegistry::GetLifetimeTypeString(const std::string &id)
+{
+    for (int i = 0; i < registry.size(); i++)
+    {
+        if (registry[i].first == id)
+            return &registry[i].first;
     }
     return NULL;
 }

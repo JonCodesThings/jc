@@ -25,7 +25,7 @@ class ASTNode
 public:
     virtual ~ASTNode() {}
     virtual const Symbol *GetSymbol(IREmitter::EmitterState &state) { return NULL; };
-    virtual const std::string &GetType(IREmitter::EmitterState &state) { return "void"; };
+    virtual const std::string *GetType(IREmitter::EmitterState &state) { return state.typeRegistry.GetLifetimeTypeString("void"); };
     virtual llvm::Value *EmitIR(IREmitter::EmitterState &state) = 0;
 };
 
@@ -48,13 +48,12 @@ public:
     std::string identifier;
 
     ASTIdentifier() {}
-    const std::string &GetType(IREmitter::EmitterState &state)
+    const std::string *GetType(IREmitter::EmitterState &state)
     {
         Symbol *symbol = state.symbolTable.GetSymbolByIdentifier(identifier);
-        printf("%s\n", symbol->type.c_str());
         if (symbol)
-            return symbol->type;
-        return "void";
+            return &symbol->type;
+        return state.typeRegistry.GetLifetimeTypeString("void");
     }
     const Symbol *GetSymbol(IREmitter::EmitterState &state)
     {
@@ -97,18 +96,26 @@ public:
     llvm::Value *EmitIR(IREmitter::EmitterState &state);
 };
 
-template <class T>
 class ASTConstant : public ASTNode
 {
 public:
-    T constant;
-
     ASTConstant() {}
-    ASTConstant(T value) : constant(value) {}
+};
+
+class ASTConstantInt : public ASTConstant
+{
+public:
+    int constant;
+
+    ASTConstantInt(int constant) : constant(constant) {}
 
     llvm::Value *EmitIR(IREmitter::EmitterState &state) 
     { 
         return llvm::ConstantInt::get(llvm::IntegerType::get(state.context, 32), constant); 
+    }
+    const std::string *GetType(IREmitter::EmitterState &state)
+    {
+        return state.typeRegistry.GetLifetimeTypeString("i32");
     }
 };
 
@@ -135,7 +142,7 @@ public:
 class ASTReturnStatement : public ASTStatement
 {
 public:
-    ASTConstant<int> constant;
+    ASTConstant &constant;
     ASTIdentifier id;
 
     enum ReturnType
@@ -144,8 +151,8 @@ public:
         ID
     } type;
 
-    ASTReturnStatement(ASTConstant<int> &val) : constant(val), type(CONSTANT) {}
-    ASTReturnStatement(ASTIdentifier &id) : id(id), type(ID) {}
+    ASTReturnStatement(ASTConstant &val) : constant(val), type(CONSTANT) {}
+    ASTReturnStatement(ASTIdentifier &id) : id(id), constant(*new ASTConstantInt(0)), type(ID) {}
     llvm::Value *EmitIR(IREmitter::EmitterState &state);
 };
 

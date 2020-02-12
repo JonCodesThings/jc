@@ -35,12 +35,12 @@ return 0;
 ASTNode *node;
 ASTStatement *statement;
 ASTExpression *expression;
-ASTConstant<const char *> *string_constant;
 ASTFunctionCall *function_call;
 ASTFunctionDeclaration *function_declaration;
 ASTFunctionDefinition *function_definition;
 ASTUnaryOperator *unary_operator;
 ASTBlock *scope_block;
+ASTConstant *constant;
 ASTIdentifier *id;
 const char *string;
 int integer;
@@ -78,6 +78,8 @@ int token;
 %type<statement> return_statement
 %type<scope_block> statements scope
 %type<statement> add subtract
+%type<constant> constant
+%type<node> id_or_constant
 
 %start module
 
@@ -98,15 +100,14 @@ binary_op: add | subtract;
 
 assign_op: variable_assign;
 
-variable_assign: id EQUAL INTEGER SEMICOLON { auto integer_constant = new ASTConstant<int>(yylval.integer); $$ = new ASTVariableAssignment(*$1, *integer_constant); }
-    | id EQUAL id SEMICOLON { $$ = new ASTVariableAssignment(*$1, *$3); }
+variable_assign: id EQUAL id_or_constant SEMICOLON {  $$ = new ASTVariableAssignment(*$1, *$3); } 
     | id EQUAL statement { $$ = new ASTVariableAssignment(*$1, *$3); };
 
-increment: id PLUS PLUS SEMICOLON { $$ = new ASTUnaryOperator(*$1, ASTUnaryOperator::INCREMENT); };
+increment: id_or_constant PLUS PLUS SEMICOLON { $$ = new ASTUnaryOperator(*$1, ASTUnaryOperator::INCREMENT); };
 
 decrement: id MINUS MINUS SEMICOLON { $$ = new ASTUnaryOperator(*$1, ASTUnaryOperator::DECREMENT); };
 
-add: id PLUS id SEMICOLON { $$ = new ASTBinaryOperator(*$1, *$3, ASTBinaryOperator::ADD); };
+add: id_or_constant PLUS id_or_constant SEMICOLON { $$ = new ASTBinaryOperator(*$1, *$3, ASTBinaryOperator::ADD); };
 
 subtract: id MINUS id SEMICOLON { $$ = new ASTBinaryOperator(*$1, *$3, ASTBinaryOperator::SUBTRACT); };
 
@@ -116,8 +117,12 @@ function_decl: id id LEFT_BRACKET RIGHT_BRACKET SEMICOLON { $$ = new ASTFunction
 
 variable_decl: id id SEMICOLON { $$ = new ASTVariableDeclaration(*$1, *$2); };
 
-return_statement: RETURN INTEGER SEMICOLON { auto integer_constant = new ASTConstant<int>(yylval.integer); $$ = new ASTReturnStatement(*integer_constant); }
+return_statement: RETURN constant SEMICOLON { $$ = new ASTReturnStatement(*$2); };
     | RETURN id SEMICOLON { $$ = new ASTReturnStatement(*$2); };
+
+id_or_constant: id { $$ = $1; } | constant { $$ = $1; };
+
+constant: INTEGER { $$ = new ASTConstantInt(yylval.integer); };
 
 id: IDENTIFIER { $$ = new ASTIdentifier($1); };
 
