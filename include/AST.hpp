@@ -125,7 +125,10 @@ public:
     ASTIdentifier &type;
     ASTIdentifier &id;
 
-    ASTVariableDeclaration(ASTIdentifier &type, ASTIdentifier &id) : type(type), id(id) {}
+    ASTNode *node;
+
+    ASTVariableDeclaration(ASTIdentifier &type, ASTIdentifier &id) : type(type), id(id), node(NULL) {}
+    ASTVariableDeclaration(ASTIdentifier &type, ASTIdentifier &id, ASTNode &node) : type(type), id(id), node(&node) {}
     llvm::Value *EmitIR(IREmitter::EmitterState &state);
 };
 

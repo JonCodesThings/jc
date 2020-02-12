@@ -92,16 +92,15 @@ scope: LEFT_BRACE statements RIGHT_BRACE { $$ = $2; } | LEFT_BRACE RIGHT_BRACE {
 statements: statements statement { $1->block.push_back($2); } 
 | statement { $$ = new ASTBlock(); $$->block.push_back($1); };
 
-statement: return_statement | function_def | function_decl | variable_decl | assign_op | unary_op | binary_op;
+statement: return_statement | function_def | function_decl | variable_decl | assign_op | unary_op | binary_op | id_or_constant SEMICOLON;
 
 unary_op: increment | decrement;
 
-binary_op: add | subtract;
+binary_op: add { $$ = $1; } | subtract { $$ = $1; };
 
 assign_op: variable_assign;
 
-variable_assign: id EQUAL id_or_constant SEMICOLON {  $$ = new ASTVariableAssignment(*$1, *$3); } 
-    | id EQUAL statement { $$ = new ASTVariableAssignment(*$1, *$3); };
+variable_assign: id EQUAL statement { $$ = new ASTVariableAssignment(*$1, *$3); };
 
 increment: id_or_constant PLUS PLUS SEMICOLON { $$ = new ASTUnaryOperator(*$1, ASTUnaryOperator::INCREMENT); };
 
@@ -115,12 +114,13 @@ function_def: id id LEFT_BRACKET RIGHT_BRACKET scope {  $$ = new ASTFunctionDefi
 
 function_decl: id id LEFT_BRACKET RIGHT_BRACKET SEMICOLON { $$ = new ASTFunctionDeclaration(*$1, *$2, *new std::vector<const char *>()); };
 
-variable_decl: id id SEMICOLON { $$ = new ASTVariableDeclaration(*$1, *$2); };
+variable_decl: id id SEMICOLON { $$ = new ASTVariableDeclaration(*$1, *$2); }
+    | id id EQUAL statement { $$ = new ASTVariableDeclaration(*$1, *$2, *$4); };
 
 return_statement: RETURN constant SEMICOLON { $$ = new ASTReturnStatement(*$2); };
     | RETURN id SEMICOLON { $$ = new ASTReturnStatement(*$2); };
 
-id_or_constant: id { $$ = $1; } | constant { $$ = $1; };
+id_or_constant: id | constant;
 
 constant: INTEGER { $$ = new ASTConstantInt(yylval.integer); };
 
