@@ -35,6 +35,8 @@ llvm::Value *ASTUnaryOperator::EmitIR(IREmitter::EmitterState &state)
     const std::string *type = operatee.GetType(state);
     const Symbol *s = operatee.GetSymbol(state);
 
+    printf("operatee type: %s\n", type->c_str());
+
     switch (op)
     {
         default:
@@ -42,6 +44,28 @@ llvm::Value *ASTUnaryOperator::EmitIR(IREmitter::EmitterState &state)
         case CAST:
         {
             const std::string *cast_to = cast->GetType(state);
+            printf("cast type: %s\n", cast_to->c_str());
+
+            if (state.typeRegistry.IsTypeNumeric(*type) && state.typeRegistry.IsTypeNumeric(*cast_to))
+            {
+                llvm::Type *conver = state.typeRegistry.GetNarrowingConversion(*type, *cast_to);
+
+                if (!conver)
+                    conver = state.typeRegistry.GetWideningConversion(*type, *cast_to);
+
+                if (!conver)
+                    return NULL;
+
+                printf("cast\n");
+
+                //TODO: allow this to support unsigned types
+                return state.builder.CreateIntCast(operatee.EmitIR(state), conver, true);
+            }
+            else
+            {
+                printf("not numeric lol\n");
+            }
+            
 
         }
         case INCREMENT:
@@ -150,13 +174,13 @@ llvm::Value *ASTVariableAssignment::EmitIR(IREmitter::EmitterState &state)
     Symbol *symbol = state.symbolTable.GetSymbolByIdentifier(id.identifier);
     const Symbol *node_symbol = node.GetSymbol(state);
 
-    if (*node.GetType(state) != *id.GetType(state))
+    /*if (*node.GetType(state) != *id.GetType(state))
     {
         printf("%s:%d:%d Error: types do not match for assignment (type %s expected, type %s given)\n",
         yycurrentfilename,
         line_number, start_char, (*id.GetType(state)).c_str(), (*node.GetType(state)).c_str());
         return NULL;
-    }
+    }*/
 
     if (node_symbol)
     {

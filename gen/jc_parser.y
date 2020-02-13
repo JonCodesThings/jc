@@ -112,13 +112,14 @@ assign_op: variable_assign;
 
 variable_assign: id EQUAL statement { $$ = new ASTVariableAssignment(*$1, *$3);  };
 
-cast: LEFT_BRACKET id RIGHT_BRACKET id { $$ = new ASTUnaryOperator(*$4, $2, ASTUnaryOperator::CAST);   };
+cast: LEFT_BRACKET id RIGHT_BRACKET id_or_constant SEMICOLON { $$ = new ASTUnaryOperator(*$4, $2, ASTUnaryOperator::CAST); };
 
 increment: id_or_constant PLUS PLUS SEMICOLON { $$ = new ASTUnaryOperator(*$1, ASTUnaryOperator::INCREMENT);  };
 
 decrement: id MINUS MINUS SEMICOLON { $$ = new ASTUnaryOperator(*$1, ASTUnaryOperator::DECREMENT);  };
 
-add: id_or_constant PLUS id_or_constant SEMICOLON { $$ = new ASTBinaryOperator(*$1, *$3, ASTBinaryOperator::ADD);  };
+add: id_or_constant PLUS id_or_constant SEMICOLON { $$ = new ASTBinaryOperator(*$1, *$3, ASTBinaryOperator::ADD);  }
+    | id_or_constant PLUS unary_op SEMICOLON {$$ = new ASTBinaryOperator(*$1, *$3, ASTBinaryOperator::ADD); };
 
 subtract: id MINUS id SEMICOLON { $$ = new ASTBinaryOperator(*$1, *$3, ASTBinaryOperator::SUBTRACT);  };
 
@@ -134,7 +135,7 @@ return_statement: RETURN constant SEMICOLON { $$ = new ASTReturnStatement(*$2); 
 
 id_or_constant: id | constant;
 
-constant: INTEGER { $$ = new ASTConstantInt(yylval.integer);  };
+constant: INTEGER { $$ = new ASTConstantInt(yylval.integer);};
 
 id: IDENTIFIER { $$ = new ASTIdentifier($1);  };
 

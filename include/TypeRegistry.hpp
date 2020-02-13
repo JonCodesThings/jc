@@ -28,6 +28,11 @@ struct JCType
         VOID,
         STRUCT
     } classification;
+
+    union
+    {
+        unsigned int INT_UPPER_LIMIT;
+    };
 };
 
 class TypeRegistry
@@ -39,8 +44,15 @@ public:
     void SetupBuiltinJCTypes();
     void AddType(const std::string &id, llvm::Type &type, const JCType::TYPE_CLASSIFICATION &classification);
     llvm::Type *GetType(const std::string &id);
+    const JCType *GetTypeInfo(const std::string &id);
     const std::string *GetLifetimeTypeString(const std::string &id);
+    bool IsTypeNumeric(const JCType &type);
+    bool IsTypeNumeric(const std::string &id);
+    llvm::Type *GetWideningConversion(const std::string &current, const std::string &to);
+    llvm::Type *GetNarrowingConversion(const std::string &current, const std::string &to);
 private:
+    void AddType(const std::string &id, llvm::Type &type, const JCType::TYPE_CLASSIFICATION &classification, unsigned int integer_limit);
+
     llvm::LLVMContext &context;
 
     std::vector<JCType> registry;

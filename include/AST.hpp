@@ -56,7 +56,7 @@ public:
         Symbol *symbol = state.symbolTable.GetSymbolByIdentifier(identifier);
         if (symbol)
             return &symbol->type;
-        return state.typeRegistry.GetLifetimeTypeString("void");
+        return state.typeRegistry.GetLifetimeTypeString(identifier);
     }
     const Symbol *GetSymbol(IREmitter::EmitterState &state)
     {
