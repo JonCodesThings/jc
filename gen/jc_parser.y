@@ -9,10 +9,17 @@ ASTBlock *base;
 extern int yylex();
 extern int yyparse();
 extern unsigned int yylineno;
+extern unsigned int yycurrentlinechar;
 
 void yyerror (char *error)
 {
 printf("%s\n", error);
+}
+
+void SetNodeInfo(ASTNode &node)
+{
+    node.line_number = yylineno;
+    node.start_char = yycurrentlinechar;
 }
 
 
@@ -72,7 +79,7 @@ int token;
 
 %token UNKNOWN
 
-%type<statement> statement function_def function_decl variable_decl assign_op variable_assign unary_op binary_op
+%type<statement> node_setup statement function_def function_decl variable_decl assign_op variable_assign unary_op binary_op
 %type<unary_operator> cast increment decrement
 %type<id> id
 %type<string> IDENTIFIER
@@ -88,45 +95,47 @@ int token;
 
 module: function_def { base = new ASTBlock(); base->block.push_back($1); };
 
-scope: LEFT_BRACE statements RIGHT_BRACE { $$ = $2; $$->line_number = yylineno; } | LEFT_BRACE RIGHT_BRACE { $$ = new ASTBlock(); $$->line_number = yylineno; } ;
+scope: LEFT_BRACE statements RIGHT_BRACE { $$ = $2;  } | LEFT_BRACE RIGHT_BRACE { $$ = new ASTBlock(); } ;
 
-statements: statements statement { $1->block.push_back($2); } 
-| statement { $$ = new ASTBlock(); $$->block.push_back($1); };
+statements: statements node_setup { $1->block.push_back($2); } 
+| node_setup { $$ = new ASTBlock(); $$->block.push_back($1); };
+
+node_setup: statement { SetNodeInfo(*$$); };
 
 statement: return_statement | function_def | function_decl | variable_decl | assign_op | unary_op | binary_op | id_or_constant SEMICOLON;
 
 unary_op: cast | increment | decrement;
 
-binary_op: add { $$ = $1; } | subtract { $$ = $1; };
+binary_op: add { $$ = $1;  } | subtract { $$ = $1; };
 
 assign_op: variable_assign;
 
-variable_assign: id EQUAL statement { $$ = new ASTVariableAssignment(*$1, *$3); $$->line_number = yylineno; };
+variable_assign: id EQUAL statement { $$ = new ASTVariableAssignment(*$1, *$3);  };
 
-cast: LEFT_BRACKET id RIGHT_BRACKET id { $$ = new ASTUnaryOperator(*$4, $2, ASTUnaryOperator::CAST); $$->line_number = yylineno; };
+cast: LEFT_BRACKET id RIGHT_BRACKET id { $$ = new ASTUnaryOperator(*$4, $2, ASTUnaryOperator::CAST);   };
 
-increment: id_or_constant PLUS PLUS SEMICOLON { $$ = new ASTUnaryOperator(*$1, ASTUnaryOperator::INCREMENT); $$->line_number = yylineno; };
+increment: id_or_constant PLUS PLUS SEMICOLON { $$ = new ASTUnaryOperator(*$1, ASTUnaryOperator::INCREMENT);  };
 
-decrement: id MINUS MINUS SEMICOLON { $$ = new ASTUnaryOperator(*$1, ASTUnaryOperator::DECREMENT); $$->line_number = yylineno; };
+decrement: id MINUS MINUS SEMICOLON { $$ = new ASTUnaryOperator(*$1, ASTUnaryOperator::DECREMENT);  };
 
-add: id_or_constant PLUS id_or_constant SEMICOLON { $$ = new ASTBinaryOperator(*$1, *$3, ASTBinaryOperator::ADD); $$->line_number = yylineno; };
+add: id_or_constant PLUS id_or_constant SEMICOLON { $$ = new ASTBinaryOperator(*$1, *$3, ASTBinaryOperator::ADD);  };
 
-subtract: id MINUS id SEMICOLON { $$ = new ASTBinaryOperator(*$1, *$3, ASTBinaryOperator::SUBTRACT); $$->line_number = yylineno; };
+subtract: id MINUS id SEMICOLON { $$ = new ASTBinaryOperator(*$1, *$3, ASTBinaryOperator::SUBTRACT);  };
 
-function_def: id id LEFT_BRACKET RIGHT_BRACKET scope {  $$ = new ASTFunctionDefinition(*$1, *$2, *new std::vector<const char *>(), *$5); $$->line_number = yylineno; };
+function_def: id id LEFT_BRACKET RIGHT_BRACKET scope {  $$ = new ASTFunctionDefinition(*$1, *$2, *new std::vector<const char *>(), *$5);  };
 
-function_decl: id id LEFT_BRACKET RIGHT_BRACKET SEMICOLON { $$ = new ASTFunctionDeclaration(*$1, *$2, *new std::vector<const char *>()); $$->line_number = yylineno; };
+function_decl: id id LEFT_BRACKET RIGHT_BRACKET SEMICOLON { $$ = new ASTFunctionDeclaration(*$1, *$2, *new std::vector<const char *>());  };
 
-variable_decl: id id SEMICOLON { $$ = new ASTVariableDeclaration(*$1, *$2); $$->line_number = yylineno; }
-    | id id EQUAL statement { $$ = new ASTVariableDeclaration(*$1, *$2, *$4); $$->line_number = yylineno; };
+variable_decl: id id SEMICOLON { $$ = new ASTVariableDeclaration(*$1, *$2);  }
+    | id id EQUAL statement { $$ = new ASTVariableDeclaration(*$1, *$2, *$4);  };
 
-return_statement: RETURN constant SEMICOLON { $$ = new ASTReturnStatement(*$2); $$->line_number = yylineno; };
-    | RETURN id SEMICOLON { $$ = new ASTReturnStatement(*$2); $$->line_number = yylineno; };
+return_statement: RETURN constant SEMICOLON { $$ = new ASTReturnStatement(*$2);  };
+    | RETURN id SEMICOLON { $$ = new ASTReturnStatement(*$2);  };
 
 id_or_constant: id | constant;
 
-constant: INTEGER { $$ = new ASTConstantInt(yylval.integer); $$->line_number = yylineno; };
+constant: INTEGER { $$ = new ASTConstantInt(yylval.integer);  };
 
-id: IDENTIFIER { $$ = new ASTIdentifier($1); $$->line_number = yylineno; };
+id: IDENTIFIER { $$ = new ASTIdentifier($1);  };
 
 %%

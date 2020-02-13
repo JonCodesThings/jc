@@ -9,12 +9,14 @@
 
 extern ASTBlock *base;
 extern FILE *yyin;
+extern const char *yycurrentfilename;
 extern int yyparse();
 
 
 int main(int argc, const char **args)
 {
     yyin = fopen(args[1], "r");
+    yycurrentfilename = args[1];
     int p = yyparse();
     if (base)
     {

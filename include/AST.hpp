@@ -24,6 +24,7 @@ class ASTNode
 {
 public:
     unsigned int line_number = 0;
+    unsigned int start_char = 0;
 
     virtual ~ASTNode() {}
     virtual const Symbol *GetSymbol(IREmitter::EmitterState &state) { return NULL; };

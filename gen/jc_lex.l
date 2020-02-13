@@ -6,53 +6,54 @@
 #include <include/AST.hpp>
 #include "jc_parser.hpp"
 extern "C" int yywrap() { return 1; }
-
+unsigned int yycurrentlinechar = 0;
+const char *yycurrentfilename = "";
 
 %}
 
 
 %%
-"\n" { yylineno++; printf("%d\n", yylineno);  }
-[  \t] { /*printf("skipping whitespace\n");*/ }
-\"[^"]*\" { yylval.string = yytext; return STRING; }
-[0-9]+ { yylval.integer = atoi(yytext); return INTEGER; }
+"\n" { yylineno++; /*printf("%d\n", yylineno);*/ yycurrentlinechar = 0; }
+[  \t] { /*printf("skipping whitespace\n");*/ yycurrentlinechar += yyleng; }
+\"[^"]*\" { yylval.string = yytext; return STRING; yycurrentlinechar += yyleng; }
+[0-9]+ { yylval.integer = atoi(yytext); return INTEGER; yycurrentlinechar += yyleng; }
 
-"(" { return LEFT_BRACKET; }
-")" { return RIGHT_BRACKET; }
-"{" { return LEFT_BRACE; }
-"}" { return RIGHT_BRACE; }
-"[" { return LEFT_SQUARE_BRACKET; }
-"]" { return RIGHT_SQUARE_BRACKET; }
+"(" { return LEFT_BRACKET; yycurrentlinechar += yyleng; }
+")" { return RIGHT_BRACKET; yycurrentlinechar += yyleng; }
+"{" { return LEFT_BRACE; yycurrentlinechar += yyleng; }
+"}" { return RIGHT_BRACE; yycurrentlinechar += yyleng; }
+"[" { return LEFT_SQUARE_BRACKET; yycurrentlinechar += yyleng; }
+"]" { return RIGHT_SQUARE_BRACKET; yycurrentlinechar += yyleng; }
 
-"," { return COMMA; }
-"." { return FSTOP; }
-";" { return SEMICOLON; }
+"," { return COMMA; yycurrentlinechar += yyleng; }
+"." { return FSTOP; yycurrentlinechar += yyleng; }
+";" { return SEMICOLON; yycurrentlinechar += yyleng; }
 
-"+" { return PLUS; }
-"-" { return MINUS; }
-"/" { return FORWARD_SLASH; }
-"*" { return ASTERISK; }
+"+" { return PLUS; yycurrentlinechar += yyleng; }
+"-" { return MINUS; yycurrentlinechar += yyleng; }
+"/" { return FORWARD_SLASH; yycurrentlinechar += yyleng; }
+"*" { return ASTERISK; yycurrentlinechar += yyleng; }
 
-"=" { return EQUAL; }
-"==" { return EQUAL_EQUAL; }
+"=" { return EQUAL; yycurrentlinechar += yyleng; }
+"==" { return EQUAL_EQUAL; yycurrentlinechar += yyleng; }
 
-"!" { return EXCLAMATION; }
-"!=" { return EXCLAMATION_EQUAL; }
+"!" { return EXCLAMATION; yycurrentlinechar += yyleng; }
+"!=" { return EXCLAMATION_EQUAL; yycurrentlinechar += yyleng; }
 
-">" { return GREATER; }
-">=" { return GREATER_EQUAL; }
+">" { return GREATER; yycurrentlinechar += yyleng; }
+">=" { return GREATER_EQUAL; yycurrentlinechar += yyleng; }
 
-"<" { return LESSER; }
-"<=" { return LESSER_EQUAL; }
+"<" { return LESSER; yycurrentlinechar += yyleng; }
+"<=" { return LESSER_EQUAL; yycurrentlinechar += yyleng; }
 
-"&" { return AND; }
-"&&" { return AND_AND; }
+"&" { return AND; yycurrentlinechar += yyleng; }
+"&&" { return AND_AND; yycurrentlinechar += yyleng; }
 
-"|" { return OR; }
-"||" { return OR_OR; }
+"|" { return OR; yycurrentlinechar += yyleng; }
+"||" { return OR_OR; yycurrentlinechar += yyleng; }
 
-"return" { return RETURN; }
-[a-zA-Z0-9]+ { yylval.string = yytext; return IDENTIFIER; }
+"return" { return RETURN; yycurrentlinechar += yyleng; }
+[a-zA-Z0-9]+ { yylval.string = yytext; return IDENTIFIER; yycurrentlinechar += yyleng; }
 
 . { return UNKNOWN; }
 <<EOF>> { return 0; }

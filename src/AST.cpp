@@ -1,5 +1,7 @@
 #include <include/AST.hpp>
 
+extern const char *yycurrentfilename;
+
 llvm::Value *ASTReturnStatement::EmitIR(IREmitter::EmitterState &state)
 {
     switch (type)
@@ -150,7 +152,9 @@ llvm::Value *ASTVariableAssignment::EmitIR(IREmitter::EmitterState &state)
 
     if (*node.GetType(state) != *id.GetType(state))
     {
-        printf("Error line %d: types do not match for assignment: type %s expected, type %s given\n",  line_number, (*id.GetType(state)).c_str(), (*node.GetType(state)).c_str());
+        printf("%s:%d:%d Error: types do not match for assignment (type %s expected, type %s given)\n",
+        yycurrentfilename,
+        line_number, start_char, (*id.GetType(state)).c_str(), (*node.GetType(state)).c_str());
         return NULL;
     }
 
