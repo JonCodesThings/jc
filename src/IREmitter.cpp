@@ -10,7 +10,9 @@ bool IREmitter::EmitIR(ASTBlock *root)
 
     for (auto statement : root->block)
     {
-        statement->EmitIR(state);
+        auto result = statement->EmitIR(state);
+        if (!result)
+            return false;
     }
 
     state.module.print(llvm::errs(), nullptr);

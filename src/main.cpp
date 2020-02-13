@@ -21,12 +21,20 @@ int main(int argc, const char **args)
         llvm::LLVMContext context;
         llvm::Module module("jc alpha", context);
         IREmitter emitter(module, context);
-        emitter.EmitIR(base);
 
-        std::error_code ec;
-        llvm::raw_fd_ostream out("alpha.ir", ec);
-        llvm::WriteBitcodeToFile(module, out);
-        out.close();
+        if (emitter.EmitIR(base))
+        {
+            std::error_code ec;
+            llvm::raw_fd_ostream out("alpha.ir", ec);
+            llvm::WriteBitcodeToFile(module, out);
+            out.close();
+        }
+        else
+        {
+            printf("Compilation failed. Please fix errors!\n");
+        }
+
+        
     }
 
     return 0;

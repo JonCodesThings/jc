@@ -37,6 +37,11 @@ llvm::Value *ASTUnaryOperator::EmitIR(IREmitter::EmitterState &state)
     {
         default:
             return NULL;
+        case CAST:
+        {
+            const std::string *cast_to = cast->GetType(state);
+
+        }
         case INCREMENT:
         {
             if ((*type) == "i8")
@@ -143,6 +148,12 @@ llvm::Value *ASTVariableAssignment::EmitIR(IREmitter::EmitterState &state)
     Symbol *symbol = state.symbolTable.GetSymbolByIdentifier(id.identifier);
     const Symbol *node_symbol = node.GetSymbol(state);
 
+    if (*node.GetType(state) != *id.GetType(state))
+    {
+        printf("Error line %d: types do not match for assignment: type %s expected, type %s given\n",  line_number, (*id.GetType(state)).c_str(), (*node.GetType(state)).c_str());
+        return NULL;
+    }
+
     if (node_symbol)
     {
         llvm::Value *temp = state.builder.CreateLoad(node_symbol->alloc_inst, "temp");
@@ -156,7 +167,10 @@ llvm::Value *ASTBlock::EmitIR(IREmitter::EmitterState &state)
 {
     auto llvmBlock = llvm::BasicBlock::Create(state.context, "temp", NULL);
     for (ASTStatement *statement : block)
-        statement->EmitIR(state);
+    {
+        if (!statement->EmitIR(state))
+            return NULL;
+    }
     return llvmBlock;
 }
 
@@ -166,7 +180,10 @@ llvm::Value *ASTBlock::EmitIR(IREmitter::EmitterState &state, llvm::Function &fu
  
     state.builder.SetInsertPoint(llvmBlock);
     for (ASTStatement *statement : block)
-        statement->EmitIR(state);
+    {
+        if (!statement->EmitIR(state))
+            return NULL;
+    }
     return llvmBlock;
 }
 
@@ -185,6 +202,8 @@ llvm::Value *ASTFunctionDeclaration::EmitIR(IREmitter::EmitterState &state)
 llvm::Value *ASTFunctionDefinition::EmitIR(IREmitter::EmitterState &state)
 {
     auto func = declaration.EmitIR(state);
-    block.EmitIR(state, *(llvm::Function*)func);
+
+    if (!block.EmitIR(state, *(llvm::Function*)func))
+        return NULL;
     return func;
 }

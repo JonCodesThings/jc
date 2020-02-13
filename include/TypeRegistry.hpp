@@ -15,19 +15,35 @@
 
 #include <vector>
 
+struct JCType
+{
+    std::string type_string;
+    llvm::Type *llvm_type;
+
+    enum TYPE_CLASSIFICATION
+    {
+        FLOAT,
+        INT,
+        CHAR,
+        VOID,
+        STRUCT
+    } classification;
+};
+
 class TypeRegistry
 {
 public:
+
     TypeRegistry(llvm::LLVMContext &context) : context(context) {}
     ~TypeRegistry() {};
     void SetupBuiltinJCTypes();
-    void AddType(const std::string &id, llvm::Type &type);
+    void AddType(const std::string &id, llvm::Type &type, const JCType::TYPE_CLASSIFICATION &classification);
     llvm::Type *GetType(const std::string &id);
     const std::string *GetLifetimeTypeString(const std::string &id);
 private:
     llvm::LLVMContext &context;
 
-    std::vector<std::pair<std::string, llvm::Type *>> registry;
+    std::vector<JCType> registry;
 };
 
 #endif

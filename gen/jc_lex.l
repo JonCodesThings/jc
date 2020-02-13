@@ -5,14 +5,15 @@
 %{
 #include <include/AST.hpp>
 #include "jc_parser.hpp"
-extern "C" int yywrap() { printf("wrap\n"); return 1; }
+extern "C" int yywrap() { return 1; }
 
 
 %}
 
 
 %%
-[[:space:]]+ { /*printf("skipping whitespace\n");*/ }
+"\n" { yylineno++; printf("%d\n", yylineno);  }
+[  \t] { /*printf("skipping whitespace\n");*/ }
 \"[^"]*\" { yylval.string = yytext; return STRING; }
 [0-9]+ { yylval.integer = atoi(yytext); return INTEGER; }
 

@@ -23,6 +23,8 @@
 class ASTNode
 {
 public:
+    unsigned int line_number = 0;
+
     virtual ~ASTNode() {}
     virtual const Symbol *GetSymbol(IREmitter::EmitterState &state) { return NULL; };
     virtual const std::string *GetType(IREmitter::EmitterState &state) { return state.typeRegistry.GetLifetimeTypeString("void"); };
@@ -67,14 +69,17 @@ class ASTUnaryOperator : public ASTExpression
 {
 public:
     ASTNode &operatee;
+    ASTIdentifier *cast;
 
     enum OP
     {
+        CAST,
         INCREMENT,
         DECREMENT
     } op;
 
-    ASTUnaryOperator(ASTNode &operatee, OP op) : operatee(operatee), op(op) {}
+    ASTUnaryOperator(ASTNode &operatee, OP op) : operatee(operatee), cast(NULL), op(op) {}
+    ASTUnaryOperator(ASTNode &operatee, ASTIdentifier *identifier, OP op) : operatee(operatee), cast(identifier), op(op) {}
     llvm::Value *EmitIR(IREmitter::EmitterState &state);
 };
 
@@ -94,6 +99,10 @@ public:
 
     ASTBinaryOperator(ASTNode &left, ASTNode &right, OP op) : left(left), right(right), op(op) {}
     llvm::Value *EmitIR(IREmitter::EmitterState &state);
+    const std::string *GetType(IREmitter::EmitterState &state)
+    {
+        return right.GetType(state);
+    }
 };
 
 class ASTConstant : public ASTNode

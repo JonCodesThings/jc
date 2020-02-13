@@ -4,32 +4,33 @@
 
 void TypeRegistry::SetupBuiltinJCTypes()
 {
-    AddType("void", *llvm::Type::getVoidTy(context));
+    AddType("void", *llvm::Type::getVoidTy(context), JCType::TYPE_CLASSIFICATION::VOID);
 
-    AddType("i8", *llvm::Type::getInt8Ty(context));
-    AddType("i16", *llvm::Type::getInt16Ty(context));
-    AddType("i32", *llvm::Type::getInt32Ty(context));
+    AddType("i8", *llvm::Type::getInt8Ty(context), JCType::TYPE_CLASSIFICATION::INT);
+    AddType("i16", *llvm::Type::getInt16Ty(context), JCType::TYPE_CLASSIFICATION::INT);
+    AddType("i32", *llvm::Type::getInt32Ty(context), JCType::TYPE_CLASSIFICATION::INT);
 
-    AddType("u8", *llvm::Type::getInt8Ty(context));
-    AddType("u16", *llvm::Type::getInt16Ty(context));
-    AddType("u32", *llvm::Type::getInt32Ty(context));
-
-    AddType("void", *llvm::Type::getVoidTy(context));
+    AddType("u8", *llvm::Type::getInt8Ty(context), JCType::TYPE_CLASSIFICATION::INT);
+    AddType("u16", *llvm::Type::getInt16Ty(context), JCType::TYPE_CLASSIFICATION::INT);
+    AddType("u32", *llvm::Type::getInt32Ty(context), JCType::TYPE_CLASSIFICATION::INT);
 }
 
-void TypeRegistry::AddType(const std::string &id, llvm::Type &type)
+void TypeRegistry::AddType(const std::string &id, llvm::Type &t, const JCType::TYPE_CLASSIFICATION &classification)
 {
-    auto type_ = std::make_pair(id, &type);
+    JCType type;
+    type.type_string = id;
+    type.llvm_type = &t;
+    type.classification = classification;
 
-    registry.push_back(type_);
+    registry.push_back(type);
 }
 
 llvm::Type *TypeRegistry::GetType(const std::string &id)
 {
     for (auto type_ : registry)
     {
-        if (type_.first == id)
-            return type_.second;
+        if (type_.type_string == id)
+            return type_.llvm_type;
     }
     return NULL;
 }
@@ -38,8 +39,8 @@ const std::string *TypeRegistry::GetLifetimeTypeString(const std::string &id)
 {
     for (int i = 0; i < registry.size(); i++)
     {
-        if (registry[i].first == id)
-            return &registry[i].first;
+        if (registry[i].type_string == id)
+            return &registry[i].type_string;
     }
     return NULL;
 }
