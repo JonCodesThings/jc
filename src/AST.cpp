@@ -44,7 +44,6 @@ llvm::Value *ASTUnaryOperator::EmitIR(IREmitter::EmitterState &state)
         case CAST:
         {
             const std::string *cast_to = cast->GetType(state);
-            printf("cast type: %s\n", cast_to->c_str());
 
             if (state.typeRegistry.IsTypeNumeric(*type) && state.typeRegistry.IsTypeNumeric(*cast_to))
             {
@@ -56,16 +55,15 @@ llvm::Value *ASTUnaryOperator::EmitIR(IREmitter::EmitterState &state)
                 if (!conver)
                     return NULL;
 
-                printf("cast\n");
+                llvm::Value *v = operatee.EmitIR(state);
+
+                if (s)
+                    v = state.builder.CreateLoad(s->alloc_inst, "temp");
+
 
                 //TODO: allow this to support unsigned types
-                return state.builder.CreateIntCast(operatee.EmitIR(state), conver, true);
+                return state.builder.CreateIntCast(v, conver, true);
             }
-            else
-            {
-                printf("not numeric lol\n");
-            }
-            
 
         }
         case INCREMENT:
