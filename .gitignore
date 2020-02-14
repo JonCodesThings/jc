@@ -42,5 +42,17 @@ _deps
 *.exe
 *.out
 *.app
+jc
 
+#IR and other stuff
 *.sh
+*.ir
+
+# VSCode
+.vscode/
+*.code-workspace
+
+#Ninja stuff
+.ninja_deps
+.ninja_log
+*.ninja
