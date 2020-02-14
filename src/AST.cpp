@@ -35,8 +35,6 @@ llvm::Value *ASTUnaryOperator::EmitIR(IREmitter::EmitterState &state)
     const std::string *type = operatee.GetType(state);
     const Symbol *s = operatee.GetSymbol(state);
 
-    printf("operatee type: %s\n", type->c_str());
-
     switch (op)
     {
         default:
@@ -172,13 +170,24 @@ llvm::Value *ASTVariableAssignment::EmitIR(IREmitter::EmitterState &state)
     Symbol *symbol = state.symbolTable.GetSymbolByIdentifier(id.identifier);
     const Symbol *node_symbol = node.GetSymbol(state);
 
-    /*if (*node.GetType(state) != *id.GetType(state))
+    if (!symbol)
     {
-        printf("%s:%d:%d Error: types do not match for assignment (type %s expected, type %s given)\n",
-        yycurrentfilename,
-        line_number, start_char, (*id.GetType(state)).c_str(), (*node.GetType(state)).c_str());
-        return NULL;
-    }*/
+        if (*node.GetType(state) != *id.GetType(state))
+        {
+            printf("%s:%d:%d Error: types do not match for assignment (type %s expected, type %s given)\n",
+            yycurrentfilename, line_number, start_char, (*id.GetType(state)).c_str(), (*node.GetType(state)).c_str());
+            return NULL;
+        }
+    }
+    else if (symbol && node_symbol)
+    {
+        if (symbol->type != node_symbol->type)
+        {
+            printf("%s:%d:%d Error: types do not match for assignment (type %s expected, type %s given)\n",
+            yycurrentfilename, line_number, start_char, symbol->type.c_str(), node_symbol->type.c_str());
+            return NULL;
+        }
+    }
 
     if (node_symbol)
     {
@@ -219,7 +228,7 @@ llvm::Value *ASTFunctionDeclaration::EmitIR(IREmitter::EmitterState &state)
     identifier.EmitIR(state);
 
     std::vector<llvm::Type*> argTypeVector;
-    auto funcType = llvm::FunctionType::get(llvm::Type::getInt32Ty(state.context), argTypeVector, false);
+    auto funcType = llvm::FunctionType::get(state.typeRegistry.GetType(return_type.identifier), argTypeVector, false);
 
     auto Func = llvm::Function::Create(funcType, llvm::GlobalValue::ExternalLinkage, identifier.identifier, state.module);
     return Func;

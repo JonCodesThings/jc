@@ -181,12 +181,25 @@ public:
     llvm::Value *EmitIR(IREmitter::EmitterState &state, llvm::Function &func);
 };
 
+struct ASTFunctionArg
+{
+    ASTFunctionArg(ASTIdentifier &type, ASTIdentifier &name) : type(type), name(name) {}
+    ASTIdentifier &type;
+    ASTIdentifier &name;
+};
+
+class ASTFunctionArgs
+{
+public:
+    std::vector<ASTFunctionArg> args;
+};
+
 class ASTFunctionCall : public ASTExpression
 {
 public:
     ASTIdentifier &identifier;
-    std::vector<const char *> &arguments;
-    ASTFunctionCall(ASTIdentifier &id, std::vector<const char *> &args) : identifier(id), arguments(args) {}
+    ASTFunctionArgs &args;
+    ASTFunctionCall(ASTIdentifier &id, ASTFunctionArgs &args) : identifier(id), args(args) {}
     llvm::Value *EmitIR(IREmitter::EmitterState &state) { return NULL; }
 };
 
@@ -195,10 +208,10 @@ class ASTFunctionDeclaration : public ASTStatement
 public:
     ASTIdentifier &identifier;
     ASTIdentifier &return_type;
-    std::vector<const char *> &arguments;
+    ASTFunctionArgs &arguments;
 
-    ASTFunctionDeclaration() : identifier(*new ASTIdentifier("function id: TBD")), return_type(*new ASTIdentifier("return type: TBD")), arguments(*new std::vector<const char *>) {}
-    ASTFunctionDeclaration(ASTIdentifier &ret_type, ASTIdentifier &id, std::vector<const char *>&args) : identifier(id), return_type(ret_type), arguments(args) {}
+    ASTFunctionDeclaration() : identifier(*new ASTIdentifier("function id: TBD")), return_type(*new ASTIdentifier("return type: TBD")), arguments(*new ASTFunctionArgs()) {}
+    ASTFunctionDeclaration(ASTIdentifier &ret_type, ASTIdentifier &id, ASTFunctionArgs &args) : identifier(id), return_type(ret_type), arguments(args) {}
 
     llvm::Value *EmitIR(IREmitter::EmitterState &state);
 };
@@ -210,7 +223,7 @@ public:
     ASTBlock &block;
 
     ASTFunctionDefinition() : declaration(*new ASTFunctionDeclaration()), block(*new ASTBlock()) {}
-    ASTFunctionDefinition(ASTIdentifier &id, ASTIdentifier &ret_type, std::vector<const char *> &args, ASTBlock &block) : declaration(*new ASTFunctionDeclaration(id, ret_type, args)), block(block) {}
+    ASTFunctionDefinition(ASTIdentifier &id, ASTIdentifier &ret_type, ASTFunctionArgs &args, ASTBlock &block) : declaration(*new ASTFunctionDeclaration(id, ret_type, args)), block(block) {}
 
     llvm::Value *EmitIR(IREmitter::EmitterState &state);
     //ASTFunctionDefinition(ASTFunctionDeclaration &decl, ASTBlock &bl) :

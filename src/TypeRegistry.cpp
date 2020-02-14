@@ -13,6 +13,9 @@ void TypeRegistry::SetupBuiltinJCTypes()
     AddType("u8", *llvm::Type::getInt8Ty(context), JCType::TYPE_CLASSIFICATION::INT);
     AddType("u16", *llvm::Type::getInt16Ty(context), JCType::TYPE_CLASSIFICATION::INT);
     AddType("u32", *llvm::Type::getInt32Ty(context), JCType::TYPE_CLASSIFICATION::INT);
+
+    AddType("f16", *llvm::Type::getHalfTy(context), JCType::TYPE_CLASSIFICATION::FLOAT);
+    AddType("f32", *llvm::Type::getFloatTy(context), JCType::TYPE_CLASSIFICATION::FLOAT);
 }
 
 void TypeRegistry::AddType(const std::string &id, llvm::Type &t, const JCType::TYPE_CLASSIFICATION &classification)

@@ -43,6 +43,7 @@ return 0;
 ASTNode *node;
 ASTStatement *statement;
 ASTExpression *expression;
+ASTFunctionArgs *function_args;
 ASTFunctionCall *function_call;
 ASTFunctionDeclaration *function_declaration;
 ASTFunctionDefinition *function_definition;
@@ -52,6 +53,7 @@ ASTConstant *constant;
 ASTIdentifier *id;
 const char *string;
 int integer;
+float fl;
 int token;
 }
 
@@ -81,6 +83,7 @@ int token;
 
 %type<statement> node_setup statement function_def function_decl variable_decl assign_op variable_assign unary_op binary_op
 %type<unary_operator> cast increment decrement
+%type<function_args> arg_list
 %type<id> id
 %type<string> IDENTIFIER
 %type<statement> return_statement
@@ -123,15 +126,19 @@ add: id_or_constant PLUS id_or_constant SEMICOLON { $$ = new ASTBinaryOperator(*
 
 subtract: id MINUS id SEMICOLON { $$ = new ASTBinaryOperator(*$1, *$3, ASTBinaryOperator::SUBTRACT);  };
 
-function_def: id id LEFT_BRACKET RIGHT_BRACKET scope {  $$ = new ASTFunctionDefinition(*$1, *$2, *new std::vector<const char *>(), *$5);  };
+function_def: id id LEFT_BRACKET arg_list RIGHT_BRACKET scope {  $$ = new ASTFunctionDefinition(*$1, *$2, *$4, *$6);  };
 
-function_decl: id id LEFT_BRACKET RIGHT_BRACKET SEMICOLON { $$ = new ASTFunctionDeclaration(*$1, *$2, *new std::vector<const char *>());  };
+function_decl: id id LEFT_BRACKET RIGHT_BRACKET SEMICOLON { $$ = new ASTFunctionDeclaration(*$1, *$2, *new ASTFunctionArgs());  };
 
 variable_decl: id id SEMICOLON { $$ = new ASTVariableDeclaration(*$1, *$2);  }
     | id id EQUAL statement { $$ = new ASTVariableDeclaration(*$1, *$2, *$4);  };
 
 return_statement: RETURN constant SEMICOLON { $$ = new ASTReturnStatement(*$2);  };
     | RETURN id SEMICOLON { $$ = new ASTReturnStatement(*$2);  };
+
+arg_list: { $$ = new ASTFunctionArgs(); } 
+    | arg_list COMMA id id { ASTFunctionArg arg(*$3, *$4); $1->args.push_back(arg); }
+    | id id { ASTFunctionArg arg(*$1, *$2);  $$ = new ASTFunctionArgs(); $$->args.push_back(arg); };
 
 id_or_constant: id | constant;
 
