@@ -163,7 +163,7 @@ arg_pair: id id { $$ = new ASTFunctionArg(*$1, *$2); };
 
 id_or_constant: id | constant;
 
-constant: INTEGER { $$ = new ASTConstantInt(yylval.integer);};
+constant: INTEGER { $$ = new ASTConstantInt(yylval.integer); } | FLOAT { $$ = new ASTConstantFloat(yylval.fl); };
 
 id: IDENTIFIER { $$ = new ASTIdentifier($1);  };
 

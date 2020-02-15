@@ -129,6 +129,23 @@ public:
     }
 };
 
+class ASTConstantFloat : public ASTConstant
+{
+public:
+    float constant;
+
+    ASTConstantFloat(float constant) : constant(constant) {}
+
+    llvm::Value *EmitIR(IREmitter::EmitterState &state) 
+    { 
+        return llvm::ConstantFP::get(llvm::Type::getFloatTy(state.context), constant); 
+    }
+    const std::string *GetType(IREmitter::EmitterState &state)
+    {
+        return state.typeRegistry.GetLifetimeTypeString("f32");
+    }
+};
+
 class ASTVariableDeclaration : public ASTStatement
 {
 public:

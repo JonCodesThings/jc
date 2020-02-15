@@ -60,7 +60,19 @@ llvm::Value *ASTUnaryOperator::EmitIR(IREmitter::EmitterState &state)
 
 
                 //TODO: allow this to support unsigned types
-                return state.builder.CreateIntCast(v, conver, true);
+
+                JCType::TYPE_CLASSIFICATION t = state.typeRegistry.GetTypeInfo(*cast_to)->classification;
+                JCType::TYPE_CLASSIFICATION f = state.typeRegistry.GetTypeInfo(*type)->classification;
+
+                if (f == JCType::TYPE_CLASSIFICATION::FLOAT && t == JCType::TYPE_CLASSIFICATION::FLOAT)
+                    return state.builder.CreateFPCast(v, conver);
+                if (f == JCType::TYPE_CLASSIFICATION::INT && t == JCType::TYPE_CLASSIFICATION::INT)
+                    return state.builder.CreateIntCast(v, conver, true);
+                if (f == JCType::TYPE_CLASSIFICATION::FLOAT && t == JCType::TYPE_CLASSIFICATION::INT)
+                    return state.builder.CreateFPToSI(v, conver);
+                if (f == JCType::TYPE_CLASSIFICATION::INT && t == JCType::TYPE_CLASSIFICATION::FLOAT)
+                    return state.builder.CreateSIToFP(v, conver);
+                return NULL;
             }
 
         }
@@ -166,7 +178,10 @@ llvm::Value * ASTVariableDeclaration::EmitIR(IREmitter::EmitterState &state)
     state.frontmost->AddSymbol(symbol);
 
     if (node)
-        state.builder.CreateStore(node->EmitIR(state), symbol.alloc_inst);
+    {
+        llvm::Value *v = node->EmitIR(state);
+        state.builder.CreateStore(v, symbol.alloc_inst);
+    }
 
     return symbol.alloc_inst;
 }

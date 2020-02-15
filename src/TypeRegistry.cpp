@@ -84,7 +84,7 @@ bool TypeRegistry::IsTypeNumeric(const std::string &id)
     }
 
     if (t)
-        return t->classification == JCType::TYPE_CLASSIFICATION::INT;
+        return t->classification == JCType::TYPE_CLASSIFICATION::INT || t->classification == JCType::TYPE_CLASSIFICATION::FLOAT || t->classification == JCType::TYPE_CLASSIFICATION::CHAR;
     return false;
 }
 
