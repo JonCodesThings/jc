@@ -1,7 +1,7 @@
 i32 main()
 {
-i32 i;
-i = 11;
-i++;
-return i;
+    i32 i;
+    i = 11;
+    i++;
+    return i;
 }

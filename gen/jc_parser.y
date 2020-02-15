@@ -83,16 +83,17 @@ int token;
 
 %token UNKNOWN
 
-%type<statement> node_setup statement function_def function_decl variable_decl assign_op variable_assign unary_op binary_op statement_id_or_constant
+%type<statement> node_setup semicoloned_statement statement function_def function_decl variable_decl assign_op variable_assign unary_op binary_op
+%type<statement> assignable_statement
 %type<unary_operator> cast increment decrement
 %type<function_args> arg_list
 %type<function_call> function_call
 %type<id> id
 %type<string> IDENTIFIER
 %type<statement> return_statement
-%type<scope_block> statements scope
+%type<scope_block> statements scope semicoloned_statements
 %type<statement> add subtract
-%type<statement_list> statement_id_or_constant_list
+%type<statement_list> statement_list 
 %type<constant> constant
 %type<function_arg> arg_pair
 %type<node> id_or_constant
@@ -108,9 +109,16 @@ statements: node_setup { $$ = new ASTBlock(); $$->block.push_back($1); };
 
 node_setup: statement { SetNodeInfo(*$$); };
 
-statement: return_statement | function_call_standalone | function_call | function_def | function_decl | variable_decl | assign_op | unary_op | binary_op | scope | id_or_constant SEMICOLON;
+semicoloned_statements: semicoloned_statement { $$ = new ASTBlock(); $$->block.push_back($1); };
+    | semicoloned_statements semicoloned_statement { $1->block.push_back($2); };
 
-scope: LEFT_BRACE statements RIGHT_BRACE { $$ = $2; } | LEFT_BRACE RIGHT_BRACE { $$ = new ASTBlock(); } ;
+semicoloned_statement: statement SEMICOLON | assignable_statement SEMICOLON
+
+statement: return_statement | function_def | function_decl | variable_decl | assign_op;
+
+assignable_statement: function_call | unary_op | binary_op | id_or_constant;
+
+scope: LEFT_BRACE semicoloned_statements RIGHT_BRACE { $$ = $2; } | LEFT_BRACE RIGHT_BRACE { $$ = new ASTBlock(); } ;
 
 unary_op: cast | increment | decrement;
 
@@ -118,42 +126,38 @@ binary_op: add { $$ = $1;  } | subtract { $$ = $1; };
 
 assign_op: variable_assign;
 
-variable_assign: id EQUAL statement { $$ = new ASTVariableAssignment(*$1, *$3);  };
+variable_assign: id EQUAL assignable_statement { $$ = new ASTVariableAssignment(*$1, *$3);  };
 
-cast: LEFT_BRACKET id RIGHT_BRACKET id_or_constant SEMICOLON { $$ = new ASTUnaryOperator(*$4, $2, ASTUnaryOperator::CAST); };
+cast: LEFT_BRACKET id RIGHT_BRACKET id_or_constant { $$ = new ASTUnaryOperator(*$4, $2, ASTUnaryOperator::CAST); };
 
-increment: id_or_constant PLUS PLUS SEMICOLON { $$ = new ASTUnaryOperator(*$1, ASTUnaryOperator::INCREMENT);  };
+increment: id_or_constant PLUS PLUS { $$ = new ASTUnaryOperator(*$1, ASTUnaryOperator::INCREMENT);  };
 
-decrement: id MINUS MINUS SEMICOLON { $$ = new ASTUnaryOperator(*$1, ASTUnaryOperator::DECREMENT);  };
+decrement: id_or_constant MINUS MINUS { $$ = new ASTUnaryOperator(*$1, ASTUnaryOperator::DECREMENT);  };
 
-add: id_or_constant PLUS id_or_constant SEMICOLON { $$ = new ASTBinaryOperator(*$1, *$3, ASTBinaryOperator::ADD);  }
-    | id_or_constant PLUS unary_op SEMICOLON {$$ = new ASTBinaryOperator(*$1, *$3, ASTBinaryOperator::ADD); };
+add: id_or_constant PLUS id_or_constant { $$ = new ASTBinaryOperator(*$1, *$3, ASTBinaryOperator::ADD);  }
+    | id_or_constant PLUS unary_op {$$ = new ASTBinaryOperator(*$1, *$3, ASTBinaryOperator::ADD); };
 
-subtract: id MINUS id SEMICOLON { $$ = new ASTBinaryOperator(*$1, *$3, ASTBinaryOperator::SUBTRACT);  };
+subtract: id_or_constant MINUS id_or_constant { $$ = new ASTBinaryOperator(*$1, *$3, ASTBinaryOperator::SUBTRACT);  };
 
 function_def: id id LEFT_BRACKET arg_list RIGHT_BRACKET scope {  $$ = new ASTFunctionDefinition(*$1, *$2, *$4, *$6);  }
-    | id id LEFT_BRACKET RIGHT_BRACKET scope {  $$ = new ASTFunctionDefinition(*$1, *$2, *new ASTFunctionArgs(), *$5);  }
+    | id id LEFT_BRACKET RIGHT_BRACKET scope {  $$ = new ASTFunctionDefinition(*$1, *$2, *new ASTFunctionArgs(), *$5);  };
 
-function_decl: id id LEFT_BRACKET RIGHT_BRACKET SEMICOLON { $$ = new ASTFunctionDeclaration(*$1, *$2, *new ASTFunctionArgs());  };
-
-function_call_standalone: function_call SEMICOLON
+function_decl: id id LEFT_BRACKET RIGHT_BRACKET { $$ = new ASTFunctionDeclaration(*$1, *$2, *new ASTFunctionArgs());  };
 
 function_call: id LEFT_BRACKET RIGHT_BRACKET { $$ = new ASTFunctionCall(*$1); }
-    | id LEFT_BRACKET statement_id_or_constant_list RIGHT_BRACKET { $$ = new ASTFunctionCall(*$1, *$3); };
+    | id LEFT_BRACKET statement_list RIGHT_BRACKET { $$ = new ASTFunctionCall(*$1, *$3); };
 
-variable_decl: id id SEMICOLON { $$ = new ASTVariableDeclaration(*$1, *$2);  }
-    | id id EQUAL statement { $$ = new ASTVariableDeclaration(*$1, *$2, *$4);  };
+variable_decl: id id { $$ = new ASTVariableDeclaration(*$1, *$2);  }
+    | id id EQUAL assignable_statement { $$ = new ASTVariableDeclaration(*$1, *$2, *$4);  };
 
-return_statement: RETURN constant SEMICOLON { $$ = new ASTReturnStatement(*$2);  };
-    | RETURN id SEMICOLON { $$ = new ASTReturnStatement(*$2);  };
+return_statement: RETURN constant { $$ = new ASTReturnStatement(*$2);  }
+    | RETURN id { $$ = new ASTReturnStatement(*$2);  };
 
 arg_list: arg_list COMMA arg_pair {  $1->args.push_back(*$3); }
     | arg_pair { $$ = new ASTFunctionArgs(); $$->args.push_back(*$1); };
 
-statement_id_or_constant_list: statement_id_or_constant_list COMMA statement_id_or_constant { $1->push_back($3); }
-    | statement_id_or_constant { $$ = new std::vector<ASTStatement *>(); $$->push_back($1); };
-
-statement_id_or_constant: statement | id | constant
+statement_list: statement_list COMMA statement { $1->push_back($3); }
+    | statement { $$ = new std::vector<ASTStatement *>(); $$->push_back($1); };
 
 arg_pair: id id { $$ = new ASTFunctionArg(*$1, *$2); };
 
