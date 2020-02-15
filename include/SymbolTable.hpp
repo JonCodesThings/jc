@@ -17,16 +17,24 @@ struct Symbol
     std::string identifier;
     std::string type;
     llvm::AllocaInst *alloc_inst;
-    
 };
 
 class SymbolTable
 {
 public:
+    SymbolTable();
+    SymbolTable(const std::string &id, SymbolTable &parent);
     bool AddSymbol(const Symbol &symbol);
+    SymbolTable *GetParentTable();
+    SymbolTable *CreateChildTable(const std::string &id);
     Symbol *GetSymbolByIdentifier(const std::string &identifier);
 private:
     std::vector<Symbol> symbols;
+
+    std::string id;
+
+    SymbolTable *parent = NULL;
+    SymbolTable *child = NULL;
 };
 
 #endif

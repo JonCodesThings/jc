@@ -14,7 +14,7 @@ llvm::Value *ASTReturnStatement::EmitIR(IREmitter::EmitterState &state)
         }
         case ID:
         {
-            Symbol *symbol = state.symbolTable.GetSymbolByIdentifier(id.identifier);
+            Symbol *symbol = state.frontmost->GetSymbolByIdentifier(id.identifier);
             llvm::Value *retval = state.builder.CreateLoad(symbol->alloc_inst, "retval");
             return state.builder.CreateRet(retval);
         }
@@ -24,7 +24,7 @@ llvm::Value *ASTReturnStatement::EmitIR(IREmitter::EmitterState &state)
 
 llvm::Value *ASTIdentifier::EmitIR(IREmitter::EmitterState &state)
 {
-    const Symbol * s = state.symbolTable.GetSymbolByIdentifier(identifier);
+    const Symbol * s = state.frontmost->GetSymbolByIdentifier(identifier);
     if (s)
         return s->alloc_inst;
     return NULL;
@@ -116,11 +116,17 @@ llvm::Value *ASTBinaryOperator::EmitIR(IREmitter::EmitterState &state)
     const std::string *ltype = left.GetType(state);
     const std::string *rtype = right.GetType(state);
 
+    printf("ltype: %p  rtype: %p\n", ltype, rtype);
+
     llvm::Value *l_inst = left.EmitIR(state);
     llvm::Value *r_inst = right.EmitIR(state);
 
+    printf("l_inst: %p  r_inst: %p\n", l_inst, r_inst);
+
     const Symbol *l_symbol = left.GetSymbol(state);
     const Symbol *r_symbol = right.GetSymbol(state);
+
+    printf("l_symbol: %p  r_symbol: %p\n", l_symbol, r_symbol);
 
     llvm::Value *templ;
     llvm::Value *tempr;
@@ -157,7 +163,7 @@ llvm::Value * ASTVariableDeclaration::EmitIR(IREmitter::EmitterState &state)
     symbol.type = type.identifier;
     symbol.identifier = id.identifier;
     symbol.alloc_inst = state.builder.CreateAlloca(state.typeRegistry.GetType(type.identifier), NULL, id.identifier);
-    state.symbolTable.AddSymbol(symbol);
+    state.frontmost->AddSymbol(symbol);
 
     if (node)
         state.builder.CreateStore(node->EmitIR(state), symbol.alloc_inst);
@@ -167,7 +173,7 @@ llvm::Value * ASTVariableDeclaration::EmitIR(IREmitter::EmitterState &state)
 
 llvm::Value *ASTVariableAssignment::EmitIR(IREmitter::EmitterState &state)
 {
-    Symbol *symbol = state.symbolTable.GetSymbolByIdentifier(id.identifier);
+    Symbol *symbol = state.frontmost->GetSymbolByIdentifier(id.identifier);
     const Symbol *node_symbol = node.GetSymbol(state);
 
     if (!symbol)
@@ -209,11 +215,19 @@ llvm::Value *ASTBlock::EmitIR(IREmitter::EmitterState &state)
     return llvmBlock;
 }
 
-llvm::Value *ASTBlock::EmitIR(IREmitter::EmitterState &state, llvm::Function &func)
+llvm::Value *ASTBlock::EmitIR(IREmitter::EmitterState &state, ASTFunctionArgs &args, llvm::Function &func)
 {        
     auto llvmBlock = llvm::BasicBlock::Create(state.context, "entry", &func);
  
     state.builder.SetInsertPoint(llvmBlock);
+
+    for (auto &arg : func.args())
+    {
+        Symbol *s = state.frontmost->GetSymbolByIdentifier(arg.getName());
+        s->alloc_inst = state.builder.CreateAlloca(state.typeRegistry.GetType(s->type), NULL, arg.getName());
+        state.builder.CreateStore(&arg, s->alloc_inst);
+    }
+
     for (ASTStatement *statement : block)
     {
         if (!statement->EmitIR(state))
@@ -222,15 +236,46 @@ llvm::Value *ASTBlock::EmitIR(IREmitter::EmitterState &state, llvm::Function &fu
     return llvmBlock;
 }
 
+llvm::Value *ASTFunctionCall::EmitIR(IREmitter::EmitterState &state)
+{
+    auto Func = state.module.getFunction(identifier.identifier);
+    
+    std::vector<llvm::Value*> argvals;
+
+    if (args)
+    {
+        for (auto &arg : *args)
+            argvals.push_back(arg->EmitIR(state));
+    }
+    
+    return state.builder.CreateCall(Func, argvals, identifier.identifier + "_call");
+}
+
 llvm::Value *ASTFunctionDeclaration::EmitIR(IREmitter::EmitterState &state)
 {
     return_type.EmitIR(state);
     identifier.EmitIR(state);
 
     std::vector<llvm::Type*> argTypeVector;
+
+    for (auto arg : arguments.args)
+        argTypeVector.push_back(state.typeRegistry.GetType(arg.type.identifier));
+
     auto funcType = llvm::FunctionType::get(state.typeRegistry.GetType(return_type.identifier), argTypeVector, false);
 
     auto Func = llvm::Function::Create(funcType, llvm::GlobalValue::ExternalLinkage, identifier.identifier, state.module);
+
+    Symbol s;
+    s.identifier = identifier.identifier;
+    s.type = return_type.identifier;
+    s.classification = Symbol::Classification::FUNCTION;
+
+    state.frontmost->AddSymbol(s);
+
+    unsigned int arg_name_index = 0;
+    for (auto & arg : Func->args())
+        arg.setName(arguments.args[arg_name_index++].name.identifier);
+
     return Func;
 }
 
@@ -238,7 +283,20 @@ llvm::Value *ASTFunctionDefinition::EmitIR(IREmitter::EmitterState &state)
 {
     auto func = declaration.EmitIR(state);
 
-    if (!block.EmitIR(state, *(llvm::Function*)func))
+    state.frontmost = state.frontmost->CreateChildTable(declaration.identifier.identifier);
+
+    for (auto &arg : declaration.arguments.args)
+    {
+        Symbol s;
+        s.identifier = arg.name.identifier;
+        s.type = arg.type.identifier;
+        s.classification = Symbol::Classification::VARIABLE;
+        s.alloc_inst = NULL;
+        state.frontmost->AddSymbol(s);
+    }
+
+    if (!block.EmitIR(state, declaration.arguments, *(llvm::Function*)func))
         return NULL;
+
     return func;
 }

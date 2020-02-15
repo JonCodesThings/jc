@@ -16,6 +16,8 @@ extern int yyparse();
 int main(int argc, const char **args)
 {
     yyin = fopen(args[1], "r");
+    if (!yyin)
+        return 0;
     yycurrentfilename = args[1];
     int p = yyparse();
     if (base)

@@ -53,14 +53,14 @@ public:
     ASTIdentifier() {}
     const std::string *GetType(IREmitter::EmitterState &state)
     {
-        Symbol *symbol = state.symbolTable.GetSymbolByIdentifier(identifier);
+        Symbol *symbol = state.frontmost->GetSymbolByIdentifier(identifier);
         if (symbol)
             return &symbol->type;
         return state.typeRegistry.GetLifetimeTypeString(identifier);
     }
     const Symbol *GetSymbol(IREmitter::EmitterState &state)
     {
-        return state.symbolTable.GetSymbolByIdentifier(identifier);
+        return state.frontmost->GetSymbolByIdentifier(identifier);
     }
     ASTIdentifier(const char *identifier) : identifier(identifier) {}
     llvm::Value *EmitIR(IREmitter::EmitterState &state);
@@ -121,7 +121,7 @@ public:
 
     llvm::Value *EmitIR(IREmitter::EmitterState &state) 
     { 
-        return llvm::ConstantInt::get(llvm::IntegerType::get(state.context, 32), constant); 
+        return llvm::ConstantInt::get(llvm::Type::getInt32Ty(state.context), constant); 
     }
     const std::string *GetType(IREmitter::EmitterState &state)
     {
@@ -169,18 +169,6 @@ public:
     llvm::Value *EmitIR(IREmitter::EmitterState &state);
 };
 
-class ASTBlock : public ASTStatement
-{
-public:
-    std::vector<ASTStatement*> &block;
-
-    ASTBlock() : block(*new std::vector<ASTStatement*>()) {}
-    ASTBlock(std::vector<ASTStatement*> &block) : block(block) {}
-
-    llvm::Value *EmitIR(IREmitter::EmitterState &state);
-    llvm::Value *EmitIR(IREmitter::EmitterState &state, llvm::Function &func);
-};
-
 struct ASTFunctionArg
 {
     ASTFunctionArg(ASTIdentifier &type, ASTIdentifier &name) : type(type), name(name) {}
@@ -194,13 +182,26 @@ public:
     std::vector<ASTFunctionArg> args;
 };
 
+class ASTBlock : public ASTStatement
+{
+public:
+    std::vector<ASTStatement*> &block;
+
+    ASTBlock() : block(*new std::vector<ASTStatement*>()) {}
+    ASTBlock(std::vector<ASTStatement*> &block) : block(block) {}
+
+    llvm::Value *EmitIR(IREmitter::EmitterState &state);
+    llvm::Value *EmitIR(IREmitter::EmitterState &state, ASTFunctionArgs &args, llvm::Function &func);
+};
+
 class ASTFunctionCall : public ASTExpression
 {
 public:
     ASTIdentifier &identifier;
-    ASTFunctionArgs &args;
-    ASTFunctionCall(ASTIdentifier &id, ASTFunctionArgs &args) : identifier(id), args(args) {}
-    llvm::Value *EmitIR(IREmitter::EmitterState &state) { return NULL; }
+    std::vector<ASTStatement*> *args;
+    ASTFunctionCall(ASTIdentifier &id) : identifier(id), args(NULL) {}
+    ASTFunctionCall(ASTIdentifier &id, std::vector<ASTStatement*> &args) : identifier(id), args(&args) {}
+    llvm::Value *EmitIR(IREmitter::EmitterState &state);
 };
 
 class ASTFunctionDeclaration : public ASTStatement

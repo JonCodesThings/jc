@@ -30,6 +30,8 @@ public:
 
         SymbolTable symbolTable;
         TypeRegistry typeRegistry;
+
+        SymbolTable *frontmost = &symbolTable;
     };
 
     IREmitter(llvm::Module &module, llvm::LLVMContext &context) : state(module, context) {}

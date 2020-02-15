@@ -1,4 +1,26 @@
-i32 main(const int argc, const string[] args)
+i8 add(i8 x, i8 y)
 {
-return 1 + 2;
+    i8 z = x + y;
+    return z;
+}
+
+i8 ret14()
+{
+    i8 z;
+    z = (i8)1000000;
+    return z;
+}
+
+i32 sub(i32 x, i32 y)
+{
+    i32 z = x - y;
+    return z;
+}
+
+i32 main()
+{
+    i8 z;
+    z = ret14();
+    i32 x = (i32)z;
+    return x;
 }
