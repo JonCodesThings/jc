@@ -17,6 +17,7 @@ struct Symbol
     std::string identifier;
     std::string type;
     llvm::AllocaInst *alloc_inst;
+    unsigned int array_size = 1;
 };
 
 class SymbolTable

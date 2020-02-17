@@ -78,7 +78,8 @@ public:
         INCREMENT,
         DECREMENT,
         ADDRESS_OF,
-        DEREFERENCE
+        DEREFERENCE,
+        ARRAY_INDEX
     } op;
 
     ASTUnaryOperator(ASTNode &operatee, OP op) : operatee(operatee), cast(NULL), op(op) {}
@@ -155,9 +156,11 @@ public:
     ASTIdentifier &id;
 
     ASTNode *node;
+    ASTConstant *array_size;
 
-    ASTVariableDeclaration(ASTIdentifier &type, ASTIdentifier &id) : type(type), id(id), node(NULL) {}
-    ASTVariableDeclaration(ASTIdentifier &type, ASTIdentifier &id, ASTNode &node) : type(type), id(id), node(&node) {}
+    ASTVariableDeclaration(ASTIdentifier &type, ASTIdentifier &id) : type(type), id(id), node(NULL), array_size(NULL) {}
+    ASTVariableDeclaration(ASTIdentifier &type, ASTIdentifier &id, ASTNode &node) : type(type), id(id), node(&node), array_size(NULL) {}
+    ASTVariableDeclaration(ASTIdentifier &type, ASTIdentifier &id, ASTConstant &array_size) : type(type), id(id), node(NULL), array_size(&array_size) {}
     llvm::Value *EmitIR(IREmitter::EmitterState &state);
 };
 

@@ -51,6 +51,7 @@ ASTFunctionDefinition *function_definition;
 ASTUnaryOperator *unary_operator;
 ASTBlock *scope_block;
 ASTConstant *constant;
+ASTConstantInt *constant_int;
 ASTIdentifier *id;
 const char *string;
 std::vector<ASTStatement *> *statement_list;
@@ -84,7 +85,7 @@ int token;
 %token UNKNOWN
 
 %type<statement> node_setup semicoloned_statement statement function_def function_decl variable_decl assign_op variable_assign unary_op binary_op
-%type<statement> assignable_statement
+%type<statement> assignable_statement array_decl
 %type<unary_operator> cast increment decrement address_of dereference
 %type<function_args> arg_list
 %type<function_call> function_call
@@ -95,6 +96,7 @@ int token;
 %type<statement> add subtract
 %type<statement_list> statement_list 
 %type<constant> constant
+%type<constant_int> constant_int
 %type<function_arg> arg_pair
 %type<node> id_or_constant
 
@@ -120,7 +122,7 @@ assignable_statement: function_call | unary_op | binary_op | id_or_constant;
 
 scope: LEFT_BRACE semicoloned_statements RIGHT_BRACE { $$ = $2; } | LEFT_BRACE RIGHT_BRACE { $$ = new ASTBlock(); } ;
 
-unary_op: cast | increment | decrement | address_of | dereference;
+unary_op: cast | increment | decrement | address_of | dereference | array_index;
 
 binary_op: add { $$ = $1;  } | subtract { $$ = $1; };
 
@@ -138,6 +140,8 @@ address_of: AND id { $$ = new ASTUnaryOperator(*$2, ASTUnaryOperator::ADDRESS_OF
 
 dereference: ASTERISK id { $$ = new ASTUnaryOperator(*$2, ASTUnaryOperator::DEREFERENCE); };
 
+array_index: id LEFT_SQUARE_BRACKET constant_int RIGHT_SQUARE_BRACKET { $$ = new ASTUnaryOperator(*$1, ASTUnaryOperator::ARRAY_INDEX); };
+
 add: id_or_constant PLUS id_or_constant { $$ = new ASTBinaryOperator(*$1, *$3, ASTBinaryOperator::ADD);  }
     | id_or_constant PLUS unary_op {$$ = new ASTBinaryOperator(*$1, *$3, ASTBinaryOperator::ADD); };
 
@@ -152,7 +156,10 @@ function_call: id LEFT_BRACKET RIGHT_BRACKET { $$ = new ASTFunctionCall(*$1); }
     | id LEFT_BRACKET statement_list RIGHT_BRACKET { $$ = new ASTFunctionCall(*$1, *$3); };
 
 variable_decl: id id { $$ = new ASTVariableDeclaration(*$1, *$2);  }
-    | id id EQUAL assignable_statement { $$ = new ASTVariableDeclaration(*$1, *$2, *$4);  };
+    | id id EQUAL assignable_statement { $$ = new ASTVariableDeclaration(*$1, *$2, *$4);  }
+    | array_decl;
+
+array_decl: id id LEFT_SQUARE_BRACKET constant_int RIGHT_SQUARE_BRACKET { $$ = new ASTVariableDeclaration(*$1, *$2, *$4); }
 
 return_statement: RETURN constant { $$ = new ASTReturnStatement(*$2);  }
     | RETURN id { $$ = new ASTReturnStatement(*$2);  };
@@ -167,7 +174,9 @@ arg_pair: id id { $$ = new ASTFunctionArg(*$1, *$2); };
 
 id_or_constant: id | constant;
 
-constant: INTEGER { $$ = new ASTConstantInt(yylval.integer); } | FLOAT { $$ = new ASTConstantFloat(yylval.fl); };
+constant: constant_int | FLOAT { $$ = new ASTConstantFloat(yylval.fl); };
+
+constant_int: INTEGER { $$ = new ASTConstantInt(yylval.integer); };
 
 id: IDENTIFIER { $$ = new ASTIdentifier($1); } | id ASTERISK { $1->identifier.append("*"); printf("%s\n", $1->identifier.c_str());  };
 

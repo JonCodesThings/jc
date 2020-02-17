@@ -1,8 +1,4 @@
 i8 main()
 {
-    i8 *i;
-    i8 j = (i8)128;
-    i = &j;
-    j = *i;
-    return j;
+    f32 i[12];
 }

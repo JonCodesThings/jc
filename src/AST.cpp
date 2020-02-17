@@ -181,16 +181,27 @@ llvm::Value * ASTVariableDeclaration::EmitIR(IREmitter::EmitterState &state)
 {
     Symbol symbol;
     symbol.classification = Symbol::VARIABLE;
-    symbol.type = type.identifier;
     symbol.identifier = id.identifier;
-    symbol.alloc_inst = state.builder.CreateAlloca(state.typeRegistry.GetType(type.identifier), NULL, id.identifier);
-    state.frontmost->AddSymbol(symbol);
+
+    auto temp = (ASTConstantInt*)array_size;
+
+    if (array_size)
+    {
+        symbol.alloc_inst = state.builder.CreateAlloca(state.typeRegistry.GetArrayType(type.identifier, temp->constant), NULL, id.identifier);
+    }
+    else
+    {
+        symbol.alloc_inst = state.builder.CreateAlloca(state.typeRegistry.GetType(type.identifier), NULL, id.identifier);
+        symbol.type = type.identifier;
+    }
 
     if (node)
     {
         llvm::Value *v = node->EmitIR(state);
         state.builder.CreateStore(v, symbol.alloc_inst);
     }
+
+    state.frontmost->AddSymbol(symbol);
 
     return symbol.alloc_inst;
 }

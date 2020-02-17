@@ -39,6 +39,11 @@ void TypeRegistry::AddType(const std::string &id, llvm::Type &t, const JCType::T
     registry.push_back(type);
 }
 
+llvm::Type *TypeRegistry::GetArrayType(const std::string &id, unsigned int array_size)
+{
+    return llvm::ArrayType::get(GetType(id), array_size);
+}
+
 llvm::Type *TypeRegistry::GetType(const std::string &id)
 {
     for (auto type_ : registry)

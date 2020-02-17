@@ -44,6 +44,7 @@ public:
     ~TypeRegistry() {};
     void SetupBuiltinJCTypes();
     void AddType(const std::string &id, llvm::Type &type, const JCType::TYPE_CLASSIFICATION &classification);
+    llvm::Type *GetArrayType(const std::string &id, unsigned int array_size);
     llvm::Type *GetType(const std::string &id);
     llvm::Type *UnwindPointerType(const std::string &id);
     const JCType *GetTypeInfo(const std::string &id);
