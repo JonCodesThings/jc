@@ -20,6 +20,8 @@
 
 #include <include/IREmitter.hpp>
 
+class ASTConstantInt;
+
 class ASTNode
 {
 public:
@@ -71,6 +73,7 @@ class ASTUnaryOperator : public ASTExpression
 public:
     ASTNode &operatee;
     ASTIdentifier *cast;
+    ASTConstantInt *index;
 
     enum OP
     {
@@ -82,8 +85,9 @@ public:
         ARRAY_INDEX
     } op;
 
-    ASTUnaryOperator(ASTNode &operatee, OP op) : operatee(operatee), cast(NULL), op(op) {}
-    ASTUnaryOperator(ASTNode &operatee, ASTIdentifier *identifier, OP op) : operatee(operatee), cast(identifier), op(op) {}
+    ASTUnaryOperator(ASTNode &operatee, OP op) : operatee(operatee), cast(NULL), index(NULL), op(op) {}
+    ASTUnaryOperator(ASTNode &operatee, ASTIdentifier *identifier, OP op) : operatee(operatee), cast(identifier), index(NULL), op(op) {}
+    ASTUnaryOperator(ASTNode &operatee, ASTConstantInt &index, OP op) : operatee(operatee), cast(NULL), index(&index), op(op) {}
     llvm::Value *EmitIR(IREmitter::EmitterState &state);
 };
 
@@ -167,27 +171,28 @@ public:
 class ASTVariableAssignment : public ASTExpression
 {
 public:
-    ASTIdentifier &id;
+    ASTIdentifier *id;
     ASTNode &node;
+    ASTNode *array_index;
 
-    ASTVariableAssignment(ASTIdentifier &id, ASTNode &node) : id(id), node(node) {}
+    ASTVariableAssignment(ASTIdentifier &id, ASTNode &node) : id(&id), node(node), array_index(NULL) {}
+    ASTVariableAssignment(ASTNode &array_index, ASTNode &node) : id (NULL), array_index(&array_index), node(node) {}
     llvm::Value *EmitIR(IREmitter::EmitterState &state);
 };
 
 class ASTReturnStatement : public ASTStatement
 {
 public:
-    ASTConstant &constant;
-    ASTIdentifier id;
+    ASTStatement *expr;
 
     enum ReturnType
     {
         CONSTANT,
-        ID
+        ID,
+        STATEMENT
     } type;
 
-    ASTReturnStatement(ASTConstant &val) : constant(val), type(CONSTANT) {}
-    ASTReturnStatement(ASTIdentifier &id) : id(id), constant(*new ASTConstantInt(0)), type(ID) {}
+    ASTReturnStatement(ASTStatement &expr) : expr(&expr) {}
     llvm::Value *EmitIR(IREmitter::EmitterState &state);
 };
 

@@ -86,7 +86,7 @@ int token;
 
 %type<statement> node_setup semicoloned_statement statement function_def function_decl variable_decl assign_op variable_assign unary_op binary_op
 %type<statement> assignable_statement array_decl
-%type<unary_operator> cast increment decrement address_of dereference
+%type<unary_operator> cast increment decrement address_of dereference array_index
 %type<function_args> arg_list
 %type<function_call> function_call
 %type<id> id
@@ -128,7 +128,8 @@ binary_op: add { $$ = $1;  } | subtract { $$ = $1; };
 
 assign_op: variable_assign;
 
-variable_assign: id EQUAL assignable_statement { $$ = new ASTVariableAssignment(*$1, *$3);  };
+variable_assign: id EQUAL assignable_statement { $$ = new ASTVariableAssignment(*$1, *$3);  }
+    | array_index EQUAL assignable_statement { $$ = new ASTVariableAssignment(*$1, *$3); };
 
 cast: LEFT_BRACKET id RIGHT_BRACKET id_or_constant { $$ = new ASTUnaryOperator(*$4, $2, ASTUnaryOperator::CAST); };
 
@@ -140,7 +141,7 @@ address_of: AND id { $$ = new ASTUnaryOperator(*$2, ASTUnaryOperator::ADDRESS_OF
 
 dereference: ASTERISK id { $$ = new ASTUnaryOperator(*$2, ASTUnaryOperator::DEREFERENCE); };
 
-array_index: id LEFT_SQUARE_BRACKET constant_int RIGHT_SQUARE_BRACKET { $$ = new ASTUnaryOperator(*$1, ASTUnaryOperator::ARRAY_INDEX); };
+array_index: id LEFT_SQUARE_BRACKET constant_int RIGHT_SQUARE_BRACKET { $$ = new ASTUnaryOperator(*$1, *$3, ASTUnaryOperator::ARRAY_INDEX); };
 
 add: id_or_constant PLUS id_or_constant { $$ = new ASTBinaryOperator(*$1, *$3, ASTBinaryOperator::ADD);  }
     | id_or_constant PLUS unary_op {$$ = new ASTBinaryOperator(*$1, *$3, ASTBinaryOperator::ADD); };
@@ -161,8 +162,7 @@ variable_decl: id id { $$ = new ASTVariableDeclaration(*$1, *$2);  }
 
 array_decl: id id LEFT_SQUARE_BRACKET constant_int RIGHT_SQUARE_BRACKET { $$ = new ASTVariableDeclaration(*$1, *$2, *$4); }
 
-return_statement: RETURN constant { $$ = new ASTReturnStatement(*$2);  }
-    | RETURN id { $$ = new ASTReturnStatement(*$2);  };
+return_statement: RETURN assignable_statement { $$ = new ASTReturnStatement(*$2); };
 
 arg_list: arg_list COMMA arg_pair {  $1->args.push_back(*$3); }
     | arg_pair { $$ = new ASTFunctionArgs(); $$->args.push_back(*$1); };
