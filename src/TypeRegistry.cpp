@@ -46,7 +46,19 @@ llvm::Type *TypeRegistry::GetType(const std::string &id)
         if (type_.type_string == id)
             return type_.llvm_type;
     }
-    return NULL;
+
+    llvm::Type * ptr_type = UnwindPointerType(id);
+
+    return ptr_type;
+}
+
+llvm::Type *TypeRegistry::UnwindPointerType(const std::string &id)
+{
+    if (id[id.size() - 1] != '*')
+        return GetType(id);
+    else
+        return llvm::PointerType::get(UnwindPointerType(id.substr(0, id.size() - 1)), 0);
+    
 }
 
 const JCType *TypeRegistry::GetTypeInfo(const std::string &id)

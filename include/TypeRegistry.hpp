@@ -26,6 +26,7 @@ struct JCType
         INT,
         CHAR,
         VOID,
+        POINTER,
         STRUCT
     } classification;
 
@@ -44,6 +45,7 @@ public:
     void SetupBuiltinJCTypes();
     void AddType(const std::string &id, llvm::Type &type, const JCType::TYPE_CLASSIFICATION &classification);
     llvm::Type *GetType(const std::string &id);
+    llvm::Type *UnwindPointerType(const std::string &id);
     const JCType *GetTypeInfo(const std::string &id);
     const std::string *GetLifetimeTypeString(const std::string &id);
     bool IsTypeNumeric(const JCType &type);

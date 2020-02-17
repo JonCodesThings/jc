@@ -109,10 +109,10 @@ statements: node_setup { $$ = new ASTBlock(); $$->block.push_back($1); };
 
 node_setup: statement { SetNodeInfo(*$$); };
 
-semicoloned_statements: semicoloned_statement { $$ = new ASTBlock(); $$->block.push_back($1); };
+semicoloned_statements: semicoloned_statement { $$ = new ASTBlock(); $$->block.push_back($1); SetNodeInfo(*$$); };
     | semicoloned_statements semicoloned_statement { $1->block.push_back($2); };
 
-semicoloned_statement: statement SEMICOLON | assignable_statement SEMICOLON
+semicoloned_statement: statement SEMICOLON { SetNodeInfo(*$1); }; | assignable_statement SEMICOLON { SetNodeInfo(*$1); };
 
 statement: return_statement | function_def | function_decl | variable_decl | assign_op;
 
@@ -165,6 +165,6 @@ id_or_constant: id | constant;
 
 constant: INTEGER { $$ = new ASTConstantInt(yylval.integer); } | FLOAT { $$ = new ASTConstantFloat(yylval.fl); };
 
-id: IDENTIFIER { $$ = new ASTIdentifier($1);  };
+id: IDENTIFIER { $$ = new ASTIdentifier($1); } | id ASTERISK { $1->identifier.append("*"); printf("%s\n", $1->identifier.c_str());  };
 
 %%

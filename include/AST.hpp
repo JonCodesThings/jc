@@ -62,7 +62,7 @@ public:
     {
         return state.frontmost->GetSymbolByIdentifier(identifier);
     }
-    ASTIdentifier(const char *identifier) : identifier(identifier) {}
+    ASTIdentifier(const std::string &identifier) : identifier(identifier) {}
     llvm::Value *EmitIR(IREmitter::EmitterState &state);
 };
 
