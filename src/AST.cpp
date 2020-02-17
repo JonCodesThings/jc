@@ -39,6 +39,15 @@ llvm::Value *ASTUnaryOperator::EmitIR(IREmitter::EmitterState &state)
     {
         default:
             return NULL;
+        case ADDRESS_OF:
+        {
+            return s->alloc_inst;
+        }
+        case DEREFERENCE:
+        {
+            llvm::Value *v = state.builder.CreateLoad(s->alloc_inst, "temp_deref");
+            return state.builder.CreateLoad(v);
+        }
         case CAST:
         {
             const std::string *cast_to = cast->GetType(state);

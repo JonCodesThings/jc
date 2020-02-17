@@ -85,7 +85,7 @@ int token;
 
 %type<statement> node_setup semicoloned_statement statement function_def function_decl variable_decl assign_op variable_assign unary_op binary_op
 %type<statement> assignable_statement
-%type<unary_operator> cast increment decrement
+%type<unary_operator> cast increment decrement address_of dereference
 %type<function_args> arg_list
 %type<function_call> function_call
 %type<id> id
@@ -120,7 +120,7 @@ assignable_statement: function_call | unary_op | binary_op | id_or_constant;
 
 scope: LEFT_BRACE semicoloned_statements RIGHT_BRACE { $$ = $2; } | LEFT_BRACE RIGHT_BRACE { $$ = new ASTBlock(); } ;
 
-unary_op: cast | increment | decrement;
+unary_op: cast | increment | decrement | address_of | dereference;
 
 binary_op: add { $$ = $1;  } | subtract { $$ = $1; };
 
@@ -133,6 +133,10 @@ cast: LEFT_BRACKET id RIGHT_BRACKET id_or_constant { $$ = new ASTUnaryOperator(*
 increment: id_or_constant PLUS PLUS { $$ = new ASTUnaryOperator(*$1, ASTUnaryOperator::INCREMENT);  };
 
 decrement: id_or_constant MINUS MINUS { $$ = new ASTUnaryOperator(*$1, ASTUnaryOperator::DECREMENT);  };
+
+address_of: AND id { $$ = new ASTUnaryOperator(*$2, ASTUnaryOperator::ADDRESS_OF); };
+
+dereference: ASTERISK id { $$ = new ASTUnaryOperator(*$2, ASTUnaryOperator::DEREFERENCE); };
 
 add: id_or_constant PLUS id_or_constant { $$ = new ASTBinaryOperator(*$1, *$3, ASTBinaryOperator::ADD);  }
     | id_or_constant PLUS unary_op {$$ = new ASTBinaryOperator(*$1, *$3, ASTBinaryOperator::ADD); };

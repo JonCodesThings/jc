@@ -76,7 +76,9 @@ public:
     {
         CAST,
         INCREMENT,
-        DECREMENT
+        DECREMENT,
+        ADDRESS_OF,
+        DEREFERENCE
     } op;
 
     ASTUnaryOperator(ASTNode &operatee, OP op) : operatee(operatee), cast(NULL), op(op) {}
