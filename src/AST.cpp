@@ -135,17 +135,11 @@ llvm::Value *ASTBinaryOperator::EmitIR(IREmitter::EmitterState &state)
     const std::string *ltype = left.GetType(state);
     const std::string *rtype = right.GetType(state);
 
-    printf("ltype: %p  rtype: %p\n", ltype, rtype);
-
     llvm::Value *l_inst = left.EmitIR(state);
     llvm::Value *r_inst = right.EmitIR(state);
 
-    printf("l_inst: %p  r_inst: %p\n", l_inst, r_inst);
-
     const Symbol *l_symbol = left.GetSymbol(state);
     const Symbol *r_symbol = right.GetSymbol(state);
-
-    printf("l_symbol: %p  r_symbol: %p\n", l_symbol, r_symbol);
 
     llvm::Value *templ;
     llvm::Value *tempr;

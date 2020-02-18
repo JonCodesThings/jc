@@ -111,7 +111,7 @@ module: statements { base = new ASTBlock(); base->block.push_back($1); };
 statements: node_setup { $$ = new ASTBlock(); $$->block.push_back($1); };
     | statements node_setup { $1->block.push_back($2); };
 
-node_setup: statement | semicoloned_statement { SetNodeInfo(*$$); };
+node_setup: statement { SetNodeInfo(*$$); } | statement SEMICOLON { SetNodeInfo(*$$); };
 
 semicoloned_statements: semicoloned_statement { $$ = new ASTBlock(); $$->block.push_back($1); SetNodeInfo(*$$); };
     | semicoloned_statements semicoloned_statement { $1->block.push_back($2); };
@@ -122,7 +122,7 @@ statement: return_statement | function_def | function_decl | variable_decl | ass
 
 assignable_statement: function_call | unary_op | binary_op | id_or_constant;
 
-scope: LEFT_BRACE semicoloned_statements RIGHT_BRACE { $$ = $2; } | LEFT_BRACE RIGHT_BRACE { $$ = new ASTBlock(); } ;
+scope: LEFT_BRACE semicoloned_statements RIGHT_BRACE { $$ = $2; } | LEFT_BRACE RIGHT_BRACE { $$ = new ASTBlock(); } ; 
 
 unary_op: cast | increment | decrement | address_of | dereference | array_index;
 
@@ -153,9 +153,9 @@ subtract: id_or_constant MINUS id_or_constant { $$ = new ASTBinaryOperator(*$1, 
 function_def: id id LEFT_BRACKET arg_list RIGHT_BRACKET scope {  $$ = new ASTFunctionDefinition(*$1, *$2, *$4, *$6);  }
     | id id LEFT_BRACKET RIGHT_BRACKET scope {  $$ = new ASTFunctionDefinition(*$1, *$2, *new ASTFunctionArgs(), *$5);  };
 
-function_decl: id id LEFT_BRACKET RIGHT_BRACKET { $$ = new ASTFunctionDeclaration(*$1, *$2, *new ASTFunctionArgs());  }
-    | id id LEFT_BRACKET arg_list RIGHT_BRACKET { $$ = new ASTFunctionDeclaration(*$1, *$2, *$4);  }
-    | EXTERN function_decl;
+function_decl: id id LEFT_BRACKET RIGHT_BRACKET SEMICOLON { $$ = new ASTFunctionDeclaration(*$1, *$2, *new ASTFunctionArgs());  }
+    | id id LEFT_BRACKET arg_list RIGHT_BRACKET SEMICOLON { $$ = new ASTFunctionDeclaration(*$1, *$2, *$4);  }
+    | EXTERN function_decl SEMICOLON;
 
 function_call: id LEFT_BRACKET RIGHT_BRACKET { $$ = new ASTFunctionCall(*$1); }
     | id LEFT_BRACKET statement_list RIGHT_BRACKET { $$ = new ASTFunctionCall(*$1, *$3); printf("oof\n"); };

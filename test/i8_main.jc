@@ -1,15 +1,15 @@
-i32 putchar(i8 ch);
+i32 printf(i8 *ch);
 
 i32 yikes(i32 oof)
 {
     return 10;
-};
+}
 
 i8 main()
 {
     i8 i[12];
-    i8 j = (i8)12;
+    i8 j = (i8)128;
     i[10] = j;
-    putchar((i8)100);
+    printf(&j);
     return j;
 }
