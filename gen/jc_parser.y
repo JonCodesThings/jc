@@ -82,6 +82,8 @@ int token;
 
 %token RETURN
 
+%token EXTERN
+
 %token UNKNOWN
 
 %type<statement> node_setup semicoloned_statement statement function_def function_decl variable_decl assign_op variable_assign unary_op binary_op
@@ -109,7 +111,7 @@ module: statements { base = new ASTBlock(); base->block.push_back($1); };
 statements: node_setup { $$ = new ASTBlock(); $$->block.push_back($1); };
     | statements node_setup { $1->block.push_back($2); };
 
-node_setup: statement { SetNodeInfo(*$$); };
+node_setup: statement | semicoloned_statement { SetNodeInfo(*$$); };
 
 semicoloned_statements: semicoloned_statement { $$ = new ASTBlock(); $$->block.push_back($1); SetNodeInfo(*$$); };
     | semicoloned_statements semicoloned_statement { $1->block.push_back($2); };
@@ -151,10 +153,12 @@ subtract: id_or_constant MINUS id_or_constant { $$ = new ASTBinaryOperator(*$1, 
 function_def: id id LEFT_BRACKET arg_list RIGHT_BRACKET scope {  $$ = new ASTFunctionDefinition(*$1, *$2, *$4, *$6);  }
     | id id LEFT_BRACKET RIGHT_BRACKET scope {  $$ = new ASTFunctionDefinition(*$1, *$2, *new ASTFunctionArgs(), *$5);  };
 
-function_decl: id id LEFT_BRACKET RIGHT_BRACKET { $$ = new ASTFunctionDeclaration(*$1, *$2, *new ASTFunctionArgs());  };
+function_decl: id id LEFT_BRACKET RIGHT_BRACKET { $$ = new ASTFunctionDeclaration(*$1, *$2, *new ASTFunctionArgs());  }
+    | id id LEFT_BRACKET arg_list RIGHT_BRACKET { $$ = new ASTFunctionDeclaration(*$1, *$2, *$4);  }
+    | EXTERN function_decl;
 
 function_call: id LEFT_BRACKET RIGHT_BRACKET { $$ = new ASTFunctionCall(*$1); }
-    | id LEFT_BRACKET statement_list RIGHT_BRACKET { $$ = new ASTFunctionCall(*$1, *$3); };
+    | id LEFT_BRACKET statement_list RIGHT_BRACKET { $$ = new ASTFunctionCall(*$1, *$3); printf("oof\n"); };
 
 variable_decl: id id { $$ = new ASTVariableDeclaration(*$1, *$2);  }
     | id id EQUAL assignable_statement { $$ = new ASTVariableDeclaration(*$1, *$2, *$4);  }
@@ -167,8 +171,8 @@ return_statement: RETURN assignable_statement { $$ = new ASTReturnStatement(*$2)
 arg_list: arg_list COMMA arg_pair {  $1->args.push_back(*$3); }
     | arg_pair { $$ = new ASTFunctionArgs(); $$->args.push_back(*$1); };
 
-statement_list: statement_list COMMA statement { $1->push_back($3); }
-    | statement { $$ = new std::vector<ASTStatement *>(); $$->push_back($1); };
+statement_list: statement_list COMMA assignable_statement { $1->push_back($3); printf("why\n"); }
+    | assignable_statement { $$ = new std::vector<ASTStatement *>(); $$->push_back($1); printf("why\n"); };
 
 arg_pair: id id { $$ = new ASTFunctionArg(*$1, *$2); };
 

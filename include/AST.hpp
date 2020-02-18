@@ -238,6 +238,12 @@ public:
     ASTIdentifier &return_type;
     ASTFunctionArgs &arguments;
 
+    enum FUNCTION_LINKAGE
+    {
+        INTERNAL,
+        EXTERN
+    } linkage = EXTERN;
+
     ASTFunctionDeclaration() : identifier(*new ASTIdentifier("function id: TBD")), return_type(*new ASTIdentifier("return type: TBD")), arguments(*new ASTFunctionArgs()) {}
     ASTFunctionDeclaration(ASTIdentifier &ret_type, ASTIdentifier &id, ASTFunctionArgs &args) : identifier(id), return_type(ret_type), arguments(args) {}
 
