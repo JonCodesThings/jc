@@ -1,0 +1,7 @@
+i32 printf(i8 *str);
+
+i32 main()
+{
+    printf("Hello, World!");
+    return 0;
+}

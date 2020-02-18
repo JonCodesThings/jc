@@ -153,6 +153,23 @@ public:
     }
 };
 
+class ASTConstantString : public ASTConstant
+{
+public:
+    std::string constant;
+
+    ASTConstantString(const std::string &constant) : constant(constant.substr(1, constant.size() - 2)) {}
+
+    llvm::Value *EmitIR(IREmitter::EmitterState &state) 
+    { 
+        return state.builder.CreateGlobalStringPtr(constant); 
+    }
+    const std::string *GetType(IREmitter::EmitterState &state)
+    {
+        return state.typeRegistry.GetLifetimeTypeString("void");
+    }
+};
+
 class ASTVariableDeclaration : public ASTStatement
 {
 public:
