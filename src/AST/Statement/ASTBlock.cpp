@@ -6,12 +6,16 @@ ASTBlock::ASTBlock(std::vector<ASTStatement*> &block) : block(block) {}
 
 llvm::Value *ASTBlock::EmitIR(IREmitter::EmitterState &state)
 {
-    auto llvmBlock = llvm::BasicBlock::Create(state.context, "temp", NULL);
+    auto llvmBlock = llvm::BasicBlock::Create(state.context, "temp", current_function);
+
+    state.builder.SetInsertPoint(llvmBlock);
+
     for (ASTStatement *statement : block)
     {
         if (!statement->EmitIR(state))
             return NULL;
     }
+    b = llvmBlock;
     return llvmBlock;
 }
 
@@ -19,7 +23,6 @@ llvm::Value *ASTBlock::EmitIR(IREmitter::EmitterState &state, ASTFunctionArgs &a
 {        
     auto llvmBlock = llvm::BasicBlock::Create(state.context, "entry", &func);
  
-    state.builder.SetInsertPoint(llvmBlock);
 
     for (auto &arg : func.args())
     {
@@ -28,10 +31,13 @@ llvm::Value *ASTBlock::EmitIR(IREmitter::EmitterState &state, ASTFunctionArgs &a
         state.builder.CreateStore(&arg, s->alloc_inst);
     }
 
+    state.builder.SetInsertPoint(llvmBlock);
+
     for (ASTStatement *statement : block)
     {
         if (!statement->EmitIR(state))
             return NULL;
     }
+    b = llvmBlock;
     return llvmBlock;
 }

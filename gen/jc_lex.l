@@ -55,6 +55,8 @@ const char *yycurrentfilename = "";
 
 "return" { return RETURN; yycurrentlinechar += yyleng; }
 "extern" { return EXTERN; yycurrentlinechar += yyleng; }
+"if" { return IF; yycurrentlinechar += yyleng; }
+"else" { return ELSE; yycurrentlinechar += yyleng; }
 [a-zA-Z0-9]+ { yylval.string = yytext; return IDENTIFIER; yycurrentlinechar += yyleng; }
 
 . { return UNKNOWN; }

@@ -1,5 +1,8 @@
 #include <include/AST/ASTNode.hpp>
 
+llvm::Function *ASTNode::current_function = NULL;
+llvm::BasicBlock *ASTNode::prev_block = NULL;
+
 ASTNode::ASTNode() : line_number(0), start_char(0) {}
 
 ASTNode::~ASTNode() {}

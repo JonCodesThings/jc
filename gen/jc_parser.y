@@ -48,6 +48,7 @@ ASTFunctionArgs *function_args;
 ASTFunctionCall *function_call;
 ASTFunctionDeclaration *function_declaration;
 ASTFunctionDefinition *function_definition;
+ASTIfStatement *if_statement;
 ASTUnaryOperator *unary_operator;
 ASTBlock *scope_block;
 ASTConstant *constant;
@@ -82,6 +83,8 @@ int token;
 
 %token RETURN
 
+%token IF ELSE
+
 %token EXTERN
 
 %token UNKNOWN
@@ -91,9 +94,10 @@ int token;
 %type<unary_operator> cast increment decrement address_of dereference array_index
 %type<function_args> arg_list
 %type<function_call> function_call
+%type<if_statement> if_statement
 %type<id> id
 %type<string> IDENTIFIER
-%type<statement> return_statement
+%type<statement> return_statement flow_control
 %type<scope_block> statements scope semicoloned_statements
 %type<statement> add subtract
 %type<statement_list> statement_list 
@@ -116,11 +120,13 @@ node_setup: statement { SetNodeInfo(*$$); } | statement SEMICOLON { SetNodeInfo(
 semicoloned_statements: semicoloned_statement { $$ = new ASTBlock(); $$->block.push_back($1); SetNodeInfo(*$$); };
     | semicoloned_statements semicoloned_statement { $1->block.push_back($2); };
 
-semicoloned_statement: statement SEMICOLON { SetNodeInfo(*$1); }; | assignable_statement SEMICOLON { SetNodeInfo(*$1); };
+semicoloned_statement: statement SEMICOLON { SetNodeInfo(*$1); }; | assignable_statement SEMICOLON { SetNodeInfo(*$1); } | flow_control { SetNodeInfo(*$1); };
 
 statement: return_statement | function_def | function_decl | variable_decl | assign_op;
 
 assignable_statement: function_call | unary_op | binary_op | id_or_constant;
+
+flow_control: if_statement;
 
 scope: LEFT_BRACE semicoloned_statements RIGHT_BRACE { $$ = $2; } | LEFT_BRACE RIGHT_BRACE { $$ = new ASTBlock(); } ; 
 
@@ -167,6 +173,8 @@ variable_decl: id id { $$ = new ASTVariableDeclaration(*$1, *$2);  }
 array_decl: id id LEFT_SQUARE_BRACKET constant_int RIGHT_SQUARE_BRACKET { $$ = new ASTVariableDeclaration(*$1, *$2, *$4); }
 
 return_statement: RETURN assignable_statement { $$ = new ASTReturnStatement(*$2); };
+
+if_statement: IF LEFT_BRACKET assignable_statement RIGHT_BRACKET scope { $$ = new ASTIfStatement(*$3, *$5); };
 
 arg_list: arg_list COMMA arg_pair {  $1->args.push_back(*$3); }
     | arg_pair { $$ = new ASTFunctionArgs(); $$->args.push_back(*$1); };

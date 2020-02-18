@@ -11,6 +11,8 @@ llvm::Value *ASTFunctionDefinition::EmitIR(IREmitter::EmitterState &state)
 
     state.frontmost = state.frontmost->CreateChildTable(declaration.identifier.identifier);
 
+    current_function = (llvm::Function*)func;
+
     for (auto &arg : declaration.arguments.args)
     {
         Symbol s;

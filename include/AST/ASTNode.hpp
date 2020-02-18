@@ -28,6 +28,9 @@ public:
     unsigned int line_number;
     unsigned int start_char;
 
+    static llvm::Function *current_function;
+    static llvm::BasicBlock *prev_block;
+
     ASTNode();
     virtual ~ASTNode();
     virtual const Symbol *GetSymbol(IREmitter::EmitterState &state);

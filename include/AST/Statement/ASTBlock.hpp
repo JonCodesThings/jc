@@ -9,6 +9,8 @@ class ASTBlock : public ASTStatement
 public:
     std::vector<ASTStatement*> &block;
 
+    llvm::BasicBlock *b;
+
     ASTBlock();
 
     ASTBlock(std::vector<ASTStatement*> &block);
