@@ -2,7 +2,7 @@
 
 SymbolTable::SymbolTable() : id("GLOBAL_SCOPED"), parent(NULL), child(NULL) {}
 
-SymbolTable::SymbolTable(const std::string &id, SymbolTable &table) : id(id), parent(&table), child(NULL) {printf("%s\n", id.c_str()); }
+SymbolTable::SymbolTable(const std::string &id, SymbolTable &table) : id(id), parent(&table), child(NULL) { /*printf("%s\n", id.c_str());*/ }
 
 bool SymbolTable::AddSymbol(const Symbol &symbol)
 {

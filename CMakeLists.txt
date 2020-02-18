@@ -13,7 +13,33 @@ FLEX_TARGET(jc_scanner gen/jc_lex.l gen/jc_lex.cpp)
 
 ADD_FLEX_BISON_DEPENDENCY(jc_scanner jc_parser)
 
-set(SOURCE_FILES src/main.cpp src/AST.cpp src/IREmitter.cpp src/SymbolTable.cpp src/TypeRegistry.cpp)
+set(SOURCE_FILES src/main.cpp 
+
+    src/AST/ASTConstant.cpp
+    src/AST/ASTExpression.cpp
+    src/AST/ASTNode.cpp
+    src/AST/ASTStatement.cpp
+
+    src/AST/Constant/ASTConstantFloat.cpp
+    src/AST/Constant/ASTConstantInt.cpp
+    src/AST/Constant/ASTConstantString.cpp
+
+    src/AST/Expression/ASTBinaryOperator.cpp
+    src/AST/Expression/ASTFunctionCall.cpp
+    src/AST/Expression/ASTIdentifier.cpp
+    src/AST/Expression/ASTUnaryOperator.cpp
+    src/AST/Expression/ASTVariableAssignment.cpp
+
+    src/AST/Statement/ASTBlock.cpp
+    src/AST/Statement/ASTFunctionArgs.cpp
+    src/AST/Statement/ASTFunctionDeclaration.cpp
+    src/AST/Statement/ASTFunctionDefinition.cpp
+    src/AST/Statement/ASTReturnStatement.cpp
+    src/AST/Statement/ASTVariableDeclaration.cpp
+
+    src/IREmitter.cpp 
+    src/SymbolTable.cpp 
+    src/TypeRegistry.cpp)
 
 add_executable(jc ${SOURCE_FILES} ${BISON_jc_parser_OUTPUTS} ${FLEX_jc_scanner_OUTPUTS})
 include_directories(.)
