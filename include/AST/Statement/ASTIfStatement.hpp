@@ -10,6 +10,7 @@ public:
     ASTStatement &cond_expr;
     ASTBlock &then;
     ASTBlock *otherwise;
+    std::vector<ASTIfStatement*> elif;
 
     ASTIfStatement(ASTStatement &cond_expr, ASTBlock &then, ASTBlock *otherwise);
 

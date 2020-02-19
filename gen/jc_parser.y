@@ -99,7 +99,7 @@ int token;
 %type<string> IDENTIFIER
 %type<statement> return_statement flow_control
 %type<scope_block> statements scope semicoloned_statements
-%type<statement> add subtract
+%type<statement> add subtract multiply divide
 %type<statement_list> statement_list 
 %type<constant> constant
 %type<constant_int> constant_int
@@ -117,12 +117,12 @@ statements: node_setup { $$ = new ASTBlock(); $$->block.push_back($1); };
 
 node_setup: statement { SetNodeInfo(*$$); } | statement SEMICOLON { SetNodeInfo(*$$); };
 
-semicoloned_statements: semicoloned_statement { $$ = new ASTBlock(); $$->block.push_back($1); SetNodeInfo(*$$); };
+semicoloned_statements: semicoloned_statement { $$ = new ASTBlock(); $$->block.push_back($1); SetNodeInfo(*$$); }
     | semicoloned_statements semicoloned_statement { $1->block.push_back($2); };
 
-semicoloned_statement: statement SEMICOLON { SetNodeInfo(*$1); }; | assignable_statement SEMICOLON { SetNodeInfo(*$1); } | flow_control { SetNodeInfo(*$1); };
+semicoloned_statement: statement SEMICOLON { SetNodeInfo(*$1); }; | assignable_statement SEMICOLON { SetNodeInfo(*$1); };
 
-statement: return_statement | function_def | function_decl | variable_decl | assign_op;
+statement: return_statement | function_def | function_decl | variable_decl | assign_op | flow_control;
 
 assignable_statement: function_call | unary_op | binary_op | id_or_constant;
 
@@ -132,7 +132,7 @@ scope: LEFT_BRACE semicoloned_statements RIGHT_BRACE { $$ = $2; } | LEFT_BRACE R
 
 unary_op: cast | increment | decrement | address_of | dereference | array_index;
 
-binary_op: add { $$ = $1;  } | subtract { $$ = $1; };
+binary_op: add | subtract | divide;
 
 assign_op: variable_assign;
 
@@ -154,7 +154,14 @@ array_index: id LEFT_SQUARE_BRACKET constant_int RIGHT_SQUARE_BRACKET { $$ = new
 add: id_or_constant PLUS id_or_constant { $$ = new ASTBinaryOperator(*$1, *$3, ASTBinaryOperator::ADD);  }
     | id_or_constant PLUS unary_op {$$ = new ASTBinaryOperator(*$1, *$3, ASTBinaryOperator::ADD); };
 
-subtract: id_or_constant MINUS id_or_constant { $$ = new ASTBinaryOperator(*$1, *$3, ASTBinaryOperator::SUBTRACT);  };
+subtract: id_or_constant MINUS id_or_constant { $$ = new ASTBinaryOperator(*$1, *$3, ASTBinaryOperator::SUBTRACT);  }
+    | id_or_constant MINUS unary_op { $$ = new ASTBinaryOperator(*$1, *$3, ASTBinaryOperator::SUBTRACT); };
+
+multiply: id_or_constant ASTERISK id_or_constant { $$ = new ASTBinaryOperator(*$1, *$3, ASTBinaryOperator::MULTIPLY);  }
+    | id_or_constant ASTERISK unary_op {$$ = new ASTBinaryOperator(*$1, *$3, ASTBinaryOperator::MULTIPLY); };
+
+divide: id_or_constant FORWARD_SLASH id_or_constant { $$ = new ASTBinaryOperator(*$1, *$3, ASTBinaryOperator::DIVIDE);  }
+    | id_or_constant FORWARD_SLASH unary_op {$$ = new ASTBinaryOperator(*$1, *$3, ASTBinaryOperator::DIVIDE); };
 
 function_def: id id LEFT_BRACKET arg_list RIGHT_BRACKET scope {  $$ = new ASTFunctionDefinition(*$1, *$2, *$4, *$6);  }
     | id id LEFT_BRACKET RIGHT_BRACKET scope {  $$ = new ASTFunctionDefinition(*$1, *$2, *new ASTFunctionArgs(), *$5);  };
@@ -191,6 +198,6 @@ constant: constant_int | FLOAT { $$ = new ASTConstantFloat(yylval.fl); } | STRIN
 
 constant_int: INTEGER { $$ = new ASTConstantInt(yylval.integer); };
 
-id: IDENTIFIER { $$ = new ASTIdentifier($1); } | id ASTERISK { $1->identifier.append("*"); printf("%s\n", $1->identifier.c_str());  };
+id: IDENTIFIER { $$ = new ASTIdentifier($1); } | id ASTERISK { $1->identifier.append("*");  };
 
 %%

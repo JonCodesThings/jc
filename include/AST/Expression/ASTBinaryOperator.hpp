@@ -13,7 +13,7 @@ public:
     {
         ADD,
         SUBTRACT,
-        MULTIPLE,
+        MULTIPLY,
         DIVIDE
     } op;
 

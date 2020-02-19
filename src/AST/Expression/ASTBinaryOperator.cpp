@@ -37,6 +37,14 @@ llvm::Value *ASTBinaryOperator::EmitIR(IREmitter::EmitterState &state)
         {
             return state.builder.CreateSub(templ, tempr);
         }
+        case MULTIPLY:
+        {
+            return state.builder.CreateMul(templ, tempr);
+        }
+        case DIVIDE:
+        {
+            return state.builder.CreateSDiv(templ, tempr);
+        }
     }
     return NULL;
 }

@@ -1,6 +1,6 @@
 i32 main()
 {
     i32 x;
-    x = 6 + 2;
+    x = 2 * 4;
     return x;
 }
