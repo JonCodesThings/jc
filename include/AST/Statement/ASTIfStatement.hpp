@@ -9,9 +9,9 @@ class ASTIfStatement : public ASTStatement
 public:
     ASTStatement &cond_expr;
     ASTBlock &then;
+    ASTBlock *otherwise;
 
-    //ASTIfStatement(ASTStatement &cond_expr);
-    ASTIfStatement(ASTStatement &cond_expr, ASTBlock &then);
+    ASTIfStatement(ASTStatement &cond_expr, ASTBlock &then, ASTBlock *otherwise);
 
     llvm::Value *EmitIR(IREmitter::EmitterState &state);
 };

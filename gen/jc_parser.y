@@ -174,7 +174,8 @@ array_decl: id id LEFT_SQUARE_BRACKET constant_int RIGHT_SQUARE_BRACKET { $$ = n
 
 return_statement: RETURN assignable_statement { $$ = new ASTReturnStatement(*$2); };
 
-if_statement: IF LEFT_BRACKET assignable_statement RIGHT_BRACKET scope { $$ = new ASTIfStatement(*$3, *$5); };
+if_statement: IF LEFT_BRACKET assignable_statement RIGHT_BRACKET scope { $$ = new ASTIfStatement(*$3, *$5, NULL); }
+    | IF LEFT_BRACKET assignable_statement RIGHT_BRACKET scope ELSE scope {$$ = new ASTIfStatement(*$3, *$5, $7); };
 
 arg_list: arg_list COMMA arg_pair {  $1->args.push_back(*$3); }
     | arg_pair { $$ = new ASTFunctionArgs(); $$->args.push_back(*$1); };

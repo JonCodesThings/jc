@@ -1,6 +1,6 @@
 #include <include/AST/Statement/ASTIfStatement.hpp>
 
-ASTIfStatement::ASTIfStatement(ASTStatement &cond_expr, ASTBlock &then) : cond_expr(cond_expr), then(then) {}
+ASTIfStatement::ASTIfStatement(ASTStatement &cond_expr, ASTBlock &then, ASTBlock *otherwise) : cond_expr(cond_expr), then(then), otherwise(otherwise) {}
 
 llvm::Value *ASTIfStatement::EmitIR(IREmitter::EmitterState &state)
 {
@@ -10,33 +10,35 @@ llvm::Value *ASTIfStatement::EmitIR(IREmitter::EmitterState &state)
 
     llvm::Value *v = state.builder.CreateICmpEQ(x, llvm::ConstantInt::get(llvm::Type::getInt32Ty(state.context), 1), "if_stmt");
 
-    prev_block = state.builder.GetInsertBlock();
+    llvm::BasicBlock *current_insert = state.builder.GetInsertBlock();
 
-    llvm::Value *th = then.EmitIR(state);
+    llvm::BasicBlock *th = (llvm::BasicBlock*)then.EmitIR(state);
 
-    auto el = llvm::BasicBlock::Create(state.context, "else", current_function);
+    llvm::BasicBlock *ot;
+    if (otherwise)
+        ot = (llvm::BasicBlock*)otherwise->EmitIR(state);
+    else
+        ot = llvm::BasicBlock::Create(state.context, "otherwise", current_function);
 
     auto merge = llvm::BasicBlock::Create(state.context, "merge", current_function);
 
     //state.builder.CreateBr(merge);
 
-    state.builder.SetInsertPoint(&current_function->getEntryBlock());
+    state.builder.SetInsertPoint(current_insert);
 
     llvm::BasicBlock *i = (llvm::BasicBlock*)th;
 
-    state.builder.CreateCondBr(v, i, el);
+    state.builder.CreateCondBr(v, th, ot);
 
-    state.builder.SetInsertPoint(el);
+    state.builder.SetInsertPoint(ot);
 
-    state.builder.CreateAlloca(state.typeRegistry.GetType("i8"), NULL, "yikes");
-
-    state.builder.CreateBr(merge);
+    //state.builder.CreateBr(merge);
 
     state.builder.SetInsertPoint(merge);
 
-    auto Phi = state.builder.CreatePHI(llvm::Type::getInt8Ty(state.context), 2);
-    Phi->addIncoming(llvm::ConstantInt::get(llvm::Type::getInt8Ty(state.context), 1), el);
-    //Phi->addIncoming(llvm::ConstantInt::get(llvm::Type::getInt8Ty(state.context), 0), el);
+    //auto Phi = state.builder.CreatePHI(llvm::Type::getInt8Ty(state.context), 2);
+    //Phi->addIncoming(llvm::ConstantInt::get(llvm::Type::getInt8Ty(state.context), 1), th);
+    //Phi->addIncoming(llvm::ConstantInt::get(llvm::Type::getInt8Ty(state.context), 0), ot);
 
     return merge;
 }
