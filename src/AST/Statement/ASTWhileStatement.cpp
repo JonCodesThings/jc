@@ -10,19 +10,27 @@ llvm::Value *ASTWhileStatement::EmitIR(IREmitter::EmitterState &state)
 
     llvm::BasicBlock *lvb = (llvm::BasicBlock*)lv;
 
+    llvm::BasicBlock *pl = llvm::BasicBlock::Create(state.context, "post_loop", current_function);
+
     state.builder.SetInsertPoint(current_insert);
 
-    state.builder.CreateBr(lvb);
-
-    state.builder.SetInsertPoint(lvb);
+    //state.builder.CreateBr(lvb);
 
     llvm::Value *eval_cond = cond_expr.EmitIR(state);
 
-    llvm::BasicBlock *pl = llvm::BasicBlock::Create(state.context, "post_loop", current_function);
+    state.builder.CreateCondBr(eval_cond, lvb, pl);
+
+    state.builder.SetInsertPoint(lvb);
+
+    eval_cond = cond_expr.EmitIR(state);
 
     state.builder.CreateCondBr(eval_cond, lvb, pl);
 
     state.builder.SetInsertPoint(pl);
+
+    llvm::PHINode *phi = state.builder.CreatePHI(llvm::Type::getInt8Ty(state.context), 2);
+    phi->addIncoming(llvm::ConstantInt::get(llvm::Type::getInt8Ty(state.context), 0), current_insert);
+    phi->addIncoming(llvm::ConstantInt::get(llvm::Type::getInt8Ty(state.context), 1), lvb);
 
     return pl;
 }
