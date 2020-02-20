@@ -45,6 +45,10 @@ llvm::Value *ASTBinaryOperator::EmitIR(IREmitter::EmitterState &state)
         {
             return state.builder.CreateSDiv(templ, tempr);
         }
+        case EQUALITY:
+        {
+            return state.builder.CreateICmpEQ(templ, tempr);
+        }
     }
     return NULL;
 }

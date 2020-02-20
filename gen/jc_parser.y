@@ -49,6 +49,7 @@ ASTFunctionCall *function_call;
 ASTFunctionDeclaration *function_declaration;
 ASTFunctionDefinition *function_definition;
 ASTIfStatement *if_statement;
+ASTWhileStatement *while_loop;
 ASTUnaryOperator *unary_operator;
 ASTBlock *scope_block;
 ASTConstant *constant;
@@ -85,6 +86,8 @@ int token;
 
 %token IF ELSE
 
+%token FOR WHILE
+
 %token EXTERN
 
 %token UNKNOWN
@@ -99,8 +102,9 @@ int token;
 %type<string> IDENTIFIER
 %type<statement> return_statement flow_control
 %type<scope_block> statements scope semicoloned_statements
-%type<statement> add subtract multiply divide
+%type<statement> add subtract multiply divide equality
 %type<statement_list> statement_list 
+%type<while_loop> while_loop
 %type<constant> constant
 %type<constant_int> constant_int
 %type<function_arg> arg_pair
@@ -126,13 +130,15 @@ statement: return_statement | function_def | function_decl | variable_decl | ass
 
 assignable_statement: function_call | unary_op | binary_op | id_or_constant;
 
-flow_control: if_statement;
+flow_control: if_statement | loop;
+
+loop: while_loop;
 
 scope: LEFT_BRACE semicoloned_statements RIGHT_BRACE { $$ = $2; } | LEFT_BRACE RIGHT_BRACE { $$ = new ASTBlock(); } ; 
 
 unary_op: cast | increment | decrement | address_of | dereference | array_index;
 
-binary_op: add | subtract | multiply | divide;
+binary_op: add | subtract | multiply | divide | equality;
 
 assign_op: variable_assign;
 
@@ -163,6 +169,9 @@ multiply: id_or_constant ASTERISK id_or_constant { $$ = new ASTBinaryOperator(*$
 divide: id_or_constant FORWARD_SLASH id_or_constant { $$ = new ASTBinaryOperator(*$1, *$3, ASTBinaryOperator::DIVIDE);  }
     | id_or_constant FORWARD_SLASH unary_op {$$ = new ASTBinaryOperator(*$1, *$3, ASTBinaryOperator::DIVIDE); };
 
+equality: id_or_constant EQUAL_EQUAL id_or_constant { $$ = new ASTBinaryOperator(*$1, *$3, ASTBinaryOperator::EQUALITY);  }
+    | id_or_constant EQUAL_EQUAL unary_op {$$ = new ASTBinaryOperator(*$1, *$3, ASTBinaryOperator::EQUALITY); };
+
 function_def: id id LEFT_BRACKET arg_list RIGHT_BRACKET scope {  $$ = new ASTFunctionDefinition(*$1, *$2, *$4, *$6);  }
     | id id LEFT_BRACKET RIGHT_BRACKET scope {  $$ = new ASTFunctionDefinition(*$1, *$2, *new ASTFunctionArgs(), *$5);  };
 
@@ -182,7 +191,11 @@ array_decl: id id LEFT_SQUARE_BRACKET constant_int RIGHT_SQUARE_BRACKET { $$ = n
 return_statement: RETURN assignable_statement { $$ = new ASTReturnStatement(*$2); };
 
 if_statement: IF LEFT_BRACKET assignable_statement RIGHT_BRACKET scope { $$ = new ASTIfStatement(*$3, *$5, NULL); }
-    | IF LEFT_BRACKET assignable_statement RIGHT_BRACKET scope ELSE scope {$$ = new ASTIfStatement(*$3, *$5, $7); };
+    | IF LEFT_BRACKET assignable_statement RIGHT_BRACKET scope ELSE scope {$$ = new ASTIfStatement(*$3, *$5, $7); } 
+    |IF LEFT_BRACKET assignable_statement RIGHT_BRACKET scope ELSE if_statement 
+    { auto yikes = new ASTBlock(); yikes->block.push_back($7); $$ = new ASTIfStatement(*$3, *$5, yikes); };
+
+while_loop: WHILE LEFT_BRACKET assignable_statement RIGHT_BRACKET scope { $$ = new ASTWhileStatement(*$3, *$5); };
 
 arg_list: arg_list COMMA arg_pair {  $1->args.push_back(*$3); }
     | arg_pair { $$ = new ASTFunctionArgs(); $$->args.push_back(*$1); };

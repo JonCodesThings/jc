@@ -24,5 +24,7 @@
 #include <include/AST/Statement/ASTIfStatement.hpp>
 #include <include/AST/Statement/ASTReturnStatement.hpp>
 #include <include/AST/Statement/ASTVariableDeclaration.hpp>
+#include <include/AST/Statement/ASTWhileStatement.hpp>
+
 
 #endif

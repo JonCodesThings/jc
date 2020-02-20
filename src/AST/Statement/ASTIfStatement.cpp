@@ -7,10 +7,6 @@ llvm::Value *ASTIfStatement::EmitIR(IREmitter::EmitterState &state)
 {
     llvm::Value *eval_cond = cond_expr.EmitIR(state);
 
-    llvm::Value *x = state.builder.CreateLoad(eval_cond);
-
-    llvm::Value *v = state.builder.CreateICmpEQ(x, llvm::ConstantInt::get(llvm::Type::getInt32Ty(state.context), 1), "if_stmt");
-
     llvm::BasicBlock *current_insert = state.builder.GetInsertBlock();
 
     auto merge = llvm::BasicBlock::Create(state.context, "merge", current_function);
@@ -31,7 +27,7 @@ llvm::Value *ASTIfStatement::EmitIR(IREmitter::EmitterState &state)
 
     llvm::BasicBlock *i = (llvm::BasicBlock*)th;
 
-    state.builder.CreateCondBr(v, th, ot);
+    state.builder.CreateCondBr(eval_cond, th, ot);
 
     state.builder.SetInsertPoint(ot);
 

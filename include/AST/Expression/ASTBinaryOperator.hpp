@@ -14,7 +14,8 @@ public:
         ADD,
         SUBTRACT,
         MULTIPLY,
-        DIVIDE
+        DIVIDE,
+        EQUALITY
     } op;
 
     ASTBinaryOperator(ASTNode &left, ASTNode &right, OP op);

@@ -37,6 +37,7 @@ set(SOURCE_FILES src/main.cpp
     src/AST/Statement/ASTIfStatement.cpp
     src/AST/Statement/ASTReturnStatement.cpp
     src/AST/Statement/ASTVariableDeclaration.cpp
+    src/AST/Statement/ASTWhileStatement.cpp
 
     src/IREmitter.cpp 
     src/SymbolTable.cpp 

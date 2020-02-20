@@ -48,6 +48,7 @@ public:
 
         IF_STATEMENT,
         RETURN_STATEMENT,
+        WHILE_STATEMENT,
 
         BLOCK,
 
