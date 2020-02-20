@@ -68,47 +68,16 @@ llvm::Value *ASTUnaryOperator::EmitIR(IREmitter::EmitterState &state)
         }
         case INCREMENT:
         {
-            if ((*type) == "i8")
-            {
-                llvm::Value *temp = state.builder.CreateLoad(s->alloc_inst, "temp");
-                llvm::Value *added = state.builder.CreateAdd(temp, llvm::ConstantInt::get(llvm::IntegerType::get(state.context, 8), 1));
-                return state.builder.CreateStore(added, s->alloc_inst);
-            }
-            if ((*type) == "i16")
-            {
-                llvm::Value *temp = state.builder.CreateLoad(s->alloc_inst, "temp");
-                llvm::Value *added = state.builder.CreateAdd(temp, llvm::ConstantInt::get(llvm::IntegerType::get(state.context, 16), 1));
-                return state.builder.CreateStore(added, s->alloc_inst);
-            }
-            if ((*type) == "i32")
-            {
-                llvm::Value *temp = state.builder.CreateLoad(s->alloc_inst, "temp");
-                llvm::Value *added = state.builder.CreateAdd(temp, llvm::ConstantInt::get(llvm::IntegerType::get(state.context, 32), 1));
-                return state.builder.CreateStore(added, s->alloc_inst);
-            }
+            llvm::Value *temp = state.builder.CreateLoad(s->alloc_inst, "temp");
+            llvm::Value *added = state.builder.CreateAdd(temp, llvm::ConstantInt::get(state.typeRegistry.GetType(*type), 1));
+            return state.builder.CreateStore(added, s->alloc_inst);
         }
         case DECREMENT:
         {
-            if ((*type) == "i8")
-            {
-                llvm::Value *temp = state.builder.CreateLoad(s->alloc_inst, "temp");
-                llvm::Value *added = state.builder.CreateSub(temp, llvm::ConstantInt::get(llvm::IntegerType::get(state.context, 8), 1));
-                return state.builder.CreateStore(added, s->alloc_inst);
-            }
-            if ((*type) == "i16")
-            {
-                llvm::Value *temp = state.builder.CreateLoad(s->alloc_inst, "temp");
-                llvm::Value *added = state.builder.CreateSub(temp, llvm::ConstantInt::get(llvm::IntegerType::get(state.context, 16), 1));
-                return state.builder.CreateStore(added, s->alloc_inst);
-            }
-            if ((*type) == "i32")
-            {
-                llvm::Value *temp = state.builder.CreateLoad(s->alloc_inst, "temp");
-                llvm::Value *added = state.builder.CreateSub(temp, llvm::ConstantInt::get(llvm::IntegerType::get(state.context, 32), 1));
-                return state.builder.CreateStore(added, s->alloc_inst);
-            }
+            llvm::Value *temp = state.builder.CreateLoad(s->alloc_inst, "temp");
+            llvm::Value *added = state.builder.CreateSub(temp, llvm::ConstantInt::get(state.typeRegistry.GetType(*type), 1));
+            return state.builder.CreateStore(added, s->alloc_inst);
         }
     }
-    
     return NULL;
 }
