@@ -49,6 +49,10 @@ llvm::Value *ASTBinaryOperator::EmitIR(IREmitter::EmitterState &state)
         {
             return state.builder.CreateICmpEQ(templ, tempr);
         }
+        case INEQUALITY:
+        {
+            return state.builder.CreateICmpNE(templ, tempr);
+        }
     }
     return NULL;
 }

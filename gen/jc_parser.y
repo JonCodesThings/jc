@@ -102,7 +102,7 @@ int token;
 %type<string> IDENTIFIER
 %type<statement> return_statement flow_control
 %type<scope_block> statements scope semicoloned_statements
-%type<statement> add subtract multiply divide equality
+%type<statement> add subtract multiply divide equality inequality
 %type<statement_list> statement_list 
 %type<while_loop> while_loop
 %type<constant> constant
@@ -138,7 +138,7 @@ scope: LEFT_BRACE semicoloned_statements RIGHT_BRACE { $$ = $2; } | LEFT_BRACE R
 
 unary_op: cast | increment | decrement | address_of | dereference | array_index;
 
-binary_op: add | subtract | multiply | divide | equality;
+binary_op: add | subtract | multiply | divide | equality | inequality;
 
 assign_op: variable_assign;
 
@@ -171,6 +171,9 @@ divide: id_or_constant FORWARD_SLASH id_or_constant { $$ = new ASTBinaryOperator
 
 equality: id_or_constant EQUAL_EQUAL id_or_constant { $$ = new ASTBinaryOperator(*$1, *$3, ASTBinaryOperator::EQUALITY);  }
     | id_or_constant EQUAL_EQUAL unary_op {$$ = new ASTBinaryOperator(*$1, *$3, ASTBinaryOperator::EQUALITY); };
+
+inequality: id_or_constant EXCLAMATION_EQUAL id_or_constant { $$ = new ASTBinaryOperator(*$1, *$3, ASTBinaryOperator::INEQUALITY);  }
+    | id_or_constant EXCLAMATION_EQUAL unary_op {$$ = new ASTBinaryOperator(*$1, *$3, ASTBinaryOperator::INEQUALITY); };
 
 function_def: id id LEFT_BRACKET arg_list RIGHT_BRACKET scope {  $$ = new ASTFunctionDefinition(*$1, *$2, *$4, *$6);  }
     | id id LEFT_BRACKET RIGHT_BRACKET scope {  $$ = new ASTFunctionDefinition(*$1, *$2, *new ASTFunctionArgs(), *$5);  };
