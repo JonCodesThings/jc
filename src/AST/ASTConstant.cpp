@@ -1,3 +1,3 @@
 #include <include/AST/ASTConstant.hpp>
 
-ASTConstant::ASTConstant() {}
+ASTConstant::ASTConstant() : ASTNode(CONSTANT) {}

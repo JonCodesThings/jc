@@ -31,10 +31,36 @@ public:
     static llvm::Function *current_function;
     static llvm::BasicBlock *prev_block;
 
-    ASTNode();
+    enum NODE_TYPE
+    {
+        IDENTIFIER,
+        CONSTANT,
+
+        UNARY_OP,
+        BINARY_OP,
+
+        VARIABLE_ASSIGNMENT,
+        VARIABLE_DECLARATION,
+
+        FUNCTION_CALL,
+        FUNCTION_DECLARATION,
+        FUNCTION_DEFINITION,
+
+        IF_STATEMENT,
+        RETURN_STATEMENT,
+
+        BLOCK,
+
+        NODE_TYPE_COUNT
+    } node_type;
+
+    static NODE_TYPE prev_processed;
+
+    ASTNode(const NODE_TYPE &type);
     virtual ~ASTNode();
     virtual const Symbol *GetSymbol(IREmitter::EmitterState &state);
     virtual const std::string *GetType(IREmitter::EmitterState &state);
+    virtual const NODE_TYPE GetNodeType();
     virtual llvm::Value *EmitIR(IREmitter::EmitterState &state) = 0;
 };
 

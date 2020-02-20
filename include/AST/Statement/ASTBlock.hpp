@@ -11,6 +11,8 @@ public:
 
     llvm::BasicBlock *b;
 
+    bool returned = false;
+
     ASTBlock();
 
     ASTBlock(std::vector<ASTStatement*> &block);

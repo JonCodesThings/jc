@@ -1,10 +1,10 @@
 #include <include/AST/Statement/ASTFunctionDeclaration.hpp>
 
 ASTFunctionDeclaration::ASTFunctionDeclaration() : 
-    identifier(*new ASTIdentifier("function id: TBD")), return_type(*new ASTIdentifier("return type: TBD")), arguments(*new ASTFunctionArgs()) {}
+    identifier(*new ASTIdentifier("function id: TBD")), return_type(*new ASTIdentifier("return type: TBD")), arguments(*new ASTFunctionArgs()), ASTStatement(FUNCTION_DECLARATION) {}
 
 ASTFunctionDeclaration::ASTFunctionDeclaration(ASTIdentifier &ret_type, ASTIdentifier &id, ASTFunctionArgs &args) : 
-    identifier(id), return_type(ret_type), arguments(args) {}
+    identifier(id), return_type(ret_type), arguments(args), ASTStatement(FUNCTION_DECLARATION) {}
 
 
 llvm::Value *ASTFunctionDeclaration::EmitIR(IREmitter::EmitterState &state)

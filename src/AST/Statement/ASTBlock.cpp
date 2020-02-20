@@ -1,8 +1,8 @@
 #include <include/AST/Statement/ASTBlock.hpp>
 
-ASTBlock::ASTBlock() : block(*new std::vector<ASTStatement*>()) {}
+ASTBlock::ASTBlock() : block(*new std::vector<ASTStatement*>()), ASTStatement(BLOCK) {}
 
-ASTBlock::ASTBlock(std::vector<ASTStatement*> &block) : block(block) {}
+ASTBlock::ASTBlock(std::vector<ASTStatement*> &block) : block(block), ASTStatement(BLOCK) {}
 
 llvm::Value *ASTBlock::EmitIR(IREmitter::EmitterState &state)
 {
@@ -14,6 +14,11 @@ llvm::Value *ASTBlock::EmitIR(IREmitter::EmitterState &state)
     {
         if (!statement->EmitIR(state))
             return NULL;
+        if (statement->GetNodeType() == ASTNode::NODE_TYPE::RETURN_STATEMENT)
+        {
+            returned = true;
+            break;
+        }
     }
     b = llvmBlock;
     return llvmBlock;
@@ -37,6 +42,11 @@ llvm::Value *ASTBlock::EmitIR(IREmitter::EmitterState &state, ASTFunctionArgs &a
     {
         if (!statement->EmitIR(state))
             return NULL;
+        if (statement->GetNodeType() == ASTNode::NODE_TYPE::RETURN_STATEMENT)
+        {
+            returned = true;
+            break;
+        }
     }
     b = llvmBlock;
     return llvmBlock;

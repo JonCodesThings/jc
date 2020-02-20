@@ -1,8 +1,8 @@
 #include <include/AST/Expression/ASTIdentifier.hpp>
 
-ASTIdentifier::ASTIdentifier(const std::string &identifier) : identifier(identifier) {}
+ASTIdentifier::ASTIdentifier(const std::string &identifier) : identifier(identifier), ASTExpression(IDENTIFIER) {}
 
-ASTIdentifier::ASTIdentifier() {}
+ASTIdentifier::ASTIdentifier() : ASTExpression(IDENTIFIER) {}
 
 const std::string *ASTIdentifier::GetType(IREmitter::EmitterState &state)
 {

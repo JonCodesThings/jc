@@ -1,6 +1,6 @@
 #include <include/AST/Expression/ASTBinaryOperator.hpp>
 
-ASTBinaryOperator::ASTBinaryOperator(ASTNode &left, ASTNode &right, OP op) : left(left), right(right), op(op) {}
+ASTBinaryOperator::ASTBinaryOperator(ASTNode &left, ASTNode &right, OP op) : left(left), right(right), op(op), ASTExpression(BINARY_OP) {}
 
 llvm::Value *ASTBinaryOperator::EmitIR(IREmitter::EmitterState &state)
 {

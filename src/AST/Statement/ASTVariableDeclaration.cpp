@@ -1,13 +1,13 @@
 #include <include/AST/Statement/ASTVariableDeclaration.hpp>
 
 ASTVariableDeclaration::ASTVariableDeclaration(ASTIdentifier &type, ASTIdentifier &id) : 
-    type(type), id(id), node(NULL), array_size(NULL) {}
+    type(type), id(id), node(NULL), array_size(NULL), ASTStatement(VARIABLE_DECLARATION) {}
 
 ASTVariableDeclaration::ASTVariableDeclaration(ASTIdentifier &type, ASTIdentifier &id, ASTNode &node) : 
-    type(type), id(id), node(&node), array_size(NULL) {}
+    type(type), id(id), node(&node), array_size(NULL), ASTStatement(VARIABLE_DECLARATION)  {}
 
 ASTVariableDeclaration::ASTVariableDeclaration(ASTIdentifier &type, ASTIdentifier &id, ASTConstant &array_size) : 
-    type(type), id(id), node(NULL), array_size(&array_size) {}
+    type(type), id(id), node(NULL), array_size(&array_size), ASTStatement(VARIABLE_DECLARATION)  {}
 
 llvm::Value * ASTVariableDeclaration::EmitIR(IREmitter::EmitterState &state)
 {

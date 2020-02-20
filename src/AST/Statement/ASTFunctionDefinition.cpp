@@ -1,9 +1,9 @@
 #include <include/AST/Statement/ASTFunctionDefinition.hpp>
 
-ASTFunctionDefinition::ASTFunctionDefinition() : declaration(*new ASTFunctionDeclaration()), block(*new ASTBlock()) {}
+ASTFunctionDefinition::ASTFunctionDefinition() : declaration(*new ASTFunctionDeclaration()), block(*new ASTBlock()), ASTStatement(FUNCTION_DEFINITION) {}
 
 ASTFunctionDefinition::ASTFunctionDefinition(ASTIdentifier &id, ASTIdentifier &ret_type, ASTFunctionArgs &args, ASTBlock &block) : 
-    declaration(*new ASTFunctionDeclaration(id, ret_type, args)), block(block) {}
+    declaration(*new ASTFunctionDeclaration(id, ret_type, args)), block(block), ASTStatement(FUNCTION_DEFINITION) {}
 
 llvm::Value *ASTFunctionDefinition::EmitIR(IREmitter::EmitterState &state)
 {

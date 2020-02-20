@@ -1,6 +1,6 @@
 #include <include/AST/Statement/ASTReturnStatement.hpp>
 
-ASTReturnStatement::ASTReturnStatement(ASTStatement &expr) : expr(&expr) {}
+ASTReturnStatement::ASTReturnStatement(ASTStatement &expr) : expr(&expr), ASTStatement(RETURN_STATEMENT) {}
 
 llvm::Value *ASTReturnStatement::EmitIR(IREmitter::EmitterState &state)
 {
@@ -12,5 +12,6 @@ llvm::Value *ASTReturnStatement::EmitIR(IREmitter::EmitterState &state)
     }
     else
         retval = expr->EmitIR(state);
+    prev_processed = node_type;
     return state.builder.CreateRet(retval);
 }

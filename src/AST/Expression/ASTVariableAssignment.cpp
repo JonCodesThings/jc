@@ -2,9 +2,9 @@
 
 extern const char *yycurrentfilename;
 
-ASTVariableAssignment::ASTVariableAssignment(ASTIdentifier &id, ASTNode &node) : id(&id), node(node), array_index(NULL) {}
+ASTVariableAssignment::ASTVariableAssignment(ASTIdentifier &id, ASTNode &node) : id(&id), node(node), array_index(NULL), ASTExpression(VARIABLE_ASSIGNMENT) {}
 
-ASTVariableAssignment::ASTVariableAssignment(ASTNode &array_index, ASTNode &node) : id (NULL), array_index(&array_index), node(node) {}
+ASTVariableAssignment::ASTVariableAssignment(ASTNode &array_index, ASTNode &node) : id (NULL), array_index(&array_index), node(node), ASTExpression(VARIABLE_ASSIGNMENT) {}
 
 llvm::Value *ASTVariableAssignment::EmitIR(IREmitter::EmitterState &state)
 {

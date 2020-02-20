@@ -1,6 +1,7 @@
 #include <include/AST/Statement/ASTIfStatement.hpp>
 
-ASTIfStatement::ASTIfStatement(ASTStatement &cond_expr, ASTBlock &then, ASTBlock *otherwise) : cond_expr(cond_expr), then(then), otherwise(otherwise) {}
+ASTIfStatement::ASTIfStatement(ASTStatement &cond_expr, ASTBlock &then, ASTBlock *otherwise) : 
+    cond_expr(cond_expr), then(then), otherwise(otherwise), ASTStatement(IF_STATEMENT) {}
 
 llvm::Value *ASTIfStatement::EmitIR(IREmitter::EmitterState &state)
 {
@@ -16,7 +17,8 @@ llvm::Value *ASTIfStatement::EmitIR(IREmitter::EmitterState &state)
 
     llvm::BasicBlock *th = (llvm::BasicBlock*)then.EmitIR(state);
 
-    state.builder.CreateBr(merge);
+    if (!then.returned)
+        state.builder.CreateBr(merge);
 
     llvm::BasicBlock *ot;
     if (otherwise)
@@ -33,15 +35,31 @@ llvm::Value *ASTIfStatement::EmitIR(IREmitter::EmitterState &state)
 
     state.builder.SetInsertPoint(ot);
 
-    state.builder.CreateBr(merge);
+    if (otherwise)
+    {
+        if(!otherwise->returned)
+            state.builder.CreateBr(merge);
+    }
+    else
+        state.builder.CreateBr(merge);
 
     state.builder.SetInsertPoint(merge);
 
-    auto Phi = state.builder.CreatePHI(llvm::Type::getInt8Ty(state.context), 0);
-    Phi->addIncoming(llvm::ConstantInt::get(llvm::Type::getInt8Ty(state.context), 1), th);
+    llvm::PHINode *phi = NULL;
+
+    if (!then.returned)
+    {
+        phi = state.builder.CreatePHI(llvm::Type::getInt8Ty(state.context), 0);
+        phi->addIncoming(llvm::ConstantInt::get(llvm::Type::getInt8Ty(state.context), 1), th);
+    }
 
     if (otherwise)
-        Phi->addIncoming(llvm::ConstantInt::get(llvm::Type::getInt8Ty(state.context), 0), ot);
+    {
+        if (!otherwise->returned)
+            phi->addIncoming(llvm::ConstantInt::get(llvm::Type::getInt8Ty(state.context), 0), ot);
+    }
+    else if (phi)
+        phi->addIncoming(llvm::ConstantInt::get(llvm::Type::getInt8Ty(state.context), 0), ot);
 
     return merge;
 }

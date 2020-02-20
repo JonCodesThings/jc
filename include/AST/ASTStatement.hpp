@@ -6,6 +6,7 @@
 class ASTStatement : public ASTNode
 {
 public:
+    ASTStatement(const NODE_TYPE &type);
     virtual ~ASTStatement();
 };
 

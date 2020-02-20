@@ -1,10 +1,10 @@
 #include <include/AST/Expression/ASTUnaryOperator.hpp>
 
-ASTUnaryOperator::ASTUnaryOperator(ASTNode &operatee, OP op) : operatee(operatee), cast(NULL), index(NULL), op(op) {}
+ASTUnaryOperator::ASTUnaryOperator(ASTNode &operatee, OP op) : operatee(operatee), cast(NULL), index(NULL), op(op), ASTExpression(UNARY_OP) {}
 
-ASTUnaryOperator::ASTUnaryOperator(ASTNode &operatee, ASTIdentifier *identifier, OP op) : operatee(operatee), cast(identifier), index(NULL), op(op) {}
+ASTUnaryOperator::ASTUnaryOperator(ASTNode &operatee, ASTIdentifier *identifier, OP op) : operatee(operatee), cast(identifier), index(NULL), op(op), ASTExpression(UNARY_OP) {}
 
-ASTUnaryOperator::ASTUnaryOperator(ASTNode &operatee, ASTConstantInt &index, OP op) : operatee(operatee), cast(NULL), index(&index), op(op) {}
+ASTUnaryOperator::ASTUnaryOperator(ASTNode &operatee, ASTConstantInt &index, OP op) : operatee(operatee), cast(NULL), index(&index), op(op), ASTExpression(UNARY_OP) {}
 
 llvm::Value *ASTUnaryOperator::EmitIR(IREmitter::EmitterState &state)
 {
