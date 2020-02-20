@@ -41,13 +41,10 @@ llvm::Value *ASTIfStatement::EmitIR(IREmitter::EmitterState &state)
 
     state.builder.SetInsertPoint(merge);
 
-    llvm::PHINode *phi = NULL;
+    llvm::PHINode *phi = state.builder.CreatePHI(llvm::Type::getInt8Ty(state.context), 0);
 
     if (!then.returned)
-    {
-        phi = state.builder.CreatePHI(llvm::Type::getInt8Ty(state.context), 0);
         phi->addIncoming(llvm::ConstantInt::get(llvm::Type::getInt8Ty(state.context), 1), th);
-    }
 
     if (otherwise)
     {
@@ -56,6 +53,15 @@ llvm::Value *ASTIfStatement::EmitIR(IREmitter::EmitterState &state)
     }
     else if (phi)
         phi->addIncoming(llvm::ConstantInt::get(llvm::Type::getInt8Ty(state.context), 0), ot);
+
+    if (phi->incoming_values().begin() == phi->incoming_values().end())
+        phi->eraseFromParent();
+
+    if (phi->getParent()->size() == 1)
+    {
+        state.builder.CreateBr(current_insert);
+        state.builder.SetInsertPoint(current_insert);
+    }
 
     return merge;
 }
