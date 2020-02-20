@@ -12,7 +12,11 @@ llvm::Value *ASTIfStatement::EmitIR(IREmitter::EmitterState &state)
 
     llvm::BasicBlock *current_insert = state.builder.GetInsertBlock();
 
+    auto merge = llvm::BasicBlock::Create(state.context, "merge", current_function);
+
     llvm::BasicBlock *th = (llvm::BasicBlock*)then.EmitIR(state);
+
+    state.builder.CreateBr(merge);
 
     llvm::BasicBlock *ot;
     if (otherwise)
@@ -20,9 +24,6 @@ llvm::Value *ASTIfStatement::EmitIR(IREmitter::EmitterState &state)
     else
         ot = llvm::BasicBlock::Create(state.context, "otherwise", current_function);
 
-    auto merge = llvm::BasicBlock::Create(state.context, "merge", current_function);
-
-    //state.builder.CreateBr(merge);
 
     state.builder.SetInsertPoint(current_insert);
 
@@ -32,13 +33,15 @@ llvm::Value *ASTIfStatement::EmitIR(IREmitter::EmitterState &state)
 
     state.builder.SetInsertPoint(ot);
 
-    //state.builder.CreateBr(merge);
+    state.builder.CreateBr(merge);
 
     state.builder.SetInsertPoint(merge);
 
-    //auto Phi = state.builder.CreatePHI(llvm::Type::getInt8Ty(state.context), 2);
-    //Phi->addIncoming(llvm::ConstantInt::get(llvm::Type::getInt8Ty(state.context), 1), th);
-    //Phi->addIncoming(llvm::ConstantInt::get(llvm::Type::getInt8Ty(state.context), 0), ot);
+    auto Phi = state.builder.CreatePHI(llvm::Type::getInt8Ty(state.context), 0);
+    Phi->addIncoming(llvm::ConstantInt::get(llvm::Type::getInt8Ty(state.context), 1), th);
+
+    if (otherwise)
+        Phi->addIncoming(llvm::ConstantInt::get(llvm::Type::getInt8Ty(state.context), 0), ot);
 
     return merge;
 }

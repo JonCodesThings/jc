@@ -120,7 +120,7 @@ node_setup: statement { SetNodeInfo(*$$); } | statement SEMICOLON { SetNodeInfo(
 semicoloned_statements: semicoloned_statement { $$ = new ASTBlock(); $$->block.push_back($1); SetNodeInfo(*$$); }
     | semicoloned_statements semicoloned_statement { $1->block.push_back($2); };
 
-semicoloned_statement: statement SEMICOLON { SetNodeInfo(*$1); }; | assignable_statement SEMICOLON { SetNodeInfo(*$1); };
+semicoloned_statement: statement SEMICOLON { SetNodeInfo(*$1); }; | assignable_statement SEMICOLON { SetNodeInfo(*$1); } | flow_control { SetNodeInfo(*$1); };
 
 statement: return_statement | function_def | function_decl | variable_decl | assign_op | flow_control;
 
@@ -132,7 +132,7 @@ scope: LEFT_BRACE semicoloned_statements RIGHT_BRACE { $$ = $2; } | LEFT_BRACE R
 
 unary_op: cast | increment | decrement | address_of | dereference | array_index;
 
-binary_op: add | subtract | divide;
+binary_op: add | subtract | multiply | divide;
 
 assign_op: variable_assign;
 
