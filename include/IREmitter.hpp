@@ -23,18 +23,18 @@ class IREmitter
 public:
     struct EmitterState
     {
-        EmitterState(llvm::Module &module, llvm::LLVMContext &context) : module(module), context(context), builder(context), typeRegistry(context) {}
+        EmitterState(llvm::Module &module, llvm::LLVMContext &context, TypeRegistry &r) : module(module), context(context), builder(context), typeRegistry(r) {}
         llvm::Module &module;
         llvm::LLVMContext &context;
         llvm::IRBuilder<> builder;
 
         SymbolTable symbolTable;
-        TypeRegistry typeRegistry;
+        TypeRegistry &typeRegistry;
 
         SymbolTable *frontmost = &symbolTable;
     };
 
-    IREmitter(llvm::Module &module, llvm::LLVMContext &context) : state(module, context) {}
+    IREmitter(llvm::Module &module, llvm::LLVMContext &context, TypeRegistry &r) : state(module, context, r) {}
     bool EmitIR(ASTBlock *root);
     
 private:

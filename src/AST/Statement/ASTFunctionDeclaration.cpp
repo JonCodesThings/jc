@@ -15,7 +15,14 @@ llvm::Value *ASTFunctionDeclaration::EmitIR(IREmitter::EmitterState &state)
     std::vector<llvm::Type*> argTypeVector;
 
     for (auto arg : arguments.args)
-        argTypeVector.push_back(state.typeRegistry.GetType(arg.type.identifier));
+    {
+        llvm::Type *t = state.typeRegistry.GetType(arg.type.identifier);
+
+        if (!t)
+            t = state.typeRegistry.UnwindPointerType(arg.type.identifier);
+
+        argTypeVector.push_back(t);
+    }
 
     auto funcType = llvm::FunctionType::get(state.typeRegistry.GetType(return_type.identifier), argTypeVector, false);
 

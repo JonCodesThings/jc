@@ -52,9 +52,9 @@ llvm::Type *TypeRegistry::GetType(const std::string &id)
             return type_.llvm_type;
     }
 
-    llvm::Type * ptr_type = UnwindPointerType(id);
+    //llvm::Type * ptr_type = UnwindPointerType(id);
 
-    return ptr_type;
+    return NULL;
 }
 
 llvm::Type *TypeRegistry::UnwindPointerType(const std::string &id)
@@ -62,7 +62,13 @@ llvm::Type *TypeRegistry::UnwindPointerType(const std::string &id)
     if (id[id.size() - 1] != '*')
         return GetType(id);
     else
-        return llvm::PointerType::get(UnwindPointerType(id.substr(0, id.size() - 1)), 0);
+    {
+        llvm::Type *t = UnwindPointerType(id.substr(0, id.size() - 1));
+        if (t)
+            return llvm::PointerType::get(t, 0);
+        else
+            return NULL;
+    }
     
 }
 

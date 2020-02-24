@@ -62,7 +62,7 @@ float fl;
 int token;
 }
 
-%token IDENTIFIER STRING INTEGER FLOAT
+%token IDENTIFIER STRING INTEGER FLOAT TYPE
 
 %token LEFT_BRACKET RIGHT_BRACKET LEFT_BRACE RIGHT_BRACE LEFT_SQUARE_BRACKET RIGHT_SQUARE_BRACKET
 
@@ -98,8 +98,8 @@ int token;
 %type<function_args> arg_list
 %type<function_call> function_call
 %type<if_statement> if_statement
-%type<id> id
-%type<string> IDENTIFIER
+%type<id> id type
+%type<string> IDENTIFIER TYPE
 %type<statement> return_statement flow_control
 %type<scope_block> statements scope semicoloned_statements
 %type<statement> add subtract multiply divide equality inequality
@@ -175,18 +175,18 @@ equality: id_or_constant EQUAL_EQUAL id_or_constant { $$ = new ASTBinaryOperator
 inequality: id_or_constant EXCLAMATION_EQUAL id_or_constant { $$ = new ASTBinaryOperator(*$1, *$3, ASTBinaryOperator::INEQUALITY);  }
     | id_or_constant EXCLAMATION_EQUAL unary_op {$$ = new ASTBinaryOperator(*$1, *$3, ASTBinaryOperator::INEQUALITY); };
 
-function_def: id id LEFT_BRACKET arg_list RIGHT_BRACKET scope {  $$ = new ASTFunctionDefinition(*$1, *$2, *$4, *$6);  }
-    | id id LEFT_BRACKET RIGHT_BRACKET scope {  $$ = new ASTFunctionDefinition(*$1, *$2, *new ASTFunctionArgs(), *$5);  };
+function_def: type id LEFT_BRACKET arg_list RIGHT_BRACKET scope {  $$ = new ASTFunctionDefinition(*$1, *$2, *$4, *$6);  }
+    | type id LEFT_BRACKET RIGHT_BRACKET scope {  $$ = new ASTFunctionDefinition(*$1, *$2, *new ASTFunctionArgs(), *$5);  };
 
-function_decl: id id LEFT_BRACKET RIGHT_BRACKET SEMICOLON { $$ = new ASTFunctionDeclaration(*$1, *$2, *new ASTFunctionArgs());  }
-    | id id LEFT_BRACKET arg_list RIGHT_BRACKET SEMICOLON { $$ = new ASTFunctionDeclaration(*$1, *$2, *$4);  }
+function_decl: type id LEFT_BRACKET RIGHT_BRACKET SEMICOLON { $$ = new ASTFunctionDeclaration(*$1, *$2, *new ASTFunctionArgs());  }
+    | type id LEFT_BRACKET arg_list RIGHT_BRACKET SEMICOLON { $$ = new ASTFunctionDeclaration(*$1, *$2, *$4);  }
     | EXTERN function_decl SEMICOLON;
 
 function_call: id LEFT_BRACKET RIGHT_BRACKET { $$ = new ASTFunctionCall(*$1); }
     | id LEFT_BRACKET statement_list RIGHT_BRACKET { $$ = new ASTFunctionCall(*$1, *$3); printf("oof\n"); };
 
-variable_decl: id id { $$ = new ASTVariableDeclaration(*$1, *$2);  }
-    | id id EQUAL assignable_statement { $$ = new ASTVariableDeclaration(*$1, *$2, *$4);  }
+variable_decl: type id { $$ = new ASTVariableDeclaration(*$1, *$2);  }
+    | type id EQUAL assignable_statement { $$ = new ASTVariableDeclaration(*$1, *$2, *$4);  }
     | array_decl;
 
 array_decl: id id LEFT_SQUARE_BRACKET constant_int RIGHT_SQUARE_BRACKET { $$ = new ASTVariableDeclaration(*$1, *$2, *$4); }
@@ -206,7 +206,7 @@ arg_list: arg_list COMMA arg_pair {  $1->args.push_back(*$3); }
 statement_list: statement_list COMMA assignable_statement { $1->push_back($3); printf("why\n"); }
     | assignable_statement { $$ = new std::vector<ASTStatement *>(); $$->push_back($1); printf("why\n"); };
 
-arg_pair: id id { $$ = new ASTFunctionArg(*$1, *$2); };
+arg_pair: type id { $$ = new ASTFunctionArg(*$1, *$2); };
 
 id_or_constant: id | constant;
 
@@ -214,6 +214,8 @@ constant: constant_int | FLOAT { $$ = new ASTConstantFloat(yylval.fl); } | STRIN
 
 constant_int: INTEGER { $$ = new ASTConstantInt(yylval.integer); };
 
-id: IDENTIFIER { $$ = new ASTIdentifier($1); } | id ASTERISK { $1->identifier.append("*");  };
+id: IDENTIFIER { $$ = new ASTIdentifier($1); };
+
+type: TYPE { $$ = new ASTIdentifier($1); } | type ASTERISK { $1->identifier.append("*");  };
 
 %%

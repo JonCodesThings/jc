@@ -11,6 +11,7 @@ extern ASTBlock *base;
 extern FILE *yyin;
 extern const char *yycurrentfilename;
 extern int yyparse();
+extern TypeRegistry *registry;
 
 
 int main(int argc, const char **args)
@@ -19,12 +20,14 @@ int main(int argc, const char **args)
     if (!yyin)
         return 0;
     yycurrentfilename = args[1];
+    llvm::LLVMContext context;
+    registry = new TypeRegistry(context);
+    registry->SetupBuiltinJCTypes();
     int p = yyparse();
     if (base)
     {
-        llvm::LLVMContext context;
         llvm::Module module("jc alpha", context);
-        IREmitter emitter(module, context);
+        IREmitter emitter(module, context, *registry);
 
         if (emitter.EmitIR(base))
         {
