@@ -155,7 +155,8 @@ address_of: AND id { $$ = new ASTUnaryOperator(*$2, ASTUnaryOperator::ADDRESS_OF
 
 dereference: ASTERISK id { $$ = new ASTUnaryOperator(*$2, ASTUnaryOperator::DEREFERENCE); };
 
-array_index: id LEFT_SQUARE_BRACKET constant_int RIGHT_SQUARE_BRACKET { $$ = new ASTUnaryOperator(*$1, *$3, ASTUnaryOperator::ARRAY_INDEX); };
+array_index: id LEFT_SQUARE_BRACKET constant_int RIGHT_SQUARE_BRACKET { $$ = new ASTUnaryOperator(*$1, *$3, ASTUnaryOperator::ARRAY_INDEX); }
+    | id LEFT_SQUARE_BRACKET id RIGHT_SQUARE_BRACKET { $$ = new ASTUnaryOperator(*$1, $3, ASTUnaryOperator::ARRAY_INDEX);} ;
 
 add: id_or_constant PLUS id_or_constant { $$ = new ASTBinaryOperator(*$1, *$3, ASTBinaryOperator::ADD);  }
     | id_or_constant PLUS unary_op {$$ = new ASTBinaryOperator(*$1, *$3, ASTBinaryOperator::ADD); };
@@ -189,7 +190,7 @@ variable_decl: type id { $$ = new ASTVariableDeclaration(*$1, *$2);  }
     | type id EQUAL assignable_statement { $$ = new ASTVariableDeclaration(*$1, *$2, *$4);  }
     | array_decl;
 
-array_decl: id id LEFT_SQUARE_BRACKET constant_int RIGHT_SQUARE_BRACKET { $$ = new ASTVariableDeclaration(*$1, *$2, *$4); }
+array_decl: type id LEFT_SQUARE_BRACKET constant_int RIGHT_SQUARE_BRACKET { $$ = new ASTVariableDeclaration(*$1, *$2, *$4); }
 
 return_statement: RETURN assignable_statement { $$ = new ASTReturnStatement(*$2); };
 

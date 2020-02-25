@@ -21,6 +21,9 @@ llvm::Value *ASTFunctionDeclaration::EmitIR(IREmitter::EmitterState &state)
         if (!t)
             t = state.typeRegistry.UnwindPointerType(arg.type.identifier);
 
+        if (!t)
+            return NULL;
+
         argTypeVector.push_back(t);
     }
 
