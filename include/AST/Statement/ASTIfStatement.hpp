@@ -4,15 +4,20 @@
 #include <include/AST/ASTStatement.hpp>
 #include <include/AST/Statement/ASTBlock.hpp>
 
+struct ASTConditionalBlock
+{
+    ASTConditionalBlock(ASTStatement &cond_expr, ASTBlock &then);
+    ASTStatement &cond_expr;
+    ASTBlock &then;
+};
+
 class ASTIfStatement : public ASTStatement
 {
 public:
-    ASTStatement &cond_expr;
-    ASTBlock &then;
+    std::vector<ASTConditionalBlock*> &conditional_blocks;
     ASTBlock *otherwise;
-    std::vector<ASTIfStatement*> elif;
 
-    ASTIfStatement(ASTStatement &cond_expr, ASTBlock &then, ASTBlock *otherwise);
+    ASTIfStatement(std::vector<ASTConditionalBlock*> &conditional_blocks, ASTBlock *otherwise);
 
     llvm::Value *EmitIR(IREmitter::EmitterState &state);
 };

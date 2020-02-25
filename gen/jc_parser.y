@@ -194,10 +194,15 @@ array_decl: type id LEFT_SQUARE_BRACKET constant_int RIGHT_SQUARE_BRACKET { $$ =
 
 return_statement: RETURN assignable_statement { $$ = new ASTReturnStatement(*$2); };
 
-if_statement: IF LEFT_BRACKET assignable_statement RIGHT_BRACKET scope { $$ = new ASTIfStatement(*$3, *$5, NULL); }
-    | IF LEFT_BRACKET assignable_statement RIGHT_BRACKET scope ELSE scope {$$ = new ASTIfStatement(*$3, *$5, $7); } 
-    |IF LEFT_BRACKET assignable_statement RIGHT_BRACKET scope ELSE if_statement 
-    { auto yikes = new ASTBlock(); yikes->block.push_back($7); $$ = new ASTIfStatement(*$3, *$5, yikes); };
+if_statement: IF LEFT_BRACKET assignable_statement RIGHT_BRACKET scope 
+    { ASTConditionalBlock *cond_block = new ASTConditionalBlock(*$3, *$5);
+    std::vector<ASTConditionalBlock*> *cond_blocks = new std::vector<ASTConditionalBlock*>();
+    cond_blocks->push_back(cond_block);
+    $$ = new ASTIfStatement(*cond_blocks, NULL); }
+    | if_statement ELSE scope
+    {
+        $1->otherwise = $3;
+    };
 
 while_loop: WHILE LEFT_BRACKET assignable_statement RIGHT_BRACKET scope { $$ = new ASTWhileStatement(*$3, *$5); };
 

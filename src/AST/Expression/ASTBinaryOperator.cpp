@@ -26,7 +26,6 @@ llvm::Value *ASTBinaryOperator::EmitIR(IREmitter::EmitterState &state)
     else
         tempr = r_inst;
 
-
     switch (op)
     {
         case ADD:
