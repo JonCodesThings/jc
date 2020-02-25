@@ -9,9 +9,8 @@ i32 main()
         i++;
     }
 
-    i32 *y = x[9];
+    i32 y;
+    y = x[9];
 
-    i32 z = *y;
-
-    return z;
+    return y;
 }

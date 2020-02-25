@@ -35,6 +35,7 @@ llvm::Value *ASTUnaryOperator::EmitIR(IREmitter::EmitterState &state)
 
             if (v->getType() == llvm::Type::getInt32Ty(state.context))
                 v = state.builder.CreateGEP(s->alloc_inst, { llvm::ConstantInt::get(llvm::Type::getInt32Ty(state.context), 0), v});
+
             return v;
         }
         case CAST:

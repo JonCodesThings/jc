@@ -1,5 +1,7 @@
 #include <include/AST/Statement/ASTVariableDeclaration.hpp>
 
+#include <include/AST/Expression/ASTVariableAssignment.hpp>
+
 ASTVariableDeclaration::ASTVariableDeclaration(ASTIdentifier &type, ASTIdentifier &id) : 
     type(type), id(id), node(NULL), array_size(NULL), ASTStatement(VARIABLE_DECLARATION) {}
 
@@ -31,13 +33,14 @@ llvm::Value * ASTVariableDeclaration::EmitIR(IREmitter::EmitterState &state)
 
     symbol.alloc_inst = state.builder.CreateAlloca(t, NULL, id.identifier);
 
+    state.frontmost->AddSymbol(symbol);
+
     if (node)
     {
-        llvm::Value *v = node->EmitIR(state);
-        state.builder.CreateStore(v, symbol.alloc_inst);
+        auto assignment = ASTVariableAssignment(id, *node);
+        assignment.EmitIR(state);
     }
 
-    state.frontmost->AddSymbol(symbol);
 
     return symbol.alloc_inst;
 }

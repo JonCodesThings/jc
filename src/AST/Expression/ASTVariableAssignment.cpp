@@ -38,7 +38,12 @@ llvm::Value *ASTVariableAssignment::EmitIR(IREmitter::EmitterState &state)
             return state.builder.CreateStore(temp, symbol->alloc_inst);
         }
 
-        return state.builder.CreateStore(node.EmitIR(state), symbol->alloc_inst);
+        llvm::Value * v = node.EmitIR(state);
+
+        if (v->getType() == symbol->alloc_inst->getType())
+            v = state.builder.CreateLoad(v, "temp");
+
+        return state.builder.CreateStore(v, symbol->alloc_inst);
     }
     else if (array_index)
     {
