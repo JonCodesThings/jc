@@ -8,8 +8,10 @@ i32 main()
         x[i] = i;
         i++;
     }
-    
-    i32 y = x[9];
 
-    return y;
+    i32 *y = x[9];
+
+    i32 z = *y;
+
+    return z;
 }
