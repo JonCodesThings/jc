@@ -15,17 +15,21 @@ llvm::Value * ASTVariableDeclaration::EmitIR(IREmitter::EmitterState &state)
     symbol.classification = Symbol::VARIABLE;
     symbol.identifier = id.identifier;
 
+    llvm::Type *t = state.typeRegistry.GetType(type.identifier);
+
+    if (!t)
+        t = state.typeRegistry.UnwindPointerType(type.identifier);
+
     auto temp = (ASTConstantInt*)array_size;
 
     if (array_size)
-    {
-        symbol.alloc_inst = state.builder.CreateAlloca(state.typeRegistry.GetArrayType(type.identifier, temp->constant), NULL, id.identifier);
-    }
+        t = state.typeRegistry.GetArrayType(type.identifier, temp->constant);
     else
     {
-        symbol.alloc_inst = state.builder.CreateAlloca(state.typeRegistry.GetType(type.identifier), NULL, id.identifier);
         symbol.type = type.identifier;
     }
+
+    symbol.alloc_inst = state.builder.CreateAlloca(t, NULL, id.identifier);
 
     if (node)
     {

@@ -1,4 +1,5 @@
 i32 main()
 {
     i32 *i;
+    return 10;
 }
