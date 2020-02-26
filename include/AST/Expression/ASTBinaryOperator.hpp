@@ -16,7 +16,11 @@ public:
         MULTIPLY,
         DIVIDE,
         EQUALITY,
-        INEQUALITY
+        INEQUALITY,
+        LESSER,
+        GREATER,
+        LESSER_OR_EQUAL,
+        GREATER_OR_EQUAL
     } op;
 
     ASTBinaryOperator(ASTNode &left, ASTNode &right, OP op);

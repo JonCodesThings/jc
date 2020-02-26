@@ -52,6 +52,22 @@ llvm::Value *ASTBinaryOperator::EmitIR(IREmitter::EmitterState &state)
         {
             return state.builder.CreateICmpNE(templ, tempr);
         }
+        case LESSER:
+        {
+            return state.builder.CreateICmpSLT(templ, tempr);
+        }
+        case GREATER:
+        {
+            return state.builder.CreateICmpSGT(templ, tempr);
+        }
+        case LESSER_OR_EQUAL:
+        {
+            return state.builder.CreateICmpSLE(templ, tempr);
+        }
+        case GREATER_OR_EQUAL:
+        {
+            return state.builder.CreateICmpSGE(templ, tempr);
+        }
     }
     return NULL;
 }
