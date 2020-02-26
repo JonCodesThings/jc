@@ -1,9 +1,8 @@
 i32 main()
 {
     i32 x;
-    for (i32 i; i < 24; i++)
+    for (i32 i = 0; i < 36; i++)
     {
-        i32 z = 10;
         x = i;
     }
     return x;
