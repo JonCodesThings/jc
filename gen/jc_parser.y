@@ -49,6 +49,7 @@ ASTFunctionCall *function_call;
 ASTFunctionDeclaration *function_declaration;
 ASTFunctionDefinition *function_definition;
 ASTIfStatement *if_statement;
+ASTForStatement *for_loop;
 ASTWhileStatement *while_loop;
 ASTUnaryOperator *unary_operator;
 ASTBlock *scope_block;
@@ -107,6 +108,7 @@ int token;
 %type<statement_list> statement_list
 %type<cond_block> cond_block
 %type<while_loop> while_loop
+%type<for_loop> for_loop
 %type<constant> constant
 %type<constant_int> constant_int
 %type<function_arg> arg_pair
@@ -134,7 +136,7 @@ assignable_statement: function_call | unary_op | binary_op | id_or_constant;
 
 flow_control: if_statement | loop;
 
-loop: while_loop;
+loop: while_loop | for_loop;
 
 scope: LEFT_BRACE semicoloned_statements RIGHT_BRACE { $$ = $2; } | LEFT_BRACE RIGHT_BRACE { $$ = new ASTBlock(); } ; 
 
@@ -223,6 +225,11 @@ cond_block: IF LEFT_BRACKET assignable_statement RIGHT_BRACKET scope
     }
 
 while_loop: WHILE LEFT_BRACKET assignable_statement RIGHT_BRACKET scope { $$ = new ASTWhileStatement(*$3, *$5); };
+
+for_loop: FOR LEFT_BRACKET statement SEMICOLON assignable_statement SEMICOLON assignable_statement RIGHT_BRACKET scope
+{
+ $$ = new ASTForStatement(*$3, *$5, *$7, *$9);
+} 
 
 arg_list: arg_list COMMA arg_pair {  $1->args.push_back(*$3); }
     | arg_pair { $$ = new ASTFunctionArgs(); $$->args.push_back(*$1); };

@@ -31,6 +31,7 @@ set(SOURCE_FILES src/main.cpp
     src/AST/Expression/ASTVariableAssignment.cpp
 
     src/AST/Statement/ASTBlock.cpp
+    src/AST/Statement/ASTForStatement.cpp
     src/AST/Statement/ASTFunctionArgs.cpp
     src/AST/Statement/ASTFunctionDeclaration.cpp
     src/AST/Statement/ASTFunctionDefinition.cpp
