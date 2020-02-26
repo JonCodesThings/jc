@@ -17,6 +17,8 @@ public:
 
     ASTBlock(std::vector<ASTStatement*> &block);
 
+    bool ContainsReturnStatement();
+
     llvm::Value *EmitIR(IREmitter::EmitterState &state);
     
     llvm::Value *EmitIR(IREmitter::EmitterState &state, ASTFunctionArgs &args, llvm::Function &func);

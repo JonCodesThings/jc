@@ -56,6 +56,7 @@ ASTConstant *constant;
 ASTConstantInt *constant_int;
 ASTIdentifier *id;
 const char *string;
+std::vector<ASTConditionalBlock *> *cond_block;
 std::vector<ASTStatement *> *statement_list;
 int integer;
 float fl;
@@ -103,7 +104,8 @@ int token;
 %type<statement> return_statement flow_control
 %type<scope_block> statements scope semicoloned_statements
 %type<statement> add subtract multiply divide equality inequality
-%type<statement_list> statement_list 
+%type<statement_list> statement_list
+%type<cond_block> cond_block
 %type<while_loop> while_loop
 %type<constant> constant
 %type<constant_int> constant_int
@@ -194,15 +196,19 @@ array_decl: type id LEFT_SQUARE_BRACKET constant_int RIGHT_SQUARE_BRACKET { $$ =
 
 return_statement: RETURN assignable_statement { $$ = new ASTReturnStatement(*$2); };
 
-if_statement: IF LEFT_BRACKET assignable_statement RIGHT_BRACKET scope 
-    { ASTConditionalBlock *cond_block = new ASTConditionalBlock(*$3, *$5);
-    std::vector<ASTConditionalBlock*> *cond_blocks = new std::vector<ASTConditionalBlock*>();
-    cond_blocks->push_back(cond_block);
-    $$ = new ASTIfStatement(*cond_blocks, NULL); }
-    | if_statement ELSE scope
+if_statement: cond_block { $$ = new ASTIfStatement(*$1, NULL); } | cond_block ELSE scope { $$ = new ASTIfStatement(*$1, $3); }
+
+cond_block: IF LEFT_BRACKET assignable_statement RIGHT_BRACKET scope 
+    { 
+        $$ = new std::vector<ASTConditionalBlock*>();
+        ASTConditionalBlock *cb = new ASTConditionalBlock(*$3, *$5);
+        $$->push_back(cb);
+    }
+    | cond_block ELSE IF LEFT_BRACKET assignable_statement RIGHT_BRACKET scope
     {
-        $1->otherwise = $3;
-    };
+        ASTConditionalBlock *cb = new ASTConditionalBlock(*$5, *$7);
+        $1->push_back(cb);
+    }
 
 while_loop: WHILE LEFT_BRACKET assignable_statement RIGHT_BRACKET scope { $$ = new ASTWhileStatement(*$3, *$5); };
 

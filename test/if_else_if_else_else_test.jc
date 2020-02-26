@@ -10,5 +10,9 @@ i32 main()
     {
         return 1;
     }
-    return 10;
+    else
+    {
+        return 2;
+    }
+    return 5;
 }

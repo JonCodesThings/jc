@@ -4,6 +4,16 @@ ASTBlock::ASTBlock() : block(*new std::vector<ASTStatement*>()), ASTStatement(BL
 
 ASTBlock::ASTBlock(std::vector<ASTStatement*> &block) : block(block), ASTStatement(BLOCK) {}
 
+bool ASTBlock::ContainsReturnStatement()
+{
+    for (ASTStatement *statement : block)
+    {
+        if (statement->GetNodeType() == NODE_TYPE::RETURN_STATEMENT)
+            return true;
+    }
+    return false;
+}
+
 llvm::Value *ASTBlock::EmitIR(IREmitter::EmitterState &state)
 {
     auto llvmBlock = llvm::BasicBlock::Create(state.context, "temp", current_function);
