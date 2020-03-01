@@ -1,6 +1,7 @@
 #include <include/AST/Statement/ASTBlock.hpp>
 
 #include <include/AST/Statement/ASTDeferredStatement.hpp>
+#include <include/AST/Statement/ASTReturnStatement.hpp>
 
 #include <algorithm>
 
@@ -34,6 +35,7 @@ llvm::Value *ASTBlock::EmitIR(IREmitter::EmitterState &state)
         CreateBasicBlock(state, "new_block");
 
     std::vector<ASTDeferredStatement*> deferred;
+    std::vector<ASTReturnStatement*> r;
 
     for (ASTStatement *statement : block)
     {
@@ -43,13 +45,25 @@ llvm::Value *ASTBlock::EmitIR(IREmitter::EmitterState &state)
             deferred.push_back(s);
             continue;
         }
+        if (statement->GetNodeType() == ASTNode::NODE_TYPE::RETURN_STATEMENT)
+        {
+            ASTReturnStatement *s = (ASTReturnStatement*)statement;
+            r.push_back(s);
+            continue;
+        }
     }
 
     for (ASTStatement *s : deferred)
         block.erase(std::remove(block.begin(), block.end(), s), block.end());
 
+    for (ASTReturnStatement *s : r)
+        block.erase(std::remove(block.begin(), block.end(), s), block.end());
+
     for (ASTDeferredStatement *s : deferred)
         block.push_back(&s->defer);
+
+    for (ASTReturnStatement *s : r)
+        block.push_back(s);
 
     for (ASTStatement *statement : block)
     {

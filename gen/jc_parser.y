@@ -207,7 +207,7 @@ function_decl: type id LEFT_BRACKET RIGHT_BRACKET SEMICOLON { $$ = new ASTFuncti
     | EXTERN function_decl SEMICOLON;
 
 function_call: id LEFT_BRACKET RIGHT_BRACKET { $$ = new ASTFunctionCall(*$1); }
-    | id LEFT_BRACKET statement_list RIGHT_BRACKET { $$ = new ASTFunctionCall(*$1, *$3); printf("oof\n"); };
+    | id LEFT_BRACKET statement_list RIGHT_BRACKET { $$ = new ASTFunctionCall(*$1, *$3); };
 
 variable_decl: type id { $$ = new ASTVariableDeclaration(*$1, *$2);  }
     | type id EQUAL assignable_statement { $$ = new ASTVariableDeclaration(*$1, *$2, *$4);  }
@@ -243,8 +243,8 @@ for_loop: FOR LEFT_BRACKET statement SEMICOLON assignable_statement SEMICOLON as
 arg_list: arg_list COMMA arg_pair {  $1->args.push_back(*$3); }
     | arg_pair { $$ = new ASTFunctionArgs(); $$->args.push_back(*$1); };
 
-statement_list: statement_list COMMA assignable_statement { $1->push_back($3); printf("why\n"); }
-    | assignable_statement { $$ = new std::vector<ASTStatement *>(); $$->push_back($1); printf("why\n"); };
+statement_list: statement_list COMMA assignable_statement { $1->push_back($3); }
+    | assignable_statement { $$ = new std::vector<ASTStatement *>(); $$->push_back($1); };
 
 arg_pair: type id { $$ = new ASTFunctionArg(*$1, *$2); };
 

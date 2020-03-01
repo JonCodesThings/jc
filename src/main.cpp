@@ -32,7 +32,9 @@ int main(int argc, const char **args)
         if (emitter.EmitIR(base))
         {
             std::error_code ec;
-            llvm::raw_fd_ostream out("alpha.ir", ec);
+            std::string o = args[1];
+            o.append(".ir");
+            llvm::raw_fd_ostream out(o, ec);
             llvm::WriteBitcodeToFile(module, out);
             out.close();
         }
