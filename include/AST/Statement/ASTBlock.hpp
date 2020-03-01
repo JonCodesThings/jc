@@ -21,7 +21,10 @@ public:
 
     llvm::Value *EmitIR(IREmitter::EmitterState &state);
     
-    llvm::Value *EmitIR(IREmitter::EmitterState &state, ASTFunctionArgs &args, llvm::Function &func);
+    llvm::Value *EmitIR(IREmitter::EmitterState &state, ASTFunctionArgs &args);
+
+private:
+    llvm::Value *CreateBasicBlock(IREmitter::EmitterState &state, const std::string &name);
 };
 
 #endif

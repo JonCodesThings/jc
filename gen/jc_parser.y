@@ -42,6 +42,7 @@ return 0;
 {
 ASTNode *node;
 ASTStatement *statement;
+ASTDeferredStatement *defer_statement;
 ASTExpression *expression;
 ASTFunctionArg *function_arg;
 ASTFunctionArgs *function_args;
@@ -84,13 +85,15 @@ int token;
 
 %token OR OR_OR
 
-%token RETURN
+%token RETURN DEFER
 
 %token IF ELSE
 
 %token FOR WHILE
 
 %token EXTERN
+
+%token STRUCT
 
 %token UNKNOWN
 
@@ -106,6 +109,7 @@ int token;
 %type<scope_block> statements scope semicoloned_statements
 %type<statement> add subtract multiply divide equality inequality lesser  greater  lesser_or_equal  greater_or_equal
 %type<statement_list> statement_list
+%type<defer_statement> defer_statement
 %type<cond_block> cond_block
 %type<while_loop> while_loop
 %type<for_loop> for_loop
@@ -128,9 +132,12 @@ node_setup: statement { SetNodeInfo(*$$); } | statement SEMICOLON { SetNodeInfo(
 semicoloned_statements: semicoloned_statement { $$ = new ASTBlock(); $$->block.push_back($1); SetNodeInfo(*$$); }
     | semicoloned_statements semicoloned_statement { $1->block.push_back($2); };
 
-semicoloned_statement: statement SEMICOLON { SetNodeInfo(*$1); }; | assignable_statement SEMICOLON { SetNodeInfo(*$1); } | flow_control { SetNodeInfo(*$1); };
+semicoloned_statement: statement SEMICOLON { SetNodeInfo(*$1); }; | assignable_statement SEMICOLON { SetNodeInfo(*$1); } | flow_control { SetNodeInfo(*$1); }
+    | defer_statement SEMICOLON { SetNodeInfo(*$1); }; ;
 
 statement: return_statement | function_def | function_decl | variable_decl | assign_op | flow_control;
+
+defer_statement: DEFER assignable_statement { $$ = new ASTDeferredStatement(*$2); }
 
 assignable_statement: function_call | unary_op | binary_op | id_or_constant;
 
@@ -207,6 +214,8 @@ variable_decl: type id { $$ = new ASTVariableDeclaration(*$1, *$2);  }
     | array_decl;
 
 array_decl: type id LEFT_SQUARE_BRACKET constant_int RIGHT_SQUARE_BRACKET { $$ = new ASTVariableDeclaration(*$1, *$2, *$4); }
+
+//struct_decl: STRUCT type { $$ = new ASTStructDeclaration(); }
 
 return_statement: RETURN assignable_statement { $$ = new ASTReturnStatement(*$2); };
 

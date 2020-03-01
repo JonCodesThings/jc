@@ -23,7 +23,7 @@ llvm::Value *ASTFunctionDefinition::EmitIR(IREmitter::EmitterState &state)
         state.frontmost->AddSymbol(s);
     }
 
-    if (!block.EmitIR(state, declaration.arguments, *(llvm::Function*)func))
+    if (!block.EmitIR(state, declaration.arguments))
         return NULL;
 
     return func;

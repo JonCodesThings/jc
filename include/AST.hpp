@@ -18,6 +18,7 @@
 #include <include/AST/Expression/ASTVariableAssignment.hpp>
 
 #include <include/AST/Statement/ASTBlock.hpp>
+#include <include/AST/Statement/ASTDeferredStatement.hpp>
 #include <include/AST/Statement/ASTForStatement.hpp>
 #include <include/AST/Statement/ASTFunctionArgs.hpp>
 #include <include/AST/Statement/ASTFunctionDeclaration.hpp>

@@ -1,8 +1,13 @@
 #include <include/AST/Statement/ASTBlock.hpp>
 
-ASTBlock::ASTBlock() : block(*new std::vector<ASTStatement*>()), ASTStatement(BLOCK) {}
+#include <include/AST/Statement/ASTDeferredStatement.hpp>
 
-ASTBlock::ASTBlock(std::vector<ASTStatement*> &block) : block(block), ASTStatement(BLOCK) {}
+#include <algorithm>
+
+
+ASTBlock::ASTBlock() : block(*new std::vector<ASTStatement*>()), b(NULL), ASTStatement(BLOCK) {}
+
+ASTBlock::ASTBlock(std::vector<ASTStatement*> &block) : block(block), b(NULL), ASTStatement(BLOCK) {}
 
 bool ASTBlock::ContainsReturnStatement()
 {
@@ -14,11 +19,37 @@ bool ASTBlock::ContainsReturnStatement()
     return false;
 }
 
+llvm::Value *ASTBlock::CreateBasicBlock(IREmitter::EmitterState &state, const std::string &name)
+{
+    b = llvm::BasicBlock::Create(state.context, name, current_function);
+
+    state.builder.SetInsertPoint(b);
+
+    return b;
+}
+
 llvm::Value *ASTBlock::EmitIR(IREmitter::EmitterState &state)
 {
-    auto llvmBlock = llvm::BasicBlock::Create(state.context, "temp", current_function);
+    if (!b)
+        CreateBasicBlock(state, "new_block");
 
-    state.builder.SetInsertPoint(llvmBlock);
+    std::vector<ASTDeferredStatement*> deferred;
+
+    for (ASTStatement *statement : block)
+    {
+        if (statement->GetNodeType() == ASTNode::NODE_TYPE::DEFER_STATEMENT)
+        {
+            ASTDeferredStatement *s = (ASTDeferredStatement*)statement;
+            deferred.push_back(s);
+            continue;
+        }
+    }
+
+    for (ASTStatement *s : deferred)
+        block.erase(std::remove(block.begin(), block.end(), s), block.end());
+
+    for (ASTDeferredStatement *s : deferred)
+        block.push_back(&s->defer);
 
     for (ASTStatement *statement : block)
     {
@@ -30,34 +61,19 @@ llvm::Value *ASTBlock::EmitIR(IREmitter::EmitterState &state)
             break;
         }
     }
-    b = llvmBlock;
-    return llvmBlock;
+    return b;
 }
 
-llvm::Value *ASTBlock::EmitIR(IREmitter::EmitterState &state, ASTFunctionArgs &args, llvm::Function &func)
+llvm::Value *ASTBlock::EmitIR(IREmitter::EmitterState &state, ASTFunctionArgs &args)
 {        
-    auto llvmBlock = llvm::BasicBlock::Create(state.context, "entry", &func);
- 
+    CreateBasicBlock(state, "entry");
 
-    for (auto &arg : func.args())
+    for (auto &arg : current_function->args())
     {
         Symbol *s = state.frontmost->GetSymbolByIdentifier(arg.getName());
         s->alloc_inst = state.builder.CreateAlloca(state.typeRegistry.GetType(s->type), NULL, arg.getName());
         state.builder.CreateStore(&arg, s->alloc_inst);
     }
 
-    state.builder.SetInsertPoint(llvmBlock);
-
-    for (ASTStatement *statement : block)
-    {
-        if (!statement->EmitIR(state))
-            return NULL;
-        if (statement->GetNodeType() == ASTNode::NODE_TYPE::RETURN_STATEMENT)
-        {
-            returned = true;
-            break;
-        }
-    }
-    b = llvmBlock;
-    return llvmBlock;
+    return EmitIR(state);
 }

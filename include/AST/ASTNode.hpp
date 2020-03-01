@@ -52,6 +52,8 @@ public:
         FOR_STATEMENT,
         WHILE_STATEMENT,
 
+        DEFER_STATEMENT,
+
         BLOCK,
 
         NODE_TYPE_COUNT
