@@ -1,19 +1,17 @@
 #include <include/AST/Statement/ASTFunctionDefinition.hpp>
 
-ASTFunctionDefinition::ASTFunctionDefinition() : declaration(*new ASTFunctionDeclaration()), block(*new ASTBlock()), ASTStatement(FUNCTION_DEFINITION) {}
-
 ASTFunctionDefinition::ASTFunctionDefinition(ASTIdentifier &id, ASTIdentifier &ret_type, ASTFunctionArgs &args, ASTBlock &block) : 
-    declaration(*new ASTFunctionDeclaration(id, ret_type, args)), block(block), ASTStatement(FUNCTION_DEFINITION) {}
+    declaration(new ASTFunctionDeclaration(id, ret_type, args)), block(&block), ASTStatement(FUNCTION_DEFINITION) {}
 
 llvm::Value *ASTFunctionDefinition::EmitIR(IREmitter::EmitterState &state)
 {
-    auto func = declaration.EmitIR(state);
+    auto func = declaration->EmitIR(state);
 
-    state.frontmost = state.frontmost->CreateChildTable(declaration.identifier.identifier);
+    state.frontmost = state.frontmost->CreateChildTable(declaration->identifier->identifier);
 
     current_function = (llvm::Function*)func;
 
-    for (auto &arg : declaration.arguments.args)
+    for (auto &arg : declaration->arguments->args)
     {
         Symbol s;
         s.identifier = arg.name.identifier;
@@ -23,7 +21,7 @@ llvm::Value *ASTFunctionDefinition::EmitIR(IREmitter::EmitterState &state)
         state.frontmost->AddSymbol(s);
     }
 
-    if (!block.EmitIR(state, declaration.arguments))
+    if (!block->EmitIR(state, *declaration->arguments))
         return NULL;
 
     return func;

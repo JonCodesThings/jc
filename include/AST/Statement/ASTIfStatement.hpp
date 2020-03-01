@@ -7,17 +7,17 @@
 struct ASTConditionalBlock
 {
     ASTConditionalBlock(ASTStatement &cond_expr, ASTBlock &then);
-    ASTStatement &cond_expr;
-    ASTBlock &then;
+    std::unique_ptr<ASTStatement> cond_expr;
+    std::unique_ptr<ASTBlock> then;
 };
 
 class ASTIfStatement : public ASTStatement
 {
 public:
-    std::vector<ASTConditionalBlock*> &conditional_blocks;
-    ASTBlock *otherwise;
+    std::unique_ptr<std::vector<std::unique_ptr<ASTConditionalBlock>>> conditional_blocks;
+    std::unique_ptr<ASTBlock> otherwise;
 
-    ASTIfStatement(std::vector<ASTConditionalBlock*> &conditional_blocks, ASTBlock *otherwise);
+    ASTIfStatement(std::vector<std::unique_ptr<ASTConditionalBlock>> &conditional_blocks, ASTBlock *otherwise);
 
     llvm::Value *EmitIR(IREmitter::EmitterState &state);
 };

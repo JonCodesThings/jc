@@ -7,10 +7,10 @@
 class ASTForStatement : public ASTStatement
 {
 public:
-    ASTStatement &first;
-    ASTStatement &second;
-    ASTStatement &third;
-    ASTBlock &loop;
+    std::unique_ptr<ASTStatement> first;
+    std::unique_ptr<ASTStatement> second;
+    std::unique_ptr<ASTStatement> third;
+    std::unique_ptr<ASTStatement> loop;
 
     ASTForStatement(ASTStatement &first, ASTStatement &second, ASTStatement &third, ASTBlock &loop);
 

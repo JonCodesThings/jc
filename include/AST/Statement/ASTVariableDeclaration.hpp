@@ -8,11 +8,11 @@
 class ASTVariableDeclaration : public ASTStatement
 {
 public:
-    ASTIdentifier &type;
-    ASTIdentifier &id;
+    std::unique_ptr<ASTIdentifier> type;
+    std::unique_ptr<ASTIdentifier> id;
 
-    ASTNode *node;
-    ASTConstant *array_size;
+    std::unique_ptr<ASTNode> node;
+    std::unique_ptr<ASTConstant> array_size;
 
     ASTVariableDeclaration(ASTIdentifier &type, ASTIdentifier &id);
     

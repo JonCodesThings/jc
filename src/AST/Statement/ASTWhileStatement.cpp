@@ -1,12 +1,12 @@
 #include <include/AST/Statement/ASTWhileStatement.hpp>
 
-ASTWhileStatement::ASTWhileStatement(ASTStatement &cond_expr, ASTBlock &loop) : cond_expr(cond_expr), loop(loop), ASTStatement(WHILE_STATEMENT) {}
+ASTWhileStatement::ASTWhileStatement(ASTStatement &cond_expr, ASTBlock &loop) : cond_expr(&cond_expr), loop(&loop), ASTStatement(WHILE_STATEMENT) {}
 
 llvm::Value *ASTWhileStatement::EmitIR(IREmitter::EmitterState &state)
 {
     llvm::BasicBlock *current_insert = state.builder.GetInsertBlock();
 
-    llvm::Value *lv = loop.EmitIR(state);
+    llvm::Value *lv = loop->EmitIR(state);
 
     llvm::BasicBlock *lvb = (llvm::BasicBlock*)lv;
 
@@ -16,13 +16,13 @@ llvm::Value *ASTWhileStatement::EmitIR(IREmitter::EmitterState &state)
 
     //state.builder.CreateBr(lvb);
 
-    llvm::Value *eval_cond = cond_expr.EmitIR(state);
+    llvm::Value *eval_cond = cond_expr->EmitIR(state);
 
     state.builder.CreateCondBr(eval_cond, lvb, pl);
 
     state.builder.SetInsertPoint(lvb);
 
-    eval_cond = cond_expr.EmitIR(state);
+    eval_cond = cond_expr->EmitIR(state);
 
     state.builder.CreateCondBr(eval_cond, lvb, pl);
 

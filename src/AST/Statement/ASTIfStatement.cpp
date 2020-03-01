@@ -1,9 +1,9 @@
 #include <include/AST/Statement/ASTIfStatement.hpp>
 
-ASTConditionalBlock::ASTConditionalBlock(ASTStatement &cond_expr, ASTBlock &then) : cond_expr(cond_expr), then(then) {}
+ASTConditionalBlock::ASTConditionalBlock(ASTStatement &cond_expr, ASTBlock &then) : cond_expr(&cond_expr), then(&then) {}
 
-ASTIfStatement::ASTIfStatement(std::vector<ASTConditionalBlock*> &conditional_blocks, ASTBlock *otherwise) : 
-    conditional_blocks(conditional_blocks), otherwise(otherwise), ASTStatement(IF_STATEMENT) {}
+ASTIfStatement::ASTIfStatement(std::vector<std::unique_ptr<ASTConditionalBlock>> &conditional_blocks, ASTBlock *otherwise) : 
+    conditional_blocks(&conditional_blocks), otherwise(otherwise), ASTStatement(IF_STATEMENT) {}
 
 llvm::Value *ASTIfStatement::EmitIR(IREmitter::EmitterState &state)
 {
@@ -31,19 +31,19 @@ llvm::Value *ASTIfStatement::EmitIR(IREmitter::EmitterState &state)
 
     state.builder.SetInsertPoint(current_insert);
 
-    for (auto it = conditional_blocks.begin(); it != conditional_blocks.end(); it++)
+    for (auto it = conditional_blocks->begin(); it != conditional_blocks->end(); it++)
     {
         current_insert = state.builder.GetInsertBlock();
 
-        llvm::Value *cond = (*it)->cond_expr.EmitIR(state);
+        llvm::Value *cond = (*it)->cond_expr->EmitIR(state);
 
-        llvm::Value *block = (*it)->then.EmitIR(state);
+        llvm::Value *block = (*it)->then->EmitIR(state);
 
         llvm::BasicBlock *br = (llvm::BasicBlock *)block;
 
         llvm::BasicBlock *merge = llvm::BasicBlock::Create(state.context, "merge", current_function);
 
-        if (!(*it)->then.ContainsReturnStatement())
+        if (!(*it)->then->ContainsReturnStatement())
             state.builder.CreateBr(final_merge);
 
         state.builder.SetInsertPoint(current_insert);
@@ -52,7 +52,7 @@ llvm::Value *ASTIfStatement::EmitIR(IREmitter::EmitterState &state)
 
         state.builder.SetInsertPoint(merge);
 
-        if (std::next(it) == conditional_blocks.end())
+        if (std::next(it) == conditional_blocks->end())
         {
             if (!ot)
             {

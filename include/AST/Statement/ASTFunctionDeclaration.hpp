@@ -8,9 +8,9 @@
 class ASTFunctionDeclaration : public ASTStatement
 {
 public:
-    ASTIdentifier &identifier;
-    ASTIdentifier &return_type;
-    ASTFunctionArgs &arguments;
+    std::unique_ptr<ASTIdentifier> identifier;
+    std::unique_ptr<ASTIdentifier> return_type;
+    std::unique_ptr<ASTFunctionArgs> arguments;
 
     enum FUNCTION_LINKAGE
     {

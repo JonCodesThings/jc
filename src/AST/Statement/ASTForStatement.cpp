@@ -1,7 +1,7 @@
 #include <include/AST/Statement/ASTForStatement.hpp>
 
 ASTForStatement::ASTForStatement(ASTStatement &first, ASTStatement &second, ASTStatement &third, ASTBlock &loop) :
-    first(first), second(second), third(third), loop(loop), ASTStatement(FOR_STATEMENT) {}
+    first(&first), second(&second), third(&third), loop(&loop), ASTStatement(FOR_STATEMENT) {}
 
 llvm::Value *ASTForStatement::EmitIR(IREmitter::EmitterState &state)
 {
@@ -11,18 +11,18 @@ llvm::Value *ASTForStatement::EmitIR(IREmitter::EmitterState &state)
 
     state.builder.SetInsertPoint(current_insert);
 
-    llvm::Value *var = first.EmitIR(state);
+    llvm::Value *var = first->EmitIR(state);
 
-    llvm::Value *loop_internals = loop.EmitIR(state);
+    llvm::Value *loop_internals = loop->EmitIR(state);
 
     llvm::BasicBlock *lvb = (llvm::BasicBlock *)loop_internals;
 
-    llvm::Value *loop_condition = second.EmitIR(state);
-    llvm::Value *iterate = third.EmitIR(state);
+    llvm::Value *loop_condition = second->EmitIR(state);
+    llvm::Value *iterate = third->EmitIR(state);
     state.builder.CreateCondBr(loop_condition, lvb, pl);
 
     state.builder.SetInsertPoint(current_insert);
-    llvm::Value *cond = second.EmitIR(state);
+    llvm::Value *cond = second->EmitIR(state);
     state.builder.CreateCondBr(cond, lvb, pl);
 
     state.builder.SetInsertPoint(pl);

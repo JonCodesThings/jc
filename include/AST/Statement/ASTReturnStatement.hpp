@@ -6,7 +6,7 @@
 class ASTReturnStatement : public ASTStatement
 {
 public:
-    ASTStatement *expr;
+    std::unique_ptr<ASTStatement> expr;
 
     ASTReturnStatement(ASTStatement &expr);
     

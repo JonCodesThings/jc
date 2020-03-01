@@ -8,16 +8,13 @@
 class ASTFunctionDefinition : public ASTStatement
 {
 public:
-    ASTFunctionDeclaration &declaration;
-    ASTBlock &block;
+    std::unique_ptr<ASTFunctionDeclaration> declaration;
+    std::unique_ptr<ASTBlock> block;
 
-    ASTFunctionDefinition();
 
     ASTFunctionDefinition(ASTIdentifier &id, ASTIdentifier &ret_type, ASTFunctionArgs &args, ASTBlock &block);
 
     llvm::Value *EmitIR(IREmitter::EmitterState &state);
-    //ASTFunctionDefinition(ASTFunctionDeclaration &decl, ASTBlock &bl) :
-    //declaration(decl), block(block) {}
 };
 
 #endif

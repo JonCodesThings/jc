@@ -58,7 +58,7 @@ ASTConstant *constant;
 ASTConstantInt *constant_int;
 ASTIdentifier *id;
 const char *string;
-std::vector<ASTConditionalBlock *> *cond_block;
+std::vector<std::unique_ptr<ASTConditionalBlock>> *cond_block;
 std::vector<ASTStatement *> *statement_list;
 int integer;
 float fl;
@@ -223,14 +223,14 @@ if_statement: cond_block { $$ = new ASTIfStatement(*$1, NULL); } | cond_block EL
 
 cond_block: IF LEFT_BRACKET assignable_statement RIGHT_BRACKET scope 
     { 
-        $$ = new std::vector<ASTConditionalBlock*>();
-        ASTConditionalBlock *cb = new ASTConditionalBlock(*$3, *$5);
-        $$->push_back(cb);
+        $$ = new std::vector<std::unique_ptr<ASTConditionalBlock>>();
+        auto cb = std::make_unique<ASTConditionalBlock>(*$3, *$5);
+        $$->push_back(std::move(cb));
     }
     | cond_block ELSE IF LEFT_BRACKET assignable_statement RIGHT_BRACKET scope
     {
-        ASTConditionalBlock *cb = new ASTConditionalBlock(*$5, *$7);
-        $1->push_back(cb);
+        auto cb = std::make_unique<ASTConditionalBlock>(*$5, *$7);
+        $1->push_back(std::move(cb));
     }
 
 while_loop: WHILE LEFT_BRACKET assignable_statement RIGHT_BRACKET scope { $$ = new ASTWhileStatement(*$3, *$5); };
