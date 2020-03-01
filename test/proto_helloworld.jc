@@ -2,6 +2,6 @@ i32 printf(i8 *str);
 
 i32 main()
 {
-    printf("Hello, World!");
+    printf("Hello, World!\n");
     return 0;
 }
