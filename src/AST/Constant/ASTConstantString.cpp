@@ -37,10 +37,7 @@ const std::string PreProcess(std::string s)
     return n;
 }
 
-ASTConstantString::ASTConstantString(const std::string &constant) : constant(PreProcess(constant.substr(1, constant.size() - 2))) 
-{
-    
-}
+ASTConstantString::ASTConstantString(const std::string &constant) : constant(PreProcess(constant.substr(1, constant.size() - 2))) {}
 
 llvm::Value *ASTConstantString::EmitIR(IREmitter::EmitterState &state) 
 { 

@@ -7,8 +7,8 @@
 class ASTFunctionCall : public ASTExpression
 {
 public:
-    ASTIdentifier &identifier;
-    std::vector<ASTStatement*> *args;
+    std::unique_ptr<ASTIdentifier> identifier;
+    std::unique_ptr<std::vector<ASTStatement*>> args;
     ASTFunctionCall(ASTIdentifier &id);
     ASTFunctionCall(ASTIdentifier &id, std::vector<ASTStatement*> &args);
     llvm::Value *EmitIR(IREmitter::EmitterState &state);

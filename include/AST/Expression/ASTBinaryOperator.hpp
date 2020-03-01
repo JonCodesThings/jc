@@ -6,8 +6,8 @@
 class ASTBinaryOperator : public ASTExpression
 {
 public:
-    ASTNode &left;
-    ASTNode &right;
+    std::unique_ptr<ASTNode> left;
+    std::unique_ptr<ASTNode> right;
 
     enum OP
     {

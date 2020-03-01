@@ -1,17 +1,17 @@
 #include <include/AST/Expression/ASTBinaryOperator.hpp>
 
-ASTBinaryOperator::ASTBinaryOperator(ASTNode &left, ASTNode &right, OP op) : left(left), right(right), op(op), ASTExpression(BINARY_OP) {}
+ASTBinaryOperator::ASTBinaryOperator(ASTNode &left, ASTNode &right, OP op) : left(&left), right(&right), op(op), ASTExpression(BINARY_OP) {}
 
 llvm::Value *ASTBinaryOperator::EmitIR(IREmitter::EmitterState &state)
 {
-    const std::string *ltype = left.GetType(state);
-    const std::string *rtype = right.GetType(state);
+    const std::string *ltype = left->GetType(state);
+    const std::string *rtype = right->GetType(state);
 
-    llvm::Value *l_inst = left.EmitIR(state);
-    llvm::Value *r_inst = right.EmitIR(state);
+    llvm::Value *l_inst = left->EmitIR(state);
+    llvm::Value *r_inst = right->EmitIR(state);
 
-    const Symbol *l_symbol = left.GetSymbol(state);
-    const Symbol *r_symbol = right.GetSymbol(state);
+    const Symbol *l_symbol = left->GetSymbol(state);
+    const Symbol *r_symbol = right->GetSymbol(state);
 
     llvm::Value *templ;
     llvm::Value *tempr;
@@ -74,5 +74,5 @@ llvm::Value *ASTBinaryOperator::EmitIR(IREmitter::EmitterState &state)
 
 const std::string *ASTBinaryOperator::GetType(IREmitter::EmitterState &state)
 {
-    return right.GetType(state);
+    return right->GetType(state);
 }

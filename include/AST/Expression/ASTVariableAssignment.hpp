@@ -8,9 +8,9 @@
 class ASTVariableAssignment : public ASTExpression
 {
 public:
-    ASTIdentifier *id;
-    ASTNode &node;
-    ASTNode *array_index;
+    std::unique_ptr<ASTIdentifier> id;
+    std::unique_ptr<ASTNode> node;
+    std::unique_ptr<ASTNode> array_index;
 
     ASTVariableAssignment(ASTIdentifier &id, ASTNode &node);
     ASTVariableAssignment(ASTNode &array_index, ASTNode &node);

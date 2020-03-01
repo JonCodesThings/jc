@@ -8,9 +8,9 @@
 class ASTUnaryOperator : public ASTExpression
 {
 public:
-    ASTNode &operatee;
-    ASTIdentifier *cast;
-    ASTConstantInt *index;
+    std::unique_ptr<ASTNode> operatee;
+    std::unique_ptr<ASTIdentifier> cast;
+    std::unique_ptr<ASTConstantInt> index;
 
     enum OP
     {

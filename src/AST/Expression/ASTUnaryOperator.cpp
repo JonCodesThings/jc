@@ -1,15 +1,15 @@
 #include <include/AST/Expression/ASTUnaryOperator.hpp>
 
-ASTUnaryOperator::ASTUnaryOperator(ASTNode &operatee, OP op) : operatee(operatee), cast(NULL), index(NULL), op(op), ASTExpression(UNARY_OP) {}
+ASTUnaryOperator::ASTUnaryOperator(ASTNode &operatee, OP op) : operatee(&operatee), cast(), index(), op(op), ASTExpression(UNARY_OP) {}
 
-ASTUnaryOperator::ASTUnaryOperator(ASTNode &operatee, ASTIdentifier *identifier, OP op) : operatee(operatee), cast(identifier), index(NULL), op(op), ASTExpression(UNARY_OP) {}
+ASTUnaryOperator::ASTUnaryOperator(ASTNode &operatee, ASTIdentifier *identifier, OP op) : operatee(&operatee), cast(identifier), index(), op(op), ASTExpression(UNARY_OP) {}
 
-ASTUnaryOperator::ASTUnaryOperator(ASTNode &operatee, ASTConstantInt &index, OP op) : operatee(operatee), cast(NULL), index(&index), op(op), ASTExpression(UNARY_OP) {}
+ASTUnaryOperator::ASTUnaryOperator(ASTNode &operatee, ASTConstantInt &index, OP op) : operatee(&operatee), cast(), index(&index), op(op), ASTExpression(UNARY_OP) {}
 
 llvm::Value *ASTUnaryOperator::EmitIR(IREmitter::EmitterState &state)
 {
-    const std::string *type = operatee.GetType(state);
-    const Symbol *s = operatee.GetSymbol(state);
+    const std::string *type = operatee->GetType(state);
+    const Symbol *s = operatee->GetSymbol(state);
 
     switch (op)
     {
@@ -52,7 +52,7 @@ llvm::Value *ASTUnaryOperator::EmitIR(IREmitter::EmitterState &state)
                 if (!conver)
                     return NULL;
 
-                llvm::Value *v = operatee.EmitIR(state);
+                llvm::Value *v = operatee->EmitIR(state);
 
                 if (s)
                     v = state.builder.CreateLoad(s->alloc_inst, "temp");
