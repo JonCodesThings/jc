@@ -8,7 +8,7 @@ bool IREmitter::EmitIR(ASTBlock *root)
     if (!root)
         return false;
 
-    for (auto statement : root->block)
+    for (auto &statement : *root->block)
     {
         auto result = statement->EmitIR(state);
         if (!result)

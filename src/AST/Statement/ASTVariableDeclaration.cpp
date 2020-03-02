@@ -38,6 +38,8 @@ llvm::Value * ASTVariableDeclaration::EmitIR(IREmitter::EmitterState &state)
     if (node)
     {
         auto assignment = ASTVariableAssignment(*id, *node);
+        id.release();
+        node.release();
         assignment.EmitIR(state);
     }
 

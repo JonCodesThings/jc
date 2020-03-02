@@ -5,14 +5,13 @@
 
 #include <algorithm>
 
+ASTBlock::ASTBlock() : block(std::make_unique<std::vector<std::unique_ptr<ASTStatement>>>()), b(NULL), ASTStatement(BLOCK) {}
 
-ASTBlock::ASTBlock() : block(*new std::vector<ASTStatement*>()), b(NULL), ASTStatement(BLOCK) {}
-
-ASTBlock::ASTBlock(std::vector<ASTStatement*> &block) : block(block), b(NULL), ASTStatement(BLOCK) {}
+ASTBlock::ASTBlock(std::vector<std::unique_ptr<ASTStatement>> &block) : block(&block), b(NULL), ASTStatement(BLOCK) {}
 
 bool ASTBlock::ContainsReturnStatement()
 {
-    for (ASTStatement *statement : block)
+    for (auto &statement : *block)
     {
         if (statement->GetNodeType() == NODE_TYPE::RETURN_STATEMENT)
             return true;
@@ -34,38 +33,44 @@ llvm::Value *ASTBlock::EmitIR(IREmitter::EmitterState &state)
     if (!b)
         CreateBasicBlock(state, "new_block");
 
-    std::vector<ASTDeferredStatement*> deferred;
-    std::vector<ASTReturnStatement*> r;
+    std::vector<std::unique_ptr<ASTStatement>> deferred;
+    std::vector<std::unique_ptr<ASTStatement>> r;
 
-    for (ASTStatement *statement : block)
+    /*for (auto &statement : *block)
     {
         if (statement->GetNodeType() == ASTNode::NODE_TYPE::DEFER_STATEMENT)
         {
-            ASTDeferredStatement *s = (ASTDeferredStatement*)statement;
-            deferred.push_back(s);
+            deferred.push_back(std::move(statement));
             continue;
         }
         if (statement->GetNodeType() == ASTNode::NODE_TYPE::RETURN_STATEMENT)
         {
-            ASTReturnStatement *s = (ASTReturnStatement*)statement;
-            r.push_back(s);
+            r.push_back(std::move(statement));
             continue;
         }
     }
 
-    for (ASTStatement *s : deferred)
-        block.erase(std::remove(block.begin(), block.end(), s), block.end());
+    for (auto &s : deferred)
+        block->erase(std::remove(block->begin(), block->end(), s), block->end());
 
-    for (ASTReturnStatement *s : r)
-        block.erase(std::remove(block.begin(), block.end(), s), block.end());
+    for (auto &s : r)
+        block->erase(std::remove(block->begin(), block->end(), s), block->end());
 
-    for (ASTDeferredStatement *s : deferred)
-        block.push_back(&s->defer);
+    for (auto &s : deferred)
+    {
+        ASTDeferredStatement *casted = static_cast<ASTDeferredStatement*>(s.get());
+        auto a = std::unique_ptr<ASTStatement>(&casted->defer);
+        block->push_back(std::move(a));
+    }
 
-    for (ASTReturnStatement *s : r)
-        block.push_back(s);
+    for (auto &s : r)
+    {
+        ASTReturnStatement *casted = static_cast<ASTReturnStatement*>(s.get());
+        auto a = std::unique_ptr<ASTStatement>(casted);
+        block->push_back(std::move(a));
+    }*/
 
-    for (ASTStatement *statement : block)
+    for (auto &statement : *block)
     {
         if (!statement->EmitIR(state))
             return NULL;
@@ -89,5 +94,7 @@ llvm::Value *ASTBlock::EmitIR(IREmitter::EmitterState &state, ASTFunctionArgs &a
         state.builder.CreateStore(&arg, s->alloc_inst);
     }
 
-    return EmitIR(state);
+    auto ret = EmitIR(state);
+
+    return ret;
 }

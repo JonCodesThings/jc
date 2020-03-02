@@ -7,7 +7,7 @@
 
 #include <fstream>
 
-extern ASTBlock *base;
+extern std::unique_ptr<ASTBlock> base;
 extern FILE *yyin;
 extern const char *yycurrentfilename;
 extern int yyparse();
@@ -29,7 +29,7 @@ int main(int argc, const char **args)
         llvm::Module module("jc alpha", context);
         IREmitter emitter(module, context, *registry);
 
-        if (emitter.EmitIR(base))
+        if (emitter.EmitIR(base.get()))
         {
             std::error_code ec;
             std::string o = args[1];

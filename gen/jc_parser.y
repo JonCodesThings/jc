@@ -4,7 +4,7 @@
 #include <vector>
 #include <include/AST.hpp>
 
-ASTBlock *base;
+std::unique_ptr<ASTBlock> base;
 
 extern int yylex();
 extern int yyparse();
@@ -59,7 +59,7 @@ ASTConstantInt *constant_int;
 ASTIdentifier *id;
 const char *string;
 std::vector<std::unique_ptr<ASTConditionalBlock>> *cond_block;
-std::vector<ASTStatement *> *statement_list;
+std::vector<std::unique_ptr<ASTStatement>> *statement_list;
 int integer;
 float fl;
 int token;
@@ -122,15 +122,15 @@ int token;
 
 %%
 
-module: statements { base = new ASTBlock(); base->block.push_back($1); };
+module: statements { base = std::make_unique<ASTBlock>(); std::unique_ptr<ASTBlock> b = std::unique_ptr<ASTBlock>($1); base->block->push_back(std::move(b)); };
 
-statements: node_setup { $$ = new ASTBlock(); $$->block.push_back($1); };
-    | statements node_setup { $1->block.push_back($2); };
+statements: node_setup { $$ = new ASTBlock(); auto s = std::unique_ptr<ASTStatement>($1); $$->block->push_back(std::move(s)); };
+    | statements node_setup { auto s = std::unique_ptr<ASTStatement>($2); $1->block->push_back(std::move(s)); };
 
 node_setup: statement { SetNodeInfo(*$$); } | statement SEMICOLON { SetNodeInfo(*$$); };
 
-semicoloned_statements: semicoloned_statement { $$ = new ASTBlock(); $$->block.push_back($1); SetNodeInfo(*$$); }
-    | semicoloned_statements semicoloned_statement { $1->block.push_back($2); };
+semicoloned_statements: semicoloned_statement { $$ = new ASTBlock(); auto statement = std::unique_ptr<ASTStatement>($1); $$->block->push_back(std::move(statement)); SetNodeInfo(*$$); }
+    | semicoloned_statements semicoloned_statement { auto statement = std::unique_ptr<ASTStatement>($2); $1->block->push_back(std::move(statement)); };
 
 semicoloned_statement: statement SEMICOLON { SetNodeInfo(*$1); }; | assignable_statement SEMICOLON { SetNodeInfo(*$1); } | flow_control { SetNodeInfo(*$1); }
     | defer_statement SEMICOLON { SetNodeInfo(*$1); }; ;
@@ -243,8 +243,8 @@ for_loop: FOR LEFT_BRACKET statement SEMICOLON assignable_statement SEMICOLON as
 arg_list: arg_list COMMA arg_pair {  $1->args.push_back(*$3); }
     | arg_pair { $$ = new ASTFunctionArgs(); $$->args.push_back(*$1); };
 
-statement_list: statement_list COMMA assignable_statement { $1->push_back($3); }
-    | assignable_statement { $$ = new std::vector<ASTStatement *>(); $$->push_back($1); };
+statement_list: statement_list COMMA assignable_statement { auto s = std::unique_ptr<ASTStatement>($3); $1->push_back(std::move(s)); }
+    | assignable_statement { $$ = new std::vector<std::unique_ptr<ASTStatement>>(); auto s = std::unique_ptr<ASTStatement>($1); $$->push_back(std::move(s)); };
 
 arg_pair: type id { $$ = new ASTFunctionArg(*$1, *$2); };
 

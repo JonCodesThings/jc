@@ -7,7 +7,7 @@
 class ASTBlock : public ASTStatement
 {
 public:
-    std::vector<ASTStatement*> &block;
+    std::unique_ptr<std::vector<std::unique_ptr<ASTStatement>>> block;
 
     llvm::BasicBlock *b;
 
@@ -15,7 +15,7 @@ public:
 
     ASTBlock();
 
-    ASTBlock(std::vector<ASTStatement*> &block);
+    ASTBlock(std::vector<std::unique_ptr<ASTStatement>> &block);
 
     bool ContainsReturnStatement();
 

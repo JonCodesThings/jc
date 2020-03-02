@@ -2,7 +2,7 @@
 
 ASTFunctionCall::ASTFunctionCall(ASTIdentifier &id) : identifier(&id), args(), ASTExpression(FUNCTION_CALL) {}
 
-ASTFunctionCall::ASTFunctionCall(ASTIdentifier &id, std::vector<ASTStatement*> &args) : identifier(&id), args(&args), ASTExpression(FUNCTION_CALL) {}
+ASTFunctionCall::ASTFunctionCall(ASTIdentifier &id, std::vector<std::unique_ptr<ASTStatement>> &args) : identifier(&id), args(&args), ASTExpression(FUNCTION_CALL) {}
 
 
 llvm::Value *ASTFunctionCall::EmitIR(IREmitter::EmitterState &state)
