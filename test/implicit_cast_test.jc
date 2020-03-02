@@ -2,6 +2,5 @@ i32 main()
 {
     i8 i = 24;
     i32 j = i;
-    i8 k = j;
     return j;
 }
