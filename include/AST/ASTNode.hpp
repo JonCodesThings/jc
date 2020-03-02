@@ -54,6 +54,8 @@ public:
 
         DEFER_STATEMENT,
 
+        IMPORT_STATEMENT,
+
         BLOCK,
 
         NODE_TYPE_COUNT

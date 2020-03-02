@@ -149,3 +149,13 @@ llvm::Type *TypeRegistry::GetWideningConversion(const std::string &current, cons
 
     return NULL;
 }
+
+llvm::Type *TypeRegistry::GetImplicitCast(const std::string &current, const std::string &to)
+{
+    llvm::Type *t = GetWideningConversion(current, to);
+
+    if (!t)
+        return GetNarrowingConversion(current, to);
+
+    return t;
+}

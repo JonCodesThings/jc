@@ -53,6 +53,7 @@ public:
     bool IsTypeNumeric(const std::string &id);
     llvm::Type *GetWideningConversion(const std::string &current, const std::string &to);
     llvm::Type *GetNarrowingConversion(const std::string &current, const std::string &to);
+    llvm::Type *GetImplicitCast(const std::string &current, const std::string &to);
 private:
     void AddType(const std::string &id, llvm::Type &type, const JCType::TYPE_CLASSIFICATION &classification, unsigned int integer_limit);
 

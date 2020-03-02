@@ -91,7 +91,7 @@ int token;
 
 %token FOR WHILE
 
-%token EXTERN
+%token EXTERN IMPORT EXPORT
 
 %token STRUCT
 
@@ -156,7 +156,7 @@ assign_op: variable_assign;
 variable_assign: id EQUAL assignable_statement { $$ = new ASTVariableAssignment(*$1, *$3);  }
     | array_index EQUAL assignable_statement { $$ = new ASTVariableAssignment(*$1, *$3); };
 
-cast: LEFT_BRACKET id RIGHT_BRACKET id_or_constant { $$ = new ASTUnaryOperator(*$4, $2, ASTUnaryOperator::CAST); };
+cast: LEFT_BRACKET type RIGHT_BRACKET id_or_constant { $$ = new ASTUnaryOperator(*$4, $2, ASTUnaryOperator::CAST); };
 
 increment: id_or_constant PLUS PLUS { $$ = new ASTUnaryOperator(*$1, ASTUnaryOperator::INCREMENT);  };
 

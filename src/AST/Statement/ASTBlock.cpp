@@ -55,12 +55,6 @@ llvm::Value *ASTBlock::EmitIR(IREmitter::EmitterState &state)
         }
     }
 
-    //for (auto &s : deferred)
-      //  block->erase(std::remove(block->begin(), block->end(), s), block->end());
-
-    //for (auto &s : r)
-      //  block->erase(std::remove(block->begin(), block->end(), s), block->end());
-
     for (auto &s : deferred)
     {
         ASTDeferredStatement *casted = static_cast<ASTDeferredStatement*>(s.get());
