@@ -6,7 +6,7 @@
 class ASTDeferredStatement : public ASTStatement
 {
 public:
-    ASTStatement &defer;
+    std::unique_ptr<ASTStatement> defer;
 
     ASTDeferredStatement(ASTStatement &defer);
 

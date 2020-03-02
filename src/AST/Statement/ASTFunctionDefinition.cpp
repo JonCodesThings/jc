@@ -14,8 +14,8 @@ llvm::Value *ASTFunctionDefinition::EmitIR(IREmitter::EmitterState &state)
     for (auto &arg : declaration->arguments->args)
     {
         Symbol s;
-        s.identifier = arg.name.identifier;
-        s.type = arg.type.identifier;
+        s.identifier = arg->name->identifier;
+        s.type = arg->type->identifier;
         s.classification = Symbol::Classification::VARIABLE;
         s.alloc_inst = NULL;
         state.frontmost->AddSymbol(s);

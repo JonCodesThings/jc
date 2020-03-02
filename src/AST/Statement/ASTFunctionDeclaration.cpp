@@ -11,12 +11,12 @@ llvm::Value *ASTFunctionDeclaration::EmitIR(IREmitter::EmitterState &state)
 
     std::vector<llvm::Type*> argTypeVector;
 
-    for (auto arg : arguments->args)
+    for (auto &arg : arguments->args)
     {
-        llvm::Type *t = state.typeRegistry.GetType(arg.type.identifier);
+        llvm::Type *t = state.typeRegistry.GetType(arg->type->identifier);
 
         if (!t)
-            t = state.typeRegistry.UnwindPointerType(arg.type.identifier);
+            t = state.typeRegistry.UnwindPointerType(arg->type->identifier);
 
         if (!t)
             return NULL;
@@ -37,7 +37,7 @@ llvm::Value *ASTFunctionDeclaration::EmitIR(IREmitter::EmitterState &state)
 
     unsigned int arg_name_index = 0;
     for (auto & arg : Func->args())
-        arg.setName(arguments->args[arg_name_index++].name.identifier);
+        arg.setName(arguments->args[arg_name_index++]->name->identifier);
 
     return Func;
 }

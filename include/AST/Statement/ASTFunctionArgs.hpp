@@ -7,14 +7,14 @@ struct ASTFunctionArg
 {
     ASTFunctionArg(ASTIdentifier &type, ASTIdentifier &name);
     
-    ASTIdentifier &type;
-    ASTIdentifier &name;
+    std::unique_ptr<ASTIdentifier> type;
+    std::unique_ptr<ASTIdentifier> name;
 };
 
 class ASTFunctionArgs
 {
 public:
-    std::vector<ASTFunctionArg> args;
+    std::vector<std::unique_ptr<ASTFunctionArg>> args;
 };
 
 #endif

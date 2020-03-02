@@ -240,8 +240,8 @@ for_loop: FOR LEFT_BRACKET statement SEMICOLON assignable_statement SEMICOLON as
  $$ = new ASTForStatement(*$3, *$5, *$7, *$9);
 } 
 
-arg_list: arg_list COMMA arg_pair {  $1->args.push_back(*$3); }
-    | arg_pair { $$ = new ASTFunctionArgs(); $$->args.push_back(*$1); };
+arg_list: arg_list COMMA arg_pair { auto s = std::unique_ptr<ASTFunctionArg>($3); $1->args.push_back(std::move(s)); }
+    | arg_pair { $$ = new ASTFunctionArgs(); auto s = std::unique_ptr<ASTFunctionArg>($1); $$->args.push_back(std::move(s)); };
 
 statement_list: statement_list COMMA assignable_statement { auto s = std::unique_ptr<ASTStatement>($3); $1->push_back(std::move(s)); }
     | assignable_statement { $$ = new std::vector<std::unique_ptr<ASTStatement>>(); auto s = std::unique_ptr<ASTStatement>($1); $$->push_back(std::move(s)); };

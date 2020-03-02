@@ -13,8 +13,11 @@ bool ASTBlock::ContainsReturnStatement()
 {
     for (auto &statement : *block)
     {
-        if (statement->GetNodeType() == NODE_TYPE::RETURN_STATEMENT)
-            return true;
+        if (statement)
+        {
+            if (statement->GetNodeType() == NODE_TYPE::RETURN_STATEMENT)
+                return true;
+        }
     }
     return false;
 }
@@ -36,49 +39,53 @@ llvm::Value *ASTBlock::EmitIR(IREmitter::EmitterState &state)
     std::vector<std::unique_ptr<ASTStatement>> deferred;
     std::vector<std::unique_ptr<ASTStatement>> r;
 
-    /*for (auto &statement : *block)
+    for (auto &statement : *block)
     {
         if (statement->GetNodeType() == ASTNode::NODE_TYPE::DEFER_STATEMENT)
         {
             deferred.push_back(std::move(statement));
+            statement.release();
             continue;
         }
         if (statement->GetNodeType() == ASTNode::NODE_TYPE::RETURN_STATEMENT)
         {
             r.push_back(std::move(statement));
+            statement.release();
             continue;
         }
     }
 
-    for (auto &s : deferred)
-        block->erase(std::remove(block->begin(), block->end(), s), block->end());
+    //for (auto &s : deferred)
+      //  block->erase(std::remove(block->begin(), block->end(), s), block->end());
 
-    for (auto &s : r)
-        block->erase(std::remove(block->begin(), block->end(), s), block->end());
+    //for (auto &s : r)
+      //  block->erase(std::remove(block->begin(), block->end(), s), block->end());
 
     for (auto &s : deferred)
     {
         ASTDeferredStatement *casted = static_cast<ASTDeferredStatement*>(s.get());
-        auto a = std::unique_ptr<ASTStatement>(&casted->defer);
+        auto a = std::move(casted->defer);
         block->push_back(std::move(a));
     }
 
     for (auto &s : r)
     {
-        ASTReturnStatement *casted = static_cast<ASTReturnStatement*>(s.get());
-        auto a = std::unique_ptr<ASTStatement>(casted);
-        block->push_back(std::move(a));
-    }*/
+        block->push_back(std::move(s));
+    }
 
     for (auto &statement : *block)
     {
-        if (!statement->EmitIR(state))
-            return NULL;
-        if (statement->GetNodeType() == ASTNode::NODE_TYPE::RETURN_STATEMENT)
+        if (statement)
         {
-            returned = true;
-            break;
+            if (!statement->EmitIR(state))
+                return NULL;
+            if (statement->GetNodeType() == ASTNode::NODE_TYPE::RETURN_STATEMENT)
+            {
+                returned = true;
+                break;
+            }
         }
+        
     }
     return b;
 }
