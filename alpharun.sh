@@ -59,3 +59,7 @@ run_test test/defer_test.jc 0
 run_test test/explicit_cast_test.jc 24
 run_test test/implicit_cast_test.jc 24
 
+run_test test/float_if_test.jc 0
+
+run_test test/u32_test.jc 1
+

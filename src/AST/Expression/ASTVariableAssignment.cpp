@@ -19,7 +19,6 @@ llvm::Value *ASTVariableAssignment::EmitIR(IREmitter::EmitterState &state)
         {
             if (*node->GetType(state) != (*id->GetType(state)))
             {
-                printf("implicit 101\n");
                 auto cast = ASTUnaryOperator(*node, new ASTIdentifier(symbol->type), ASTUnaryOperator::OP::CAST);
                 node.release();
                 auto emitted_ir = cast.EmitIR(state);
@@ -36,7 +35,6 @@ llvm::Value *ASTVariableAssignment::EmitIR(IREmitter::EmitterState &state)
         {
             if (symbol->type != node_symbol->type)
             {
-                printf("%s\n", symbol->identifier.c_str());
                 auto cast = ASTUnaryOperator(*node, new ASTIdentifier(symbol->type), ASTUnaryOperator::OP::CAST);
                 node.release();
                 auto emitted_ir = cast.EmitIR(state);

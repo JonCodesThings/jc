@@ -42,31 +42,82 @@ llvm::Value *ASTBinaryOperator::EmitIR(IREmitter::EmitterState &state)
         }
         case DIVIDE:
         {
-            return state.builder.CreateSDiv(templ, tempr);
+            if ((*ltype)[0] == 'u')
+                return state.builder.CreateUDiv(templ, tempr);
+            else
+                return state.builder.CreateSDiv(templ, tempr);
         }
         case EQUALITY:
         {
-            return state.builder.CreateICmpEQ(templ, tempr);
+            switch (state.typeRegistry.GetTypeInfo(*ltype)->classification)
+            {
+                default:
+                    return NULL;
+                case JCType::TYPE_CLASSIFICATION::INT:
+                    return state.builder.CreateICmpEQ(templ, tempr);
+                case JCType::TYPE_CLASSIFICATION::FLOAT:
+                    return state.builder.CreateFCmpOEQ(templ, tempr);
+            }
         }
         case INEQUALITY:
         {
-            return state.builder.CreateICmpNE(templ, tempr);
+            switch (state.typeRegistry.GetTypeInfo(*ltype)->classification)
+            {
+                default:
+                    return NULL;
+                case JCType::TYPE_CLASSIFICATION::INT:
+                    return state.builder.CreateICmpNE(templ, tempr);
+                case JCType::TYPE_CLASSIFICATION::FLOAT:
+                    return state.builder.CreateFCmpONE(templ, tempr);
+            }
         }
         case LESSER:
         {
-            return state.builder.CreateICmpSLT(templ, tempr);
+            switch (state.typeRegistry.GetTypeInfo(*ltype)->classification)
+            {
+                default:
+                    return NULL;
+                case JCType::TYPE_CLASSIFICATION::INT:
+                    return state.builder.CreateICmpSLT(templ, tempr);
+                case JCType::TYPE_CLASSIFICATION::FLOAT:
+                    return state.builder.CreateFCmpOLT(templ, tempr);
+            }
         }
         case GREATER:
         {
-            return state.builder.CreateICmpSGT(templ, tempr);
+            switch (state.typeRegistry.GetTypeInfo(*ltype)->classification)
+            {
+                default:
+                    return NULL;
+                case JCType::TYPE_CLASSIFICATION::INT:
+                    return state.builder.CreateICmpSGT(templ, tempr);
+                case JCType::TYPE_CLASSIFICATION::FLOAT:
+                    return state.builder.CreateFCmpOGT(templ, tempr);
+            }
         }
         case LESSER_OR_EQUAL:
         {
-            return state.builder.CreateICmpSLE(templ, tempr);
+            switch (state.typeRegistry.GetTypeInfo(*ltype)->classification)
+            {
+                default:
+                    return NULL;
+                case JCType::TYPE_CLASSIFICATION::INT:
+                    return state.builder.CreateICmpSLE(templ, tempr);
+                case JCType::TYPE_CLASSIFICATION::FLOAT:
+                    return state.builder.CreateFCmpOLE(templ, tempr);
+            }
         }
         case GREATER_OR_EQUAL:
         {
-            return state.builder.CreateICmpSGE(templ, tempr);
+            switch (state.typeRegistry.GetTypeInfo(*ltype)->classification)
+            {
+                default:
+                    return NULL;
+                case JCType::TYPE_CLASSIFICATION::INT:
+                    return state.builder.CreateICmpSGE(templ, tempr);
+                case JCType::TYPE_CLASSIFICATION::FLOAT:
+                    return state.builder.CreateFCmpOGE(templ, tempr);
+            }
         }
     }
     return NULL;

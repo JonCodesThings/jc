@@ -1,0 +1,10 @@
+i32 main()
+{
+    f32 x = 1;
+    f32 y = 1;
+    if (x == y)
+    {
+        return 0;
+    }
+    return 10;
+}
