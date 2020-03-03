@@ -18,6 +18,18 @@ void TypeRegistry::SetupBuiltinJCTypes()
     AddType("f32", *llvm::Type::getFloatTy(context), JCType::TYPE_CLASSIFICATION::FLOAT);
 }
 
+void TypeRegistry::AddAlias(const std::string &id, const std::string &type_to_be_aliased)
+{
+    const JCType *t = GetTypeInfo(type_to_be_aliased);
+    if (!t)
+        return;
+
+    //printf("Alias generated to type_string: %s\n", t->type_string.c_str());
+
+    alias_registry.push_back(std::make_pair(id, t->type_string));
+}
+
+
 void TypeRegistry::AddType(const std::string &id, llvm::Type &t, const JCType::TYPE_CLASSIFICATION &classification)
 {
     JCType type;
@@ -39,6 +51,16 @@ void TypeRegistry::AddType(const std::string &id, llvm::Type &t, const JCType::T
     registry.push_back(type);
 }
 
+llvm::Type *TypeRegistry::GetAliasedType(const std::string &id)
+{
+    for (auto &pair : alias_registry)
+    {
+        if (pair.first == id)
+            return GetType(pair.second);
+    }
+    return NULL;
+}
+
 llvm::Type *TypeRegistry::GetArrayType(const std::string &id, unsigned int array_size)
 {
     return llvm::ArrayType::get(GetType(id), array_size);
@@ -46,6 +68,11 @@ llvm::Type *TypeRegistry::GetArrayType(const std::string &id, unsigned int array
 
 llvm::Type *TypeRegistry::GetType(const std::string &id)
 {
+    auto t = GetAliasedType(id);
+
+    if (t)
+        return t;
+
     for (auto type_ : registry)
     {
         if (type_.type_string == id)
@@ -67,7 +94,9 @@ llvm::Type *TypeRegistry::UnwindPointerType(const std::string &id)
         if (t)
             return llvm::PointerType::get(t, 0);
         else
+        {
             return NULL;
+        }
     }
     
 }
@@ -116,7 +145,7 @@ llvm::Type *TypeRegistry::GetNarrowingConversion(const std::string &current, con
     const JCType *curr = GetTypeInfo(current);
     const JCType *t = GetTypeInfo(to);
 
-    printf("curr: %s   to: %s\n", curr->type_string.c_str(), t->type_string.c_str());
+    //printf("curr: %s   to: %s\n", curr->type_string.c_str(), t->type_string.c_str());
 
 
     if (curr->classification == JCType::TYPE_CLASSIFICATION::FLOAT)
@@ -136,7 +165,7 @@ llvm::Type *TypeRegistry::GetWideningConversion(const std::string &current, cons
     const JCType *curr = GetTypeInfo(current);
     const JCType *t = GetTypeInfo(to);
 
-    printf("curr: %s   to: %s\n", curr->type_string.c_str(), t->type_string.c_str());
+    //printf("curr: %s   to: %s\n", curr->type_string.c_str(), t->type_string.c_str());
 
     if (curr->classification != JCType::TYPE_CLASSIFICATION::FLOAT && t->classification == JCType::TYPE_CLASSIFICATION::FLOAT)
         return t->llvm_type;

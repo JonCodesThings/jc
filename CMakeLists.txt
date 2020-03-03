@@ -43,6 +43,7 @@ set(SOURCE_FILES src/main.cpp
     src/AST/Statement/ASTFunctionDefinition.cpp
     src/AST/Statement/ASTIfStatement.cpp
     src/AST/Statement/ASTReturnStatement.cpp
+    src/AST/Statement/ASTTypeSystemModStatement.cpp
     src/AST/Statement/ASTVariableDeclaration.cpp
     src/AST/Statement/ASTWhileStatement.cpp
 

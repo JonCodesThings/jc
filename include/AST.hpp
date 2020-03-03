@@ -25,6 +25,7 @@
 #include <include/AST/Statement/ASTFunctionDefinition.hpp>
 #include <include/AST/Statement/ASTIfStatement.hpp>
 #include <include/AST/Statement/ASTReturnStatement.hpp>
+#include <include/AST/Statement/ASTTypeSystemModStatement.hpp>
 #include <include/AST/Statement/ASTVariableDeclaration.hpp>
 #include <include/AST/Statement/ASTWhileStatement.hpp>
 

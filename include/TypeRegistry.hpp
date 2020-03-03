@@ -43,7 +43,9 @@ public:
     TypeRegistry(llvm::LLVMContext &context) : context(context) {}
     ~TypeRegistry() {};
     void SetupBuiltinJCTypes();
+    void AddAlias(const std::string &id, const std::string &type_to_be_aliased);
     void AddType(const std::string &id, llvm::Type &type, const JCType::TYPE_CLASSIFICATION &classification);
+    llvm::Type *GetAliasedType(const std::string &id);
     llvm::Type *GetArrayType(const std::string &id, unsigned int array_size);
     llvm::Type *GetType(const std::string &id);
     llvm::Type *UnwindPointerType(const std::string &id);
@@ -60,6 +62,8 @@ private:
     llvm::LLVMContext &context;
 
     std::vector<JCType> registry;
+
+    std::vector<std::pair<std::string, std::string>> alias_registry;
 };
 
 #endif

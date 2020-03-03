@@ -52,6 +52,7 @@ ASTFunctionDefinition *function_definition;
 ASTIfStatement *if_statement;
 ASTForStatement *for_loop;
 ASTWhileStatement *while_loop;
+ASTTypeSystemModStatement *type_mod;
 ASTUnaryOperator *unary_operator;
 ASTBlock *scope_block;
 ASTConstant *constant;
@@ -91,6 +92,8 @@ int token;
 
 %token FOR WHILE
 
+%token TYPEDEF ALIAS
+
 %token EXTERN IMPORT EXPORT
 
 %token STRUCT
@@ -110,6 +113,7 @@ int token;
 %type<statement> add subtract multiply divide equality inequality lesser  greater  lesser_or_equal  greater_or_equal
 %type<statement_list> statement_list
 %type<defer_statement> defer_statement
+%type<type_mod> alias_statement
 %type<cond_block> cond_block
 %type<while_loop> while_loop
 %type<for_loop> for_loop
@@ -135,7 +139,9 @@ semicoloned_statements: semicoloned_statement { $$ = new ASTBlock(); auto statem
 semicoloned_statement: statement SEMICOLON { SetNodeInfo(*$1); }; | assignable_statement SEMICOLON { SetNodeInfo(*$1); } | flow_control { SetNodeInfo(*$1); }
     | defer_statement SEMICOLON { SetNodeInfo(*$1); }; ;
 
-statement: return_statement | function_def | function_decl | variable_decl | assign_op | flow_control;
+statement: return_statement | function_def | function_decl | variable_decl | assign_op | flow_control | alias_statement;
+
+alias_statement: ALIAS TYPE TYPE SEMICOLON { $$ = new ASTTypeSystemModStatement(ASTTypeSystemModStatement::TYPE_MOD_OP::ALIAS); };
 
 defer_statement: DEFER assignable_statement { $$ = new ASTDeferredStatement(*$2); }
 

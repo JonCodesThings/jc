@@ -18,6 +18,7 @@ llvm::Value *ASTFunctionDeclaration::EmitIR(IREmitter::EmitterState &state)
         if (!t)
             t = state.typeRegistry.UnwindPointerType(arg->type->identifier);
 
+        printf("%s, %p\n", arg->type->identifier.c_str(), t);
         if (!t)
             return NULL;
 

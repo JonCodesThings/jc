@@ -20,6 +20,9 @@ extern TypeRegistry *registry;
 
 int main(int argc, const char **args)
 {
+    llvm::LLVMContext context;
+    registry = new TypeRegistry(context);
+    registry->SetupBuiltinJCTypes();
     type_in = fopen(args[1], "r");
     type_parse();
     fclose(type_in);
@@ -29,9 +32,6 @@ int main(int argc, const char **args)
         return 0;
     yycurrentfilename = args[1];
     type_currentfilename = args[1];
-    llvm::LLVMContext context;
-    registry = new TypeRegistry(context);
-    registry->SetupBuiltinJCTypes();
     int p = yyparse();
     if (base)
     {

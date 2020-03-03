@@ -1,4 +1,6 @@
-i32 printf(i8 *str);
+alias i8 char;
+
+i32 printf(char *str);
 
 i32 main()
 {

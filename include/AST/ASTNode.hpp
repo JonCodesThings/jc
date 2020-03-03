@@ -56,6 +56,8 @@ public:
 
         IMPORT_STATEMENT,
 
+        TYPE_MOD,
+
         BLOCK,
 
         NODE_TYPE_COUNT

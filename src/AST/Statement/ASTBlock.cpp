@@ -41,6 +41,11 @@ llvm::Value *ASTBlock::EmitIR(IREmitter::EmitterState &state)
 
     for (auto &statement : *block)
     {
+        if (statement->GetNodeType() == ASTNode::NODE_TYPE::TYPE_MOD)
+        {
+            delete statement.release();
+            continue;
+        }
         if (statement->GetNodeType() == ASTNode::NODE_TYPE::DEFER_STATEMENT)
         {
             deferred.push_back(std::move(statement));

@@ -61,6 +61,8 @@ TypeRegistry *registry;
 "while" { return WHILE; yycurrentlinechar += yyleng; }
 "struct" { return STRUCT; yycurrentlinechar += yyleng; }
 "defer" { return DEFER; yycurrentlinechar += yyleng; }
+"alias" { return ALIAS; yycurrentlinechar += yyleng; }
+"typedef" { return TYPEDEF; yycurrentlinechar += yyleng; }
 [a-zA-Z0-9]+ { yylval.string = yytext; if (!registry->GetType(yylval.string)) return IDENTIFIER; else return TYPE; yycurrentlinechar += yyleng; }
 
 . { return UNKNOWN; }
