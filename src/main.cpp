@@ -1,4 +1,5 @@
 #include <include/AST.hpp>
+#include <gen/jc_type_parser.hpp>
 #include <gen/jc_parser.hpp>
 #include <include/IREmitter.hpp>
 
@@ -23,6 +24,7 @@ int main(int argc, const char **args)
     llvm::LLVMContext context;
     registry = new TypeRegistry(context);
     registry->SetupBuiltinJCTypes();
+    type_parse();
     int p = yyparse();
     if (base)
     {

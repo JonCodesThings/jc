@@ -8,6 +8,11 @@ include_directories(${LLVM_INCLUDE_DIRS})
 add_definitions(${LLVM_DEFINITIONS})
 llvm_map_components_to_libnames(llvm_libs support core irreader bitwriter)
 
+BISON_TARGET(jc_type_parser gen/jc_type_parser.y gen/jc_type_parser.cpp)
+FLEX_TARGET(jc_type_scanner gen/jc_type_scanner.l gen/jc_type_scanner.cpp)
+
+ADD_FLEX_BISON_DEPENDENCY(jc_type_scanner jc_type_parser)
+
 BISON_TARGET(jc_parser gen/jc_parser.y gen/jc_parser.cpp)
 FLEX_TARGET(jc_scanner gen/jc_lex.l gen/jc_lex.cpp)
 
@@ -45,7 +50,7 @@ set(SOURCE_FILES src/main.cpp
     src/SymbolTable.cpp 
     src/TypeRegistry.cpp)
 
-add_executable(jc ${SOURCE_FILES} ${BISON_jc_parser_OUTPUTS} ${FLEX_jc_scanner_OUTPUTS})
+add_executable(jc ${SOURCE_FILES} ${BISON_jc_type_parser_OUTPUTS} ${FLEX_jc_type_scanner_OUTPUTS} ${BISON_jc_parser_OUTPUTS} ${FLEX_jc_scanner_OUTPUTS})
 include_directories(.)
 target_link_libraries(jc ${llvm_libs})
 
