@@ -1,8 +1,11 @@
+i32 printf(i8 *str);
+
 i32 main()
 {
-    i32 x = 5;
-    while (x == 5)
+    i32 x = 0;
+    while (x != 5)
     {
+        printf("my name jeff");
         x++;
     }
     return x;

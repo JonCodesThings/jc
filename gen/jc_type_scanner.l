@@ -5,6 +5,7 @@
 %option prefix="type_"
 %{
 #include "jc_type_parser.hpp"
+const char *type_currentfilename = "";
 extern "C" int type_wrap() { return 1; }
 %}
 
