@@ -13,7 +13,7 @@
 #include <llvm/IR/Type.h>
 #include <llvm/IR/Verifier.h>
 
-#include "SymbolTable.hpp"
+#include "SymbolTableStack.hpp"
 #include "TypeRegistry.hpp"
 
 class ASTBlock;
@@ -23,15 +23,14 @@ class IREmitter
 public:
     struct EmitterState
     {
-        EmitterState(llvm::Module &module, llvm::LLVMContext &context, TypeRegistry &r) : module(module), context(context), builder(context), typeRegistry(r) {}
+        EmitterState(llvm::Module &module, llvm::LLVMContext &context, TypeRegistry &r) 
+        : module(module), context(context), builder(context), typeRegistry(r) {}
         llvm::Module &module;
         llvm::LLVMContext &context;
         llvm::IRBuilder<> builder;
 
-        SymbolTable symbolTable;
+        SymbolTableStack symbolStack;
         TypeRegistry &typeRegistry;
-
-        SymbolTable *frontmost = &symbolTable;
     };
 
     IREmitter(llvm::Module &module, llvm::LLVMContext &context, TypeRegistry &r) : state(module, context, r) {}

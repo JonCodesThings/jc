@@ -19,3 +19,10 @@ llvm::Value *ASTFunctionCall::EmitIR(IREmitter::EmitterState &state)
     
     return state.builder.CreateCall(Func, argvals, identifier->identifier + "_call");
 }
+
+const std::string *ASTFunctionCall::GetType(IREmitter::EmitterState &state)
+{
+    const Symbol *s = state.symbolStack.GetSymbolByIdentifier(identifier->identifier);
+    //printf("%s\n", s->type.c_str());
+    return state.typeRegistry.GetLifetimeTypeString(s->type);
+}

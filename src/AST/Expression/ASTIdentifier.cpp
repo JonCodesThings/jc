@@ -6,7 +6,7 @@ ASTIdentifier::ASTIdentifier() : ASTExpression(IDENTIFIER) {}
 
 const std::string *ASTIdentifier::GetType(IREmitter::EmitterState &state)
 {
-    Symbol *symbol = state.frontmost->GetSymbolByIdentifier(identifier);
+    Symbol *symbol = state.symbolStack.GetSymbolByIdentifier(identifier);
     if (symbol)
         return &symbol->type;
     return state.typeRegistry.GetLifetimeTypeString(identifier);
@@ -14,12 +14,12 @@ const std::string *ASTIdentifier::GetType(IREmitter::EmitterState &state)
 
 const Symbol *ASTIdentifier::GetSymbol(IREmitter::EmitterState &state)
 {
-    return state.frontmost->GetSymbolByIdentifier(identifier);
+    return state.symbolStack.GetSymbolByIdentifier(identifier);
 }
 
 llvm::Value *ASTIdentifier::EmitIR(IREmitter::EmitterState &state)
 {
-    const Symbol * s = state.frontmost->GetSymbolByIdentifier(identifier);
+    const Symbol * s = state.symbolStack.GetSymbolByIdentifier(identifier);
     if (s)
         return s->alloc_inst;
     return NULL;

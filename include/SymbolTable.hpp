@@ -23,19 +23,14 @@ struct Symbol
 class SymbolTable
 {
 public:
-    SymbolTable();
-    SymbolTable(const std::string &id, SymbolTable &parent);
+    SymbolTable(const std::string &id);
+    ~SymbolTable();
     bool AddSymbol(const Symbol &symbol);
-    SymbolTable *GetParentTable();
-    SymbolTable *CreateChildTable(const std::string &id);
     Symbol *GetSymbolByIdentifier(const std::string &identifier);
 private:
     std::vector<Symbol> symbols;
 
     std::string id;
-
-    SymbolTable *parent = NULL;
-    SymbolTable *child = NULL;
 };
 
 #endif

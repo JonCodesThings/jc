@@ -27,7 +27,7 @@ llvm::Value *ASTVariableAssignment::EmitIR(IREmitter::EmitterState &state)
 
     if (id)
     {
-        Symbol *symbol = state.frontmost->GetSymbolByIdentifier(id->identifier);
+        Symbol *symbol = state.symbolStack.GetSymbolByIdentifier(id->identifier);
         const Symbol *node_symbol = node->GetSymbol(state);
 
         if (!symbol)

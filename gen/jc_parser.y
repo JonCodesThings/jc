@@ -254,7 +254,7 @@ arg_list: arg_list COMMA arg_pair { auto s = std::unique_ptr<ASTFunctionArg>($3)
 statement_list: statement_list COMMA assignable_statement { auto s = std::unique_ptr<ASTStatement>($3); $1->push_back(std::move(s)); }
     | assignable_statement { $$ = new std::vector<std::unique_ptr<ASTStatement>>(); auto s = std::unique_ptr<ASTStatement>($1); $$->push_back(std::move(s)); };
 
-arg_pair: type id { $$ = new ASTFunctionArg(*$1, *$2); };
+arg_pair: type id { $$ = new ASTFunctionArg(*$1, *$2); } | FSTOP FSTOP FSTOP { $$ = new ASTFunctionArg(); };
 
 id_or_constant: id | constant;
 

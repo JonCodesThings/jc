@@ -95,7 +95,7 @@ llvm::Value *ASTBlock::EmitIR(IREmitter::EmitterState &state, ASTFunctionArgs &a
 
     for (auto &arg : current_function->args())
     {
-        Symbol *s = state.frontmost->GetSymbolByIdentifier(arg.getName());
+        Symbol *s = state.symbolStack.GetSymbolByIdentifier(arg.getName());
         s->alloc_inst = state.builder.CreateAlloca(state.typeRegistry.GetType(s->type), NULL, arg.getName());
         state.builder.CreateStore(&arg, s->alloc_inst);
     }

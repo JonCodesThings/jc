@@ -33,7 +33,7 @@ llvm::Value * ASTVariableDeclaration::EmitIR(IREmitter::EmitterState &state)
 
     symbol.alloc_inst = state.builder.CreateAlloca(t, NULL, id->identifier);
 
-    state.frontmost->AddSymbol(symbol);
+    state.symbolStack.AddSymbol(symbol);
 
     if (node)
     {

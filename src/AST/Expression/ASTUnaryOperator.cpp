@@ -29,7 +29,7 @@ llvm::Value *ASTUnaryOperator::EmitIR(IREmitter::EmitterState &state)
             if (!cast)
                 return state.builder.CreateGEP(s->alloc_inst, { llvm::ConstantInt::get(llvm::Type::getInt32Ty(state.context), 0), index->EmitIR(state) });
 
-            Symbol *cs = state.frontmost->GetSymbolByIdentifier(cast->identifier);
+            Symbol *cs = state.symbolStack.GetSymbolByIdentifier(cast->identifier);
 
             llvm::Value *v  = state.builder.CreateLoad(cs->alloc_inst, "temp");
 

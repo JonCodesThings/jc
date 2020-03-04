@@ -7,7 +7,7 @@ llvm::Value *ASTFunctionDefinition::EmitIR(IREmitter::EmitterState &state)
 {
     auto func = declaration->EmitIR(state);
 
-    state.frontmost = state.frontmost->CreateChildTable(declaration->identifier->identifier);
+    state.symbolStack.Push(declaration->identifier->identifier);
 
     current_function = (llvm::Function*)func;
 
@@ -18,11 +18,13 @@ llvm::Value *ASTFunctionDefinition::EmitIR(IREmitter::EmitterState &state)
         s.type = arg->type->identifier;
         s.classification = Symbol::Classification::VARIABLE;
         s.alloc_inst = NULL;
-        state.frontmost->AddSymbol(s);
+        state.symbolStack.AddSymbol(s);
     }
 
     if (!block->EmitIR(state, *declaration->arguments))
         return NULL;
+
+    state.symbolStack.Pop();
 
     return func;
 }
