@@ -10,6 +10,21 @@ ASTVariableAssignment::ASTVariableAssignment(ASTNode &array_index, ASTNode &node
 
 llvm::Value *ASTVariableAssignment::EmitIR(IREmitter::EmitterState &state)
 {
+    auto implicit_cast = [&state, this](std::unique_ptr<ASTNode> &node, const Symbol *symbol) -> llvm::Value*
+    {
+        //printf("%s\n", node->GetType(state)->c_str());
+        auto cast = ASTUnaryOperator(*node, new ASTIdentifier(symbol->type), ASTUnaryOperator::OP::CAST);
+        node.release();
+        auto emitted_ir = cast.EmitIR(state);
+        if (!emitted_ir)
+        {
+                printf("%s:%d:%d Error: types do not match for assignment (type %s expected, type %s given)\n",
+                yycurrentfilename, line_number, start_char, (*id->GetType(state)).c_str(), (*node->GetType(state)).c_str());
+                return NULL;
+        }
+        return state.builder.CreateStore(emitted_ir, symbol->alloc_inst);
+    };
+
     if (id)
     {
         Symbol *symbol = state.frontmost->GetSymbolByIdentifier(id->identifier);
@@ -34,18 +49,7 @@ llvm::Value *ASTVariableAssignment::EmitIR(IREmitter::EmitterState &state)
         else if (symbol && node_symbol)
         {
             if (symbol->type != node_symbol->type)
-            {
-                auto cast = ASTUnaryOperator(*node, new ASTIdentifier(symbol->type), ASTUnaryOperator::OP::CAST);
-                node.release();
-                auto emitted_ir = cast.EmitIR(state);
-                if (!emitted_ir)
-                {
-                    printf("%s:%d:%d Error: types do not match for assignment (type %s expected, type %s given)\n",
-                    yycurrentfilename, line_number, start_char, (*id->GetType(state)).c_str(), (*node->GetType(state)).c_str());
-                    return NULL;
-                }
-                return state.builder.CreateStore(emitted_ir, symbol->alloc_inst);
-            }
+                return implicit_cast(node, symbol);
         }
 
         if (node_symbol)
@@ -55,22 +59,10 @@ llvm::Value *ASTVariableAssignment::EmitIR(IREmitter::EmitterState &state)
         }
 
         llvm::Value * v;
-        printf("%s\n", symbol->type.c_str());
         if (symbol->type == *node->GetType(state) || state.typeRegistry.GetType(symbol->type) == state.typeRegistry.GetType(*node->GetType(state)))
             v = node->EmitIR(state);
         else
-        {
-            auto cast = ASTUnaryOperator(*node, new ASTIdentifier(symbol->type), ASTUnaryOperator::OP::CAST);
-            node.release();
-            auto emitted_ir = cast.EmitIR(state);
-            if (!emitted_ir)
-            {
-                printf("%s:%d:%d Error: types do not match for assignment (type %s expected, type %s given)\n",
-                yycurrentfilename, line_number, start_char, (*id->GetType(state)).c_str(), (*node->GetType(state)).c_str());
-                return NULL;
-            }
-            return state.builder.CreateStore(emitted_ir, symbol->alloc_inst);
-        }
+            return implicit_cast(node, symbol);
         
 
         if (v->getType() == symbol->alloc_inst->getType())

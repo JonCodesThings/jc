@@ -73,7 +73,7 @@ llvm::Value *ASTUnaryOperator::EmitIR(IREmitter::EmitterState &state)
                     return state.builder.CreateSIToFP(v, conver);
                 return NULL;
             }
-
+            return NULL;
         }
         case INCREMENT:
         {
@@ -89,4 +89,22 @@ llvm::Value *ASTUnaryOperator::EmitIR(IREmitter::EmitterState &state)
         }
     }
     return NULL;
+}
+
+const std::string *ASTUnaryOperator::GetType(IREmitter::EmitterState &state)
+{
+    //TODO: Jon
+    //get the type stuff working for more types of unary operators
+
+    const Symbol *s = operatee->GetSymbol(state);
+    switch (op)
+    {
+        default:
+            return NULL;
+        case INCREMENT:
+        case DECREMENT:
+            return state.typeRegistry.GetLifetimeTypeString(s->type);
+        case CAST:
+            return cast->GetType(state);
+    }
 }

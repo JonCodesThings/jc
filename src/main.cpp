@@ -24,6 +24,8 @@ int main(int argc, const char **args)
     registry = new TypeRegistry(context);
     registry->SetupBuiltinJCTypes();
     type_in = fopen(args[1], "r");
+    if (!type_in)
+        return 0;
     type_parse();
     fclose(type_in);
 

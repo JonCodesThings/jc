@@ -27,6 +27,8 @@ public:
     ASTUnaryOperator(ASTNode &operatee, ASTIdentifier *identifier, OP op);
     
     ASTUnaryOperator(ASTNode &operatee, ASTConstantInt &index, OP op);
+
+    const std::string *GetType(IREmitter::EmitterState &state);
     
     llvm::Value *EmitIR(IREmitter::EmitterState &state);
 };
