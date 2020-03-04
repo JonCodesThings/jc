@@ -55,7 +55,8 @@ llvm::Value *ASTVariableAssignment::EmitIR(IREmitter::EmitterState &state)
         }
 
         llvm::Value * v;
-        if (symbol->type == *node->GetType(state))
+        printf("%s\n", symbol->type.c_str());
+        if (symbol->type == *node->GetType(state) || state.typeRegistry.GetType(symbol->type) == state.typeRegistry.GetType(*node->GetType(state)))
             v = node->EmitIR(state);
         else
         {

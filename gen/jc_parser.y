@@ -143,6 +143,8 @@ statement: return_statement | function_def | function_decl | variable_decl | ass
 
 alias_statement: ALIAS TYPE TYPE SEMICOLON { $$ = new ASTTypeSystemModStatement(ASTTypeSystemModStatement::TYPE_MOD_OP::ALIAS); };
 
+alias_statement: TYPEDEF TYPE TYPE SEMICOLON { $$ = new ASTTypeSystemModStatement(ASTTypeSystemModStatement::TYPE_MOD_OP::TYPEDEF); };
+
 defer_statement: DEFER assignable_statement { $$ = new ASTDeferredStatement(*$2); }
 
 assignable_statement: function_call | unary_op | binary_op | id_or_constant;

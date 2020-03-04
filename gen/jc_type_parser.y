@@ -37,10 +37,13 @@ defs: struct_def | alias_def | typedef_def
 struct_def: STRUCT_TYPE_KEYWORD IDENTIFIER_TYPE_KEYWORD IDENTIFIER_TYPE_KEYWORD SEMICOLON_TYPE_KEYWORD;
 
 alias_def: ALIAS_TYPE_KEYWORD IDENTIFIER_TYPE_KEYWORD IDENTIFIER_TYPE_KEYWORD SEMICOLON_TYPE_KEYWORD 
-{ registry->AddAlias(identifier_stack[1], identifier_stack[0]);
-};
+{ registry->AddAlias(identifier_stack[1], identifier_stack[0]); };
 
-typedef_def: TYPEDEF_TYPE_KEYWORD IDENTIFIER_TYPE_KEYWORD IDENTIFIER_TYPE_KEYWORD SEMICOLON_TYPE_KEYWORD;
+typedef_def: TYPEDEF_TYPE_KEYWORD IDENTIFIER_TYPE_KEYWORD IDENTIFIER_TYPE_KEYWORD SEMICOLON_TYPE_KEYWORD
+{   auto t = registry->GetType(identifier_stack[1]);
+    auto jct = registry->GetTypeInfo(identifier_stack[0]);
+    registry->AddType(identifier_stack[1], *t, jct->classification);
+}
 
 none: NONE { /*printf("none\n");*/ }
 

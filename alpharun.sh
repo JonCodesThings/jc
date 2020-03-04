@@ -63,3 +63,5 @@ run_test test/float_if_test.jc 0
 
 run_test test/u32_test.jc 1
 
+run_test test/alias_test.jc 10
+

@@ -1,0 +1,8 @@
+alias i32 MyCoolTypeAlias;
+
+MyCoolTypeAlias main()
+{
+    CoolTypeAlias a;
+    a = 10;
+    return a;
+}

@@ -45,13 +45,14 @@ public:
     void SetupBuiltinJCTypes();
     void AddAlias(const std::string &id, const std::string &type_to_be_aliased);
     void AddType(const std::string &id, llvm::Type &type, const JCType::TYPE_CLASSIFICATION &classification);
+    const std::string GetTypeStringFromAlias(const std::string &id);
     llvm::Type *GetAliasedType(const std::string &id);
     llvm::Type *GetArrayType(const std::string &id, unsigned int array_size);
     llvm::Type *GetType(const std::string &id);
     llvm::Type *UnwindPointerType(const std::string &id);
     const JCType *GetTypeInfo(const std::string &id);
     const std::string *GetLifetimeTypeString(const std::string &id);
-    bool IsTypeNumeric(const JCType &type);
+    //bool IsTypeNumeric(const JCType &type);
     bool IsTypeNumeric(const std::string &id);
     llvm::Type *GetWideningConversion(const std::string &current, const std::string &to);
     llvm::Type *GetNarrowingConversion(const std::string &current, const std::string &to);

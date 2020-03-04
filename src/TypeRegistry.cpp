@@ -51,6 +51,16 @@ void TypeRegistry::AddType(const std::string &id, llvm::Type &t, const JCType::T
     registry.push_back(type);
 }
 
+const std::string TypeRegistry::GetTypeStringFromAlias(const std::string &id)
+{   
+    for (auto &pair : alias_registry)
+    {
+        if (pair.first == id)
+            return pair.second;
+    }
+    return "";
+}
+
 llvm::Type *TypeRegistry::GetAliasedType(const std::string &id)
 {
     for (auto &pair : alias_registry)
@@ -121,17 +131,22 @@ const std::string *TypeRegistry::GetLifetimeTypeString(const std::string &id)
     return NULL;
 }
 
-bool TypeRegistry::IsTypeNumeric(const JCType &type)
+/*bool TypeRegistry::IsTypeNumeric(const JCType &type)
 {
     return (type.classification == JCType::TYPE_CLASSIFICATION::INT || type.classification == JCType::TYPE_CLASSIFICATION::FLOAT || type.classification == JCType::TYPE_CLASSIFICATION::CHAR);
-}
+}*/
 
 bool TypeRegistry::IsTypeNumeric(const std::string &id)
 {
+    std::string search = id;
+    printf("%s\n", search.c_str());
+    std::string alias = GetTypeStringFromAlias(id);
+    if (alias != "")
+        search = alias;
     JCType *t = NULL;
     for (int i = 0; i < registry.size(); i++)
     {
-        if (registry[i].type_string == id)
+        if (registry[i].type_string == search)
             t = &registry[i];
     }
 
@@ -142,8 +157,17 @@ bool TypeRegistry::IsTypeNumeric(const std::string &id)
 
 llvm::Type *TypeRegistry::GetNarrowingConversion(const std::string &current, const std::string &to)
 {
+    const std::string current_raw = GetTypeStringFromAlias(current);
+    const std::string to_raw = GetTypeStringFromAlias(to);
+
     const JCType *curr = GetTypeInfo(current);
     const JCType *t = GetTypeInfo(to);
+
+    if (current_raw != "")
+        curr = GetTypeInfo(current_raw);
+
+    if (to_raw != "")
+        t = GetTypeInfo(to_raw);
 
     //printf("curr: %s   to: %s\n", curr->type_string.c_str(), t->type_string.c_str());
 
@@ -162,8 +186,17 @@ llvm::Type *TypeRegistry::GetNarrowingConversion(const std::string &current, con
 
 llvm::Type *TypeRegistry::GetWideningConversion(const std::string &current, const std::string &to)
 {
+    const std::string current_raw = GetTypeStringFromAlias(current);
+    const std::string to_raw = GetTypeStringFromAlias(to);
+
     const JCType *curr = GetTypeInfo(current);
     const JCType *t = GetTypeInfo(to);
+
+    if (current_raw != "")
+        curr = GetTypeInfo(current_raw);
+
+    if (to_raw != "")
+        t = GetTypeInfo(to_raw);
 
     //printf("curr: %s   to: %s\n", curr->type_string.c_str(), t->type_string.c_str());
 
