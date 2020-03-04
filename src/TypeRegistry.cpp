@@ -113,9 +113,13 @@ llvm::Type *TypeRegistry::UnwindPointerType(const std::string &id)
 
 const JCType *TypeRegistry::GetTypeInfo(const std::string &id)
 {
+    std::string search = id;
+    std::string alias = GetTypeStringFromAlias(id);
+    if (alias != "")
+        search = alias;
     for (int i = 0; i < registry.size(); i++)
     {
-        if (registry[i].type_string == id)
+        if (registry[i].type_string == search)
             return &registry[i];
     }
     return NULL;
@@ -123,9 +127,13 @@ const JCType *TypeRegistry::GetTypeInfo(const std::string &id)
 
 const std::string *TypeRegistry::GetLifetimeTypeString(const std::string &id)
 {
+    std::string search = id;
+    std::string alias = GetTypeStringFromAlias(id);
+    if (alias != "")
+        search = alias;
     for (int i = 0; i < registry.size(); i++)
     {
-        if (registry[i].type_string == id)
+        if (registry[i].type_string == search)
             return &registry[i].type_string;
     }
     return NULL;
@@ -139,7 +147,6 @@ const std::string *TypeRegistry::GetLifetimeTypeString(const std::string &id)
 bool TypeRegistry::IsTypeNumeric(const std::string &id)
 {
     std::string search = id;
-    printf("%s\n", search.c_str());
     std::string alias = GetTypeStringFromAlias(id);
     if (alias != "")
         search = alias;

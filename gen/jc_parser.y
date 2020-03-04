@@ -113,7 +113,7 @@ int token;
 %type<statement> add subtract multiply divide equality inequality lesser  greater  lesser_or_equal  greater_or_equal
 %type<statement_list> statement_list
 %type<defer_statement> defer_statement
-%type<type_mod> alias_statement
+%type<type_mod> alias_statement typedef_statement
 %type<cond_block> cond_block
 %type<while_loop> while_loop
 %type<for_loop> for_loop
@@ -139,11 +139,11 @@ semicoloned_statements: semicoloned_statement { $$ = new ASTBlock(); auto statem
 semicoloned_statement: statement SEMICOLON { SetNodeInfo(*$1); }; | assignable_statement SEMICOLON { SetNodeInfo(*$1); } | flow_control { SetNodeInfo(*$1); }
     | defer_statement SEMICOLON { SetNodeInfo(*$1); }; ;
 
-statement: return_statement | function_def | function_decl | variable_decl | assign_op | flow_control | alias_statement;
+statement: return_statement | function_def | function_decl | variable_decl | assign_op | flow_control | alias_statement | typedef_statement;
 
-alias_statement: ALIAS TYPE TYPE SEMICOLON { $$ = new ASTTypeSystemModStatement(ASTTypeSystemModStatement::TYPE_MOD_OP::ALIAS); };
+alias_statement: ALIAS TYPE TYPE { $$ = new ASTTypeSystemModStatement(ASTTypeSystemModStatement::TYPE_MOD_OP::ALIAS); };
 
-alias_statement: TYPEDEF TYPE TYPE SEMICOLON { $$ = new ASTTypeSystemModStatement(ASTTypeSystemModStatement::TYPE_MOD_OP::TYPEDEF); };
+typedef_statement: TYPEDEF TYPE TYPE { $$ = new ASTTypeSystemModStatement(ASTTypeSystemModStatement::TYPE_MOD_OP::TYPEDEF); };
 
 defer_statement: DEFER assignable_statement { $$ = new ASTDeferredStatement(*$2); }
 

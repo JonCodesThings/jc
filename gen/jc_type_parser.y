@@ -11,7 +11,7 @@ extern std::vector<std::string> identifier_stack;
 
 void type_error (char *error)
 {
-printf("%s\n", error);
+printf("Type preparser: %s\n", error);
 }
 %}
 
@@ -40,7 +40,7 @@ alias_def: ALIAS_TYPE_KEYWORD IDENTIFIER_TYPE_KEYWORD IDENTIFIER_TYPE_KEYWORD SE
 { registry->AddAlias(identifier_stack[1], identifier_stack[0]); };
 
 typedef_def: TYPEDEF_TYPE_KEYWORD IDENTIFIER_TYPE_KEYWORD IDENTIFIER_TYPE_KEYWORD SEMICOLON_TYPE_KEYWORD
-{   auto t = registry->GetType(identifier_stack[1]);
+{   auto t = registry->GetType(identifier_stack[0]);
     auto jct = registry->GetTypeInfo(identifier_stack[0]);
     registry->AddType(identifier_stack[1], *t, jct->classification);
 }

@@ -2,7 +2,7 @@ alias i32 MyCoolTypeAlias;
 
 MyCoolTypeAlias main()
 {
-    CoolTypeAlias a;
+    MyCoolTypeAlias a;
     a = 10;
     return a;
 }
