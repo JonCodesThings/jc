@@ -26,10 +26,8 @@ llvm::Value * ASTVariableDeclaration::EmitIR(IREmitter::EmitterState &state)
 
     if (array_size)
         t = state.typeRegistry.GetArrayType(type->identifier, temp->constant);
-    else
-    {
-        symbol.type = type->identifier;
-    }
+
+    symbol.type = type->identifier;
 
     symbol.alloc_inst = state.builder.CreateAlloca(t, NULL, id->identifier);
 

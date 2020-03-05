@@ -106,5 +106,9 @@ const std::string *ASTUnaryOperator::GetType(IREmitter::EmitterState &state)
             return state.typeRegistry.GetLifetimeTypeString(s->type);
         case CAST:
             return cast->GetType(state);
+        case ADDRESS_OF:
+            return new std::string(s->type + "*");
+        case ARRAY_INDEX:
+            return state.typeRegistry.GetLifetimeTypeString(s->type);
     }
 }

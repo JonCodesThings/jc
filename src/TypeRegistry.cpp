@@ -131,6 +131,7 @@ const std::string *TypeRegistry::GetLifetimeTypeString(const std::string &id)
     std::string alias = GetTypeStringFromAlias(id);
     if (alias != "")
         search = alias;
+    //printf("%s\n", search.c_str());
     for (int i = 0; i < registry.size(); i++)
     {
         if (registry[i].type_string == search)
