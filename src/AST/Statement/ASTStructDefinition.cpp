@@ -6,6 +6,8 @@ llvm::Value *ASTStructDefinition::EmitIR(IREmitter::EmitterState &state)
 {
     std::vector<llvm::Type *> members;
 
+    std::vector<std::string> member_names;
+
     for (auto &member : contains->args)
     {
         llvm::Type *t = state.typeRegistry.GetType(member->type->identifier);
@@ -17,9 +19,10 @@ llvm::Value *ASTStructDefinition::EmitIR(IREmitter::EmitterState &state)
             return NULL;
 
         members.push_back(t);
+        member_names.push_back(member->name->identifier);
     }
 
-    state.typeRegistry.SetStructType(id->identifier , members);
+    state.typeRegistry.SetStructType(id->identifier, members, member_names);
 
     return (llvm::Value*)state.typeRegistry.GetType(id->identifier);
 }
