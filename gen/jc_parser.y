@@ -253,10 +253,10 @@ for_loop: FOR LEFT_BRACKET statement SEMICOLON assignable_statement SEMICOLON as
  $$ = new ASTForStatement(*$3, *$5, *$7, *$9);
 }
 
-struct_list: struct_list COMMA struct_pair { auto s = std::unique_ptr<ASTFunctionArg>($3); $1->args.push_back(std::move(s)); }
+struct_list: struct_list struct_pair { auto s = std::unique_ptr<ASTFunctionArg>($2); $1->args.push_back(std::move(s)); }
     | struct_pair { $$ = new ASTFunctionArgs(); auto s = std::unique_ptr<ASTFunctionArg>($1); $$->args.push_back(std::move(s)); };
 
-struct_pair: type id { $$ = new ASTFunctionArg(*$1, *$2); }
+struct_pair: type id SEMICOLON { $$ = new ASTFunctionArg(*$1, *$2); }
 
 arg_list: arg_list COMMA arg_pair { auto s = std::unique_ptr<ASTFunctionArg>($3); $1->args.push_back(std::move(s)); }
     | arg_pair { $$ = new ASTFunctionArgs(); auto s = std::unique_ptr<ASTFunctionArg>($1); $$->args.push_back(std::move(s)); };
