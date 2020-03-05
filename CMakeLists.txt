@@ -32,6 +32,7 @@ set(SOURCE_FILES src/main.cpp
     src/AST/Expression/ASTBinaryOperator.cpp
     src/AST/Expression/ASTFunctionCall.cpp
     src/AST/Expression/ASTIdentifier.cpp
+    src/AST/Expression/ASTMemberOperator.cpp
     src/AST/Expression/ASTUnaryOperator.cpp
     src/AST/Expression/ASTVariableAssignment.cpp
 
