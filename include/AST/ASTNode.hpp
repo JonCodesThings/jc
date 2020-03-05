@@ -38,6 +38,7 @@ public:
 
         UNARY_OP,
         BINARY_OP,
+        MEMBER_OP,
 
         VARIABLE_ASSIGNMENT,
         VARIABLE_DECLARATION,

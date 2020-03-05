@@ -44,6 +44,7 @@ public:
     ~TypeRegistry() {};
     void SetupBuiltinJCTypes();
     void AddAlias(const std::string &id, const std::string &type_to_be_aliased);
+    void AddBlankStructType(const std::string &id);
     void AddType(const std::string &id, llvm::Type &type, const JCType::TYPE_CLASSIFICATION &classification);
     const std::string GetTypeStringFromAlias(const std::string &id);
     llvm::Type *GetAliasedType(const std::string &id);
@@ -57,6 +58,7 @@ public:
     llvm::Type *GetWideningConversion(const std::string &current, const std::string &to);
     llvm::Type *GetNarrowingConversion(const std::string &current, const std::string &to);
     llvm::Type *GetImplicitCast(const std::string &current, const std::string &to);
+    void SetStructType(const std::string &id, const std::vector<llvm::Type *> &members);
 private:
     void AddType(const std::string &id, llvm::Type &type, const JCType::TYPE_CLASSIFICATION &classification, unsigned int integer_limit);
 

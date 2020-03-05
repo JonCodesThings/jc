@@ -19,9 +19,7 @@ llvm::Value *ASTStructDefinition::EmitIR(IREmitter::EmitterState &state)
         members.push_back(t);
     }
 
-    auto StructType = llvm::StructType::create(members, id->identifier);
+    state.typeRegistry.SetStructType(id->identifier , members);
 
-    state.typeRegistry.AddType(id->identifier, *StructType, JCType::TYPE_CLASSIFICATION::STRUCT);
-
-    return (llvm::Value*)StructType;
+    return (llvm::Value*)state.typeRegistry.GetType(id->identifier);
 }

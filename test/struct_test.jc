@@ -1,4 +1,4 @@
-struct CoolStruct;
+struct MyCoolStruct
 {
     i32 x;
     f32 f;
@@ -6,5 +6,6 @@ struct CoolStruct;
 
 i32 main()
 {
+    MyCoolStruct s;
     return 5;
 }

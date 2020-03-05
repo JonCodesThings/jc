@@ -26,11 +26,16 @@ int main(int argc, const char **args)
     type_in = fopen(args[1], "r");
     if (!type_in)
     {
-        printf("Type preparser failed!");
+        printf("Type preparser failed!\n");
         return 0;
     }
-    type_parse();
+    int x = type_parse();
     fclose(type_in);
+    if (x != 0)
+    {
+        printf("Type preparser failed!\n");
+        return 0;
+    }
 
     yyin = fopen(args[1], "r");
     if (!yyin)

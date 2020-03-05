@@ -29,6 +29,15 @@ void TypeRegistry::AddAlias(const std::string &id, const std::string &type_to_be
     alias_registry.push_back(std::make_pair(id, t->type_string));
 }
 
+void TypeRegistry::AddBlankStructType(const std::string &id)
+{
+    JCType type;
+    type.type_string = id;
+    type.classification = JCType::TYPE_CLASSIFICATION::STRUCT;
+
+    registry.push_back(type);
+}
+
 
 void TypeRegistry::AddType(const std::string &id, llvm::Type &t, const JCType::TYPE_CLASSIFICATION &classification)
 {
@@ -138,6 +147,19 @@ const std::string *TypeRegistry::GetLifetimeTypeString(const std::string &id)
             return &registry[i].type_string;
     }
     return NULL;
+}
+
+void TypeRegistry::SetStructType(const std::string &id, const std::vector<llvm::Type *> &members)
+{
+    for (int i = 0; i < registry.size(); i++)
+    {
+        if (registry[i].type_string == id)
+        {
+            auto StructType = llvm::StructType::create(members, id);
+            registry[i].llvm_type = StructType;
+            return;
+        }
+    }
 }
 
 /*bool TypeRegistry::IsTypeNumeric(const JCType &type)

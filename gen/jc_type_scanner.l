@@ -13,12 +13,12 @@ std::vector<std::string> identifier_stack;
 %}
 
 %%
-"struct" { identifier_stack.clear(); return STRUCT_TYPE_KEYWORD; }
-"alias"  { identifier_stack.clear(); /*printf("yikes\n");*/ return ALIAS_TYPE_KEYWORD; }
-"typedef" { identifier_stack.clear(); return TYPEDEF_TYPE_KEYWORD; }
-";" { /*printf("semicolon\n");*/ return SEMICOLON_TYPE_KEYWORD; identifier_stack.clear(); }
-[a-zA-Z0-9]+ { identifier_stack.push_back(yytext); /*printf("%s\n", yytext);*/ return IDENTIFIER_TYPE_KEYWORD; }
-[  \t\n] { /*printf("skipping whitespace\n");*/ }
-. { return NONE; }
 <<EOF>> { return 0; }
+[  \n\t] {  }
+";" {  return SEMICOLON_TYPE_KEYWORD; identifier_stack.clear(); }
+"struct" { identifier_stack.clear(); return STRUCT_TYPE_KEYWORD; }
+"alias"  { identifier_stack.clear();  return ALIAS_TYPE_KEYWORD; }
+"typedef" { identifier_stack.clear(); return TYPEDEF_TYPE_KEYWORD; }
+[a-zA-Z0-9]+ { identifier_stack.push_back(yytext); return IDENTIFIER_TYPE_KEYWORD; }
+. { return NONE; }
 %%
