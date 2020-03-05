@@ -25,7 +25,10 @@ int main(int argc, const char **args)
     registry->SetupBuiltinJCTypes();
     type_in = fopen(args[1], "r");
     if (!type_in)
+    {
+        printf("Type preparser failed!");
         return 0;
+    }
     type_parse();
     fclose(type_in);
 

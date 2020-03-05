@@ -66,3 +66,5 @@ run_test test/u32_test.jc 1
 run_test test/alias_test.jc 10
 
 run_test test/variadic_def_test.jc 0
+
+run_test test/struct_test.jc 5

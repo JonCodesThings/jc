@@ -49,6 +49,7 @@ ASTFunctionArgs *function_args;
 ASTFunctionCall *function_call;
 ASTFunctionDeclaration *function_declaration;
 ASTFunctionDefinition *function_definition;
+ASTStructDefinition *struct_definition;
 ASTIfStatement *if_statement;
 ASTForStatement *for_loop;
 ASTWhileStatement *while_loop;
@@ -100,10 +101,10 @@ int token;
 
 %token UNKNOWN
 
-%type<statement> node_setup semicoloned_statement statement function_def function_decl variable_decl assign_op variable_assign unary_op binary_op
+%type<statement> node_setup semicoloned_statement statement function_def function_decl variable_decl assign_op variable_assign unary_op binary_op struct_def
 %type<statement> assignable_statement array_decl
 %type<unary_operator> cast increment decrement address_of dereference array_index
-%type<function_args> arg_list
+%type<function_args> arg_list struct_list
 %type<function_call> function_call
 %type<if_statement> if_statement
 %type<id> id type
@@ -119,7 +120,7 @@ int token;
 %type<for_loop> for_loop
 %type<constant> constant
 %type<constant_int> constant_int
-%type<function_arg> arg_pair
+%type<function_arg> arg_pair struct_pair
 %type<node> id_or_constant
 
 %start module
@@ -139,11 +140,15 @@ semicoloned_statements: semicoloned_statement { $$ = new ASTBlock(); auto statem
 semicoloned_statement: statement SEMICOLON { SetNodeInfo(*$1); }; | assignable_statement SEMICOLON { SetNodeInfo(*$1); } | flow_control { SetNodeInfo(*$1); }
     | defer_statement SEMICOLON { SetNodeInfo(*$1); }; ;
 
-statement: return_statement | function_def | function_decl | variable_decl | assign_op | flow_control | alias_statement | typedef_statement;
+statement: return_statement | function_def | function_decl | variable_decl | assign_op | flow_control | alias_statement | typedef_statement | struct_def;
 
 alias_statement: ALIAS TYPE TYPE { $$ = new ASTTypeSystemModStatement(ASTTypeSystemModStatement::TYPE_MOD_OP::ALIAS); };
 
 typedef_statement: TYPEDEF TYPE TYPE { $$ = new ASTTypeSystemModStatement(ASTTypeSystemModStatement::TYPE_MOD_OP::TYPEDEF); };
+
+struct_decl: STRUCT TYPE SEMICOLON;
+
+struct_def: STRUCT id SEMICOLON LEFT_BRACE struct_list RIGHT_BRACE { $$ = new ASTStructDefinition(*$2, *$5); };
 
 defer_statement: DEFER assignable_statement { $$ = new ASTDeferredStatement(*$2); }
 
@@ -246,7 +251,12 @@ while_loop: WHILE LEFT_BRACKET assignable_statement RIGHT_BRACKET scope { $$ = n
 for_loop: FOR LEFT_BRACKET statement SEMICOLON assignable_statement SEMICOLON assignable_statement RIGHT_BRACKET scope
 {
  $$ = new ASTForStatement(*$3, *$5, *$7, *$9);
-} 
+}
+
+struct_list: struct_list COMMA struct_pair { auto s = std::unique_ptr<ASTFunctionArg>($3); $1->args.push_back(std::move(s)); }
+    | struct_pair { $$ = new ASTFunctionArgs(); auto s = std::unique_ptr<ASTFunctionArg>($1); $$->args.push_back(std::move(s)); };
+
+struct_pair: type id { $$ = new ASTFunctionArg(*$1, *$2); }
 
 arg_list: arg_list COMMA arg_pair { auto s = std::unique_ptr<ASTFunctionArg>($3); $1->args.push_back(std::move(s)); }
     | arg_pair { $$ = new ASTFunctionArgs(); auto s = std::unique_ptr<ASTFunctionArg>($1); $$->args.push_back(std::move(s)); };

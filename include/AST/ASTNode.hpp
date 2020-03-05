@@ -58,6 +58,8 @@ public:
 
         TYPE_MOD,
 
+        STRUCT_DEFINITION,
+
         BLOCK,
 
         NODE_TYPE_COUNT

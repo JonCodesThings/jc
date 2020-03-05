@@ -1,0 +1,10 @@
+struct CoolStruct;
+{
+    i32 x,
+    f32 f
+}
+
+i32 main()
+{
+    return 5;
+}
