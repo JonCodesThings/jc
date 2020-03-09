@@ -11,7 +11,17 @@ llvm::Value *ASTReturnStatement::EmitIR(IREmitter::EmitterState &state)
         retval = state.builder.CreateLoad(retval);
     }
     else
+    {
         retval = expr->EmitIR(state);
+        switch (expr->GetNodeType())
+        {
+            default:
+            break;
+            case MEMBER_OP:
+                retval = state.builder.CreateLoad(retval, "load_gep_retval");
+                break;
+        }
+    }
     prev_processed = node_type;
     return state.builder.CreateRet(retval);
 }

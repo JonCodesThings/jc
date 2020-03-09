@@ -8,5 +8,6 @@ i32 main()
 {
     MyCoolStruct s;
     s.x = 5;
-    return 5;
+    s.f = 32.0f;
+    return s.x;
 }

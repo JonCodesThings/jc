@@ -8,12 +8,10 @@
 class ASTVariableAssignment : public ASTExpression
 {
 public:
-    std::unique_ptr<ASTIdentifier> id;
-    std::unique_ptr<ASTNode> node;
-    std::unique_ptr<ASTNode> array_index;
+    std::unique_ptr<ASTNode> assign_to;
+    std::unique_ptr<ASTNode> val;
 
-    ASTVariableAssignment(ASTIdentifier &id, ASTNode &node);
-    ASTVariableAssignment(ASTNode &array_index, ASTNode &node);
+    ASTVariableAssignment(ASTNode &assign_to, ASTNode &val);
     llvm::Value *EmitIR(IREmitter::EmitterState &state);
 };
 

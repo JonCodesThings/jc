@@ -17,8 +17,7 @@ llvm::Value *ASTMemberOperator::EmitIR(IREmitter::EmitterState &state)
                 if (struct_type->MEMBER_NAMES[i] == member_id->identifier)
                 {
                     llvm::Value *get_element = state.builder.CreateGEP(struct_symbol->alloc_inst, { llvm::ConstantInt::get(llvm::Type::getInt32Ty(state.context), 0),  llvm::ConstantInt::get(llvm::Type::getInt32Ty(state.context), i) });
-                    llvm::Value *load_element = state.builder.CreateLoad(get_element, "load_struct_element_" + member_id->identifier);
-                    return load_element;
+                    return get_element;
                 }
             }
         }
@@ -29,5 +28,13 @@ const std::string *ASTMemberOperator::GetType(IREmitter::EmitterState &state)
 {
     const Symbol *struct_symbol = state.symbolStack.GetSymbolByIdentifier(id->identifier);
     const JCType *struct_type = state.typeRegistry.GetTypeInfo(struct_symbol->type);
+
+    for (auto &member : struct_type->MEMBER_NAMES)
+    {
+        if (member_id->identifier == member)
+        {
+        }
+    }
+
     return NULL;
 }
