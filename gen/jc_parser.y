@@ -50,6 +50,7 @@ ASTFunctionCall *function_call;
 ASTFunctionDeclaration *function_declaration;
 ASTFunctionDefinition *function_definition;
 ASTStructDefinition *struct_definition;
+ASTMemberOperator *member_operator;
 ASTIfStatement *if_statement;
 ASTForStatement *for_loop;
 ASTWhileStatement *while_loop;
@@ -97,11 +98,11 @@ int token;
 
 %token EXTERN IMPORT EXPORT
 
-%token STRUCT
+%token STRUCT ARROW
 
 %token UNKNOWN
 
-%type<statement> node_setup semicoloned_statement statement function_def function_decl variable_decl assign_op variable_assign unary_op binary_op struct_def
+%type<statement> node_setup semicoloned_statement statement function_def function_decl variable_decl assign_op variable_assign unary_op binary_op member_op struct_def
 %type<statement> assignable_statement array_decl
 %type<unary_operator> cast increment decrement address_of dereference array_index
 %type<function_args> arg_list struct_list
@@ -150,7 +151,7 @@ struct_def: STRUCT type LEFT_BRACE struct_list RIGHT_BRACE { printf("parsed a st
 
 defer_statement: DEFER assignable_statement { $$ = new ASTDeferredStatement(*$2); }
 
-assignable_statement: function_call | unary_op | binary_op | id_or_constant;
+assignable_statement: function_call | unary_op | binary_op | member_op | id_or_constant;
 
 flow_control: if_statement | loop;
 
@@ -164,8 +165,11 @@ binary_op: add | subtract | multiply | divide | equality | inequality | lesser |
 
 assign_op: variable_assign;
 
+member_op: id FSTOP id { $$ = new ASTMemberOperator(*$1, *$3, ASTMemberOperator::OP::DOT); } | id ARROW id { $$ = new ASTMemberOperator(*$1, *$3, ASTMemberOperator::OP::ARROW); };
+
 variable_assign: id EQUAL assignable_statement { $$ = new ASTVariableAssignment(*$1, *$3);  }
-    | array_index EQUAL assignable_statement { $$ = new ASTVariableAssignment(*$1, *$3); };
+    | array_index EQUAL assignable_statement { $$ = new ASTVariableAssignment(*$1, *$3); }
+    | member_op EQUAL assignable_statement { $$ = new ASTVariableAssignment(*$1, *$3); };
 
 cast: LEFT_BRACKET type RIGHT_BRACKET id_or_constant { $$ = new ASTUnaryOperator(*$4, $2, ASTUnaryOperator::CAST); };
 

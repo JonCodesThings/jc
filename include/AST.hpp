@@ -14,6 +14,7 @@
 #include <include/AST/Expression/ASTBinaryOperator.hpp>
 #include <include/AST/Expression/ASTFunctionCall.hpp>
 #include <include/AST/Expression/ASTIdentifier.hpp>
+#include <include/AST/Expression/ASTMemberOperator.hpp>
 #include <include/AST/Expression/ASTUnaryOperator.hpp>
 #include <include/AST/Expression/ASTVariableAssignment.hpp>
 

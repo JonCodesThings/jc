@@ -19,6 +19,8 @@ TypeRegistry *registry;
 [0-9]+ { yylval.integer = atoi(yytext); return INTEGER; yycurrentlinechar += yyleng; }
 [+-]?([0-9]*[.])?[0-9]+"f" { yylval.fl = atof(yytext); return FLOAT; yycurrentlinechar += yyleng; }
 
+"->" { return ARROW; yycurrentlinechar += yyleng; }
+
 "(" { return LEFT_BRACKET; yycurrentlinechar += yyleng; }
 ")" { return RIGHT_BRACKET; yycurrentlinechar += yyleng; }
 "{" { return LEFT_BRACE; yycurrentlinechar += yyleng; }
