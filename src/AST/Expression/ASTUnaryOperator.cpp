@@ -107,7 +107,18 @@ const std::string *ASTUnaryOperator::GetType(IREmitter::EmitterState &state)
         case CAST:
             return cast->GetType(state);
         case ADDRESS_OF:
-            return new std::string(s->type + "*");
+        {
+            std::string pointer_ty = s->type + "*";
+            const std::string *exists = state.typeRegistry.GetLifetimeTypeString(pointer_ty);
+
+            if (!exists)
+            {
+                llvm::Type *t = state.typeRegistry.UnwindPointerType(pointer_ty);
+                state.typeRegistry.AddType(pointer_ty, *t, JCType::TYPE_CLASSIFICATION::POINTER);
+            }
+
+            return state.typeRegistry.GetLifetimeTypeString(pointer_ty);
+        }
         case ARRAY_INDEX:
             return state.typeRegistry.GetLifetimeTypeString(s->type);
     }

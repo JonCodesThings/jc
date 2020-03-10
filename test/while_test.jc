@@ -5,7 +5,7 @@ i32 main()
     i32 x = 0;
     while (x != 5)
     {
-        printf("my name jeff");
+        printf("my name jeff\n");
         x++;
     }
     return x;

@@ -51,7 +51,7 @@ run_test test/if_else_if_else_else_test.jc 2
 
 run_test test/for_test.jc 36
 run_test test/for_array_test.jc 9
-run_test test/while_test.jc 6
+run_test test/while_test.jc 5
 run_test test/while_array_test.jc 9
 
 run_test test/defer_test.jc 0

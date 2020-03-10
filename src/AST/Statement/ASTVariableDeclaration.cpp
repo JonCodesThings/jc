@@ -20,7 +20,12 @@ llvm::Value * ASTVariableDeclaration::EmitIR(IREmitter::EmitterState &state)
     llvm::Type *t = state.typeRegistry.GetType(type->identifier);
 
     if (!t)
+    {
         t = state.typeRegistry.UnwindPointerType(type->identifier);
+        state.typeRegistry.AddType(type->identifier, *t, JCType::TYPE_CLASSIFICATION::POINTER);
+    }
+
+    
 
     auto temp = static_cast<ASTConstantInt*>(array_size.get());
 

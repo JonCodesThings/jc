@@ -51,7 +51,7 @@ llvm::Value *ASTVariableAssignment::EmitIR(IREmitter::EmitterState &state)
         }
         else
         {
-            if (*assign_to->GetType(state) != *val->GetType(state))
+            if (assign_to->GetType(state) != val->GetType(state))
                 return implicit_cast(val, assign_symbol);
             else
             {

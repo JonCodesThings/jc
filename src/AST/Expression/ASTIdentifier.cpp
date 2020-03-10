@@ -8,7 +8,7 @@ const std::string *ASTIdentifier::GetType(IREmitter::EmitterState &state)
 {
     Symbol *symbol = state.symbolStack.GetSymbolByIdentifier(identifier);
     if (symbol)
-        return &symbol->type;
+        return state.typeRegistry.GetLifetimeTypeString(symbol->type);
     return state.typeRegistry.GetLifetimeTypeString(identifier);
 }
 
