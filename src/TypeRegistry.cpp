@@ -149,7 +149,7 @@ const std::string *TypeRegistry::GetLifetimeTypeString(const std::string &id)
     return NULL;
 }
 
-void TypeRegistry::SetStructType(const std::string &id, const std::vector<llvm::Type *> &members, const std::vector<std::string> &member_names)
+void TypeRegistry::SetStructType(const std::string &id, const std::vector<llvm::Type *> &members, const std::vector<std::string> &member_names, const std::vector<std::string> &member_typenames)
 {
     for (int i = 0; i < registry.size(); i++)
     {
@@ -158,6 +158,7 @@ void TypeRegistry::SetStructType(const std::string &id, const std::vector<llvm::
             auto StructType = llvm::StructType::create(members, id);
             registry[i].llvm_type = StructType;
             registry[i].MEMBER_NAMES = member_names;
+            registry[i].MEMBER_TYPENAMES = member_typenames;
             return;
         }
     }

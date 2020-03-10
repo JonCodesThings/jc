@@ -147,7 +147,7 @@ alias_statement: ALIAS TYPE TYPE { $$ = new ASTTypeSystemModStatement(ASTTypeSys
 
 typedef_statement: TYPEDEF TYPE TYPE { $$ = new ASTTypeSystemModStatement(ASTTypeSystemModStatement::TYPE_MOD_OP::TYPEDEF); };
 
-struct_def: STRUCT type LEFT_BRACE struct_list RIGHT_BRACE { printf("parsed a struct\n"); $$ = new ASTStructDefinition(*$2, *$4); };
+struct_def: STRUCT type LEFT_BRACE struct_list RIGHT_BRACE { $$ = new ASTStructDefinition(*$2, *$4); };
 
 defer_statement: DEFER assignable_statement { $$ = new ASTDeferredStatement(*$2); }
 

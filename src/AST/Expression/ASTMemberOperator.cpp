@@ -22,6 +22,7 @@ llvm::Value *ASTMemberOperator::EmitIR(IREmitter::EmitterState &state)
             }
         }
     }
+    return NULL;
 }
 
 const std::string *ASTMemberOperator::GetType(IREmitter::EmitterState &state)
@@ -29,12 +30,12 @@ const std::string *ASTMemberOperator::GetType(IREmitter::EmitterState &state)
     const Symbol *struct_symbol = state.symbolStack.GetSymbolByIdentifier(id->identifier);
     const JCType *struct_type = state.typeRegistry.GetTypeInfo(struct_symbol->type);
 
-    for (auto &member : struct_type->MEMBER_NAMES)
+    for (unsigned int i = 0; i < struct_type->MEMBER_NAMES.size(); i++)
     {
-        if (member_id->identifier == member)
+        if (struct_type->MEMBER_NAMES[i] == member_id->identifier)
         {
+            return state.typeRegistry.GetLifetimeTypeString(struct_type->MEMBER_TYPENAMES[i]);
         }
     }
-
     return NULL;
 }
