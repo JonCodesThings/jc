@@ -1,3 +1,5 @@
+setlocal EnableDelayedExpansion
+
 CALL :run_test test\10.jc 10
 CALL :run_test test\11.jc 11
 CALL :run_test test\12.jc 12
@@ -42,18 +44,16 @@ CALL :run_test test\alias_test.jc 10
 CALL :run_test test\variadic_def_test.jc 0
 
 CALL :run_test test\struct_test.jc 5
-
 pause
 cmd /k
 
 :run_test
-setlocal EnableDelayedExpansion
 echo Running test %~1
 RelWithDebInfo\jc.exe %~1
 llc -filetype=obj -march=x86-64 %~1.ir
 set retval=%ERRORLEVEL%
-if retval == 0 (link.exe %~1.ir.obj /OUT:%~1.exe libcmt.lib) 
+if not retval==0 (link.exe %~1.ir.obj /OUT:%~1.exe libcmt.lib) 
 %~1.exe
-set return_code==%ERRORLEVEL%
+set return_code=%ERRORLEVEL%
 if return_code == %~2 (echo "Test successful!")
-echo "Test failed!"
+if not return_code == %~2 (echo "Test failed!")
