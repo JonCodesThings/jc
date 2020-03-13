@@ -33,10 +33,7 @@ const std::string *ASTMemberOperator::GetType(IREmitter::EmitterState &state)
     for (unsigned int i = 0; i < struct_type->MEMBER_NAMES.size(); i++)
     {
         if (struct_type->MEMBER_NAMES[i] == member_id->identifier)
-        {
-            printf("%p\n", state.typeRegistry.GetLifetimeTypeString(struct_type->MEMBER_TYPENAMES[i]));
             return state.typeRegistry.GetLifetimeTypeString(struct_type->MEMBER_TYPENAMES[i]);
-        }
     }
     return NULL;
 }

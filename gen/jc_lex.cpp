@@ -1,6 +1,6 @@
-#line 1 "gen/jc_lex.cpp"
+#line 2 "gen/jc_lex.cpp"
 
-#line 3 "gen/jc_lex.cpp"
+#line 4 "gen/jc_lex.cpp"
 
 #define  YY_INT_ALIGNED short int
 
@@ -524,8 +524,8 @@ extern "C" int yywrap() { return 1; }
 unsigned int yycurrentlinechar = 0;
 const char *yycurrentfilename = "";
 TypeRegistry *registry;
-#line 527 "gen/jc_lex.cpp"
 #line 528 "gen/jc_lex.cpp"
+#line 529 "gen/jc_lex.cpp"
 
 #define INITIAL 0
 
@@ -536,7 +536,7 @@ TypeRegistry *registry;
  */
 #include <unistd.h>
 #endif
-    
+
 #ifndef YY_EXTRA_TYPE
 #define YY_EXTRA_TYPE void *
 #endif
@@ -744,7 +744,7 @@ YY_DECL
 	{
 #line 15 "gen/jc_lex.l"
 
-#line 747 "gen/jc_lex.cpp"
+#line 748 "gen/jc_lex.cpp"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -1023,7 +1023,7 @@ YY_RULE_SETUP
 #line 72 "gen/jc_lex.l"
 ECHO;
 	YY_BREAK
-#line 1026 "gen/jc_lex.cpp"
+#line 1027 "gen/jc_lex.cpp"
 
 	case YY_END_OF_BUFFER:
 		{

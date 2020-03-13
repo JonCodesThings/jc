@@ -1,19 +1,19 @@
-/* A Bison parser, made by GNU Bison 2.7.  */
+/* A Bison parser, made by GNU Bison 3.0.4.  */
 
 /* Bison interface for Yacc-like parsers in C
-   
-      Copyright (C) 1984, 1989-1990, 2000-2012 Free Software Foundation, Inc.
-   
+
+   Copyright (C) 1984, 1989-1990, 2000-2015 Free Software Foundation, Inc.
+
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
    the Free Software Foundation, either version 3 of the License, or
    (at your option) any later version.
-   
+
    This program is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
    GNU General Public License for more details.
-   
+
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 
@@ -26,13 +26,13 @@
    special exception, which will cause the skeleton and the resulting
    Bison output files to be licensed under the GNU General Public
    License without this special exception.
-   
+
    This special exception was added by the Free Software Foundation in
    version 2.2 of Bison.  */
 
 #ifndef YY_YY_GEN_JC_PARSER_HPP_INCLUDED
 # define YY_YY_GEN_JC_PARSER_HPP_INCLUDED
-/* Enabling traces.  */
+/* Debug traces.  */
 #ifndef YYDEBUG
 # define YYDEBUG 0
 #endif
@@ -40,65 +40,64 @@
 extern int yydebug;
 #endif
 
-/* Tokens.  */
+/* Token type.  */
 #ifndef YYTOKENTYPE
 # define YYTOKENTYPE
-   /* Put the tokens into the symbol table, so that GDB and other debuggers
-      know about them.  */
-   enum yytokentype {
-     IDENTIFIER = 258,
-     STRING = 259,
-     INTEGER = 260,
-     FLOAT = 261,
-     TYPE = 262,
-     LEFT_BRACKET = 263,
-     RIGHT_BRACKET = 264,
-     LEFT_BRACE = 265,
-     RIGHT_BRACE = 266,
-     LEFT_SQUARE_BRACKET = 267,
-     RIGHT_SQUARE_BRACKET = 268,
-     COMMA = 269,
-     FSTOP = 270,
-     SEMICOLON = 271,
-     PLUS = 272,
-     MINUS = 273,
-     ASTERISK = 274,
-     FORWARD_SLASH = 275,
-     EQUAL = 276,
-     EQUAL_EQUAL = 277,
-     EXCLAMATION = 278,
-     EXCLAMATION_EQUAL = 279,
-     GREATER = 280,
-     GREATER_EQUAL = 281,
-     LESSER = 282,
-     LESSER_EQUAL = 283,
-     AND = 284,
-     AND_AND = 285,
-     OR = 286,
-     OR_OR = 287,
-     RETURN = 288,
-     DEFER = 289,
-     IF = 290,
-     ELSE = 291,
-     FOR = 292,
-     WHILE = 293,
-     TYPEDEF = 294,
-     ALIAS = 295,
-     EXTERN = 296,
-     IMPORT = 297,
-     EXPORT = 298,
-     STRUCT = 299,
-     ARROW = 300,
-     UNKNOWN = 301
-   };
+  enum yytokentype
+  {
+    IDENTIFIER = 258,
+    STRING = 259,
+    INTEGER = 260,
+    FLOAT = 261,
+    TYPE = 262,
+    LEFT_BRACKET = 263,
+    RIGHT_BRACKET = 264,
+    LEFT_BRACE = 265,
+    RIGHT_BRACE = 266,
+    LEFT_SQUARE_BRACKET = 267,
+    RIGHT_SQUARE_BRACKET = 268,
+    COMMA = 269,
+    FSTOP = 270,
+    SEMICOLON = 271,
+    PLUS = 272,
+    MINUS = 273,
+    ASTERISK = 274,
+    FORWARD_SLASH = 275,
+    EQUAL = 276,
+    EQUAL_EQUAL = 277,
+    EXCLAMATION = 278,
+    EXCLAMATION_EQUAL = 279,
+    GREATER = 280,
+    GREATER_EQUAL = 281,
+    LESSER = 282,
+    LESSER_EQUAL = 283,
+    AND = 284,
+    AND_AND = 285,
+    OR = 286,
+    OR_OR = 287,
+    RETURN = 288,
+    DEFER = 289,
+    IF = 290,
+    ELSE = 291,
+    FOR = 292,
+    WHILE = 293,
+    TYPEDEF = 294,
+    ALIAS = 295,
+    EXTERN = 296,
+    IMPORT = 297,
+    EXPORT = 298,
+    STRUCT = 299,
+    ARROW = 300,
+    UNKNOWN = 301
+  };
 #endif
 
-
+/* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
-typedef union YYSTYPE
+
+union YYSTYPE
 {
-/* Line 2058 of yacc.c  */
-#line 42 "gen/jc_parser.y"
+#line 42 "gen/jc_parser.y" /* yacc.c:1909  */
 
 ASTNode *node;
 ASTStatement *statement;
@@ -127,29 +126,17 @@ int integer;
 float fl;
 int token;
 
+#line 130 "gen/jc_parser.hpp" /* yacc.c:1909  */
+};
 
-/* Line 2058 of yacc.c  */
-#line 133 "gen/jc_parser.hpp"
-} YYSTYPE;
+typedef union YYSTYPE YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
-# define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1
 #endif
 
+
 extern YYSTYPE yylval;
 
-#ifdef YYPARSE_PARAM
-#if defined __STDC__ || defined __cplusplus
-int yyparse (void *YYPARSE_PARAM);
-#else
-int yyparse ();
-#endif
-#else /* ! YYPARSE_PARAM */
-#if defined __STDC__ || defined __cplusplus
 int yyparse (void);
-#else
-int yyparse ();
-#endif
-#endif /* ! YYPARSE_PARAM */
 
 #endif /* !YY_YY_GEN_JC_PARSER_HPP_INCLUDED  */

@@ -8,11 +8,6 @@ include_directories(${LLVM_INCLUDE_DIRS})
 add_definitions(${LLVM_DEFINITIONS})
 llvm_map_components_to_libnames(llvm_libs support core irreader bitwriter)
 
-BISON_TARGET(jc_type_parser gen/jc_type_parser.y gen/jc_type_parser.cpp)
-FLEX_TARGET(jc_type_scanner gen/jc_type_scanner.l gen/jc_type_scanner.cpp)
-
-ADD_FLEX_BISON_DEPENDENCY(jc_type_scanner jc_type_parser)
-
 BISON_TARGET(jc_parser gen/jc_parser.y gen/jc_parser.cpp)
 FLEX_TARGET(jc_scanner gen/jc_lex.l gen/jc_lex.cpp)
 
