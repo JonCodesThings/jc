@@ -1,4 +1,4 @@
-%define api.prefix {type_}
+%define api.prefix type_
 %{
 #include <stdio.h>
 #include <vector>

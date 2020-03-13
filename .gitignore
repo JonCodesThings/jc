@@ -56,3 +56,10 @@ jc
 .ninja_deps
 .ninja_log
 *.ninja
+*.vcxproj
+*.filters
+*.user
+*.tlog
+*.pdb
+*.ilk
+*.log

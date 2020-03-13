@@ -8,7 +8,7 @@ std::unique_ptr<ASTBlock> base;
 
 extern int yylex();
 extern int yyparse();
-extern unsigned int yylineno;
+extern int yylineno;
 extern unsigned int yycurrentlinechar;
 
 void yyerror (char *error)
