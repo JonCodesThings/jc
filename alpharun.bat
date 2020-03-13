@@ -55,5 +55,5 @@ set retval=%ERRORLEVEL%
 if not retval==0 (link.exe %~1.ir.obj /OUT:%~1.exe libcmt.lib) 
 %~1.exe
 set return_code=%ERRORLEVEL%
-if return_code == %~2 (echo "Test successful!")
-if not return_code == %~2 (echo "Test failed!")
+if not return_code == %~2 (echo "Test successful!")
+if return_code == %~2 (echo "Test failed!")
