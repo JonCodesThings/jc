@@ -13,7 +13,10 @@ std::vector<int> TypeTokenizer::Tokenize(const std::string &in)
 	for (auto ch : in)
 	{
 		if (ch == '\t' || ch == ' ' || ch == '\n')
-			continue;
+		{
+			if (current_keyword.empty())
+				continue;
+		}
 
 		accum.push_back(ch);
 
@@ -22,25 +25,28 @@ std::vector<int> TypeTokenizer::Tokenize(const std::string &in)
 			current_keyword = accum;
 			accum.clear();
 		}
-		else if (accum == ";")
+		else if ((accum.back() == ';' || accum.back() == '\n') && accum.length() > 1 && current_keyword.length() > 0)
 		{
-			accum.erase(accum.end());
+			accum.erase(accum.begin());
+			accum.pop_back();
 			std::string first = accum.substr(0, accum.find(" "));
-			std::string second = accum.substr(accum.find(" "), accum.size() - 1);
-			if (accum == "typedef")
+			std::string second = accum.substr(accum.find(" ") + 1, accum.length() - 1);
+			if (current_keyword == "typedef")
 			{
+
 				const JCType *t = registry.GetTypeInfo(first);
 				registry.AddType(accum, *t->llvm_type, t->classification);
 			}
-			else if (accum == "alias")
+			else if (current_keyword == "alias")
 			{
 				const JCType *t = registry.GetTypeInfo(first);
 				registry.AddAlias(second, first);
 			}
-			else if (accum == "struct")
+			else if (current_keyword == "struct")
 			{
 				registry.AddBlankStructType(first);
 			}
+			current_keyword.clear();
 		}
 	}
 	return std::vector<int>();

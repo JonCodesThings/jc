@@ -1,6 +1,7 @@
 #ifndef JC_TOKENIZER_H
 #define JC_TOKENIZER_H
 
+#include <string>
 #include <vector>
 
 class Tokenizer
