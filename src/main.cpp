@@ -2,6 +2,7 @@
 #include <gen/jc_type_parser.hpp>
 #include <gen/jc_parser.hpp>
 #include <include/IREmitter.hpp>
+#include <include/TypeTokenizer.hpp>
 
 #include <llvm/Bitcode/BitcodeWriter.h>
 #include <llvm/Support/raw_ostream.h>
@@ -22,20 +23,24 @@ int main(int argc, const char **args)
 {
     llvm::LLVMContext context;
     registry = new TypeRegistry(context);
+	TypeTokenizer type(*registry);
     registry->SetupBuiltinJCTypes();
-    type_in = fopen(args[1], "r");
-    if (!type_in)
-    {
-        printf("Type preparser failed!\n");
-        return 0;
-    }
-    int x = type_parse();
-    fclose(type_in);
-    if (x != 0)
-    {
-        printf("Type preparser failed!\n");
-        return 0;
-    }
+    //type_in = fopen(args[1], "r");
+	std::ifstream t_in(args[1]);
+	std::string t_string((std::istreambuf_iterator<char>(t_in)), std::istreambuf_iterator<char>());
+	type.Tokenize(t_string);
+    //if (!type_in)
+    //{
+    //    printf("Type preparser failed!\n");
+    //    return 0;
+    //}
+    //int x = type_parse();
+    //fclose(type_in);
+    //if (x != 0)
+    //{
+    //    printf("Type preparser failed!\n");
+    //    return 0;
+    //}
 
     yyin = fopen(args[1], "r");
     if (!yyin)

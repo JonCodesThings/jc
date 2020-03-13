@@ -5,6 +5,7 @@
 
 class Tokenizer
 {
+public:
 	virtual ~Tokenizer();
 	virtual std::vector<int> Tokenize(const std::string &in) = 0;
 };

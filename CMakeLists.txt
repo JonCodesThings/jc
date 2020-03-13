@@ -53,6 +53,7 @@ set(SOURCE_FILES src/main.cpp
     src/SymbolTable.cpp
     src/SymbolTableStack.cpp
 	src/Tokenizer.cpp
+	src/TypeTokenizer.cpp
     src/TypeRegistry.cpp)
 
 add_executable(jc ${SOURCE_FILES} ${BISON_jc_type_parser_OUTPUTS} ${FLEX_jc_type_scanner_OUTPUTS} ${BISON_jc_parser_OUTPUTS} ${FLEX_jc_scanner_OUTPUTS})
