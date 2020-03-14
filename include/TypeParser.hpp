@@ -3,7 +3,7 @@
 
 #include <include/Parser.hpp>
 #include <include/TypeTokenizer.hpp>
-#include<include/TypeRegistry.hpp>
+#include <include/TypeRegistry.hpp>
 
 class TypeParser : public Parser
 {

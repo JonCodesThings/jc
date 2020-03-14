@@ -9,7 +9,7 @@ class ASTImportStatement : public ASTStatement
 public:
     std::unique_ptr<ASTIdentifier> id;
 
-    ASTImportStatement(ASTIdentifier &id);
+    ASTImportStatement();
 
     llvm::Value *EmitIR(IREmitter::EmitterState &state);
 };

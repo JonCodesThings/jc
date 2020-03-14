@@ -41,7 +41,7 @@ llvm::Value *ASTBlock::EmitIR(IREmitter::EmitterState &state)
 
     for (auto &statement : *block)
     {
-        if (statement->GetNodeType() == ASTNode::NODE_TYPE::TYPE_MOD)
+        if (statement->GetNodeType() == ASTNode::NODE_TYPE::TYPE_MOD || statement->GetNodeType() == ASTNode::NODE_TYPE::IMPORT_STATEMENT)
         {
             delete statement.release();
             continue;

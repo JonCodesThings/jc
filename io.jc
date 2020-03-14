@@ -1,0 +1,3 @@
+i32 printf(i8 *str, ...);
+
+i32 getchar();

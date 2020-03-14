@@ -44,6 +44,8 @@ CALL :run_test test\alias_test.jc 10
 CALL :run_test test\variadic_def_test.jc 0
 
 CALL :run_test test\struct_test.jc 5
+
+CALL :run_test test\module_import_test.jc 0
 pause
 cmd /k
 

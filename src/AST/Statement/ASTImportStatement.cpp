@@ -1,8 +1,8 @@
-#include <AST/Statement/ASTImportStatement.hpp>
+#include <include/AST/Statement/ASTImportStatement.hpp>
 
-ASTImportStatement::ASTImportStatement(ASTIdentifier &id) : id(&id), ASTStatement(IMPORT_STATEMENT) {}
+ASTImportStatement::ASTImportStatement() : ASTStatement(IMPORT_STATEMENT) {}
 
 llvm::Value *ASTImportStatement::EmitIR(IREmitter::EmitterState &state)
 {
-    
+	return NULL;
 }

@@ -1,0 +1,7 @@
+import io;
+
+i32 main()
+{
+	printf("IO successfully imported.\n");
+	return 0;
+}

@@ -1,3 +1,5 @@
+#define YY_NO_UNISTD_H 1
+
 #include <include/AST.hpp>
 #include <gen/jc_lex.hpp>
 #include <gen/jc_parser.hpp>
@@ -30,19 +32,30 @@ int main(int argc, const char **args)
 	ModuleTokenizer module_tokenizer;
 
     registry->SetupBuiltinJCTypes();
+
 	std::ifstream t_in(args[1]);
 	std::string t_string((std::istreambuf_iterator<char>(t_in)), std::istreambuf_iterator<char>());
 	t_in.close();
-	char *cstr = new char[t_string.length() + 1];
-	strcpy(cstr, t_string.c_str());
-	YY_BUFFER_STATE s = yy_scan_string(cstr);
-	printf("%s\n", cstr);
-
 	std::vector<Token> type_tokens = type_tokenizer.Tokenize(t_string);
 	type_parser.Parse(type_tokens);
-    //yyin = fopen(args[1], "r");
-    //if (!yyin)
-        //return 0;
+
+	std::vector<Token> module_tokens = module_tokenizer.Tokenize(t_string);
+
+	std::string processed_input;
+
+	for (auto imp : module_tokens)
+	{
+		if (imp.token_type == ModuleTokenizer::IDENTIFIER_T)
+		{
+			processed_input += *imp.string;
+			delete imp.string;
+		}
+	}
+
+	processed_input += t_string;
+
+	YY_BUFFER_STATE s = yy_scan_string(processed_input.c_str());
+
     yycurrentfilename = args[1];
     int p = yyparse();
 	yy_delete_buffer(s);

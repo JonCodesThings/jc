@@ -55,6 +55,7 @@ TypeRegistry *registry;
 "|" { return OR; yycurrentlinechar += yyleng; }
 "||" { return OR_OR; yycurrentlinechar += yyleng; }
 
+"import" { return IMPORT; yycurrentlinechar += yyleng; }
 "return" { return RETURN; yycurrentlinechar += yyleng; }
 "extern" { return EXTERN; yycurrentlinechar += yyleng; }
 "if" { return IF; yycurrentlinechar += yyleng; }

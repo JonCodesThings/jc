@@ -103,7 +103,7 @@ int token;
 %token UNKNOWN
 
 %type<statement> node_setup semicoloned_statement statement function_def function_decl variable_decl assign_op variable_assign unary_op binary_op member_op struct_def
-%type<statement> assignable_statement array_decl
+%type<statement> assignable_statement array_decl import
 %type<unary_operator> cast increment decrement address_of dereference array_index
 %type<function_args> arg_list struct_list
 %type<function_call> function_call
@@ -141,7 +141,7 @@ semicoloned_statements: semicoloned_statement { $$ = new ASTBlock(); auto statem
 semicoloned_statement: statement SEMICOLON { SetNodeInfo(*$1); }; | assignable_statement SEMICOLON { SetNodeInfo(*$1); } | flow_control { SetNodeInfo(*$1); }
     | defer_statement SEMICOLON { SetNodeInfo(*$1); }; ;
 
-statement: return_statement | function_def | function_decl | variable_decl | assign_op | flow_control | alias_statement | typedef_statement | struct_def;
+statement: return_statement | function_def | function_decl | variable_decl | assign_op | flow_control | alias_statement | typedef_statement | struct_def | import;
 
 alias_statement: ALIAS TYPE TYPE { $$ = new ASTTypeSystemModStatement(ASTTypeSystemModStatement::TYPE_MOD_OP::ALIAS); };
 
@@ -157,7 +157,9 @@ flow_control: if_statement | loop;
 
 loop: while_loop | for_loop;
 
-scope: LEFT_BRACE semicoloned_statements RIGHT_BRACE { $$ = $2; } | LEFT_BRACE RIGHT_BRACE { $$ = new ASTBlock(); } ; 
+scope: LEFT_BRACE semicoloned_statements RIGHT_BRACE { $$ = $2; } | LEFT_BRACE RIGHT_BRACE { $$ = new ASTBlock(); } ;
+
+import: IMPORT id { $$ = new ASTImportStatement(); };
 
 unary_op: cast | increment | decrement | address_of | dereference | array_index;
 
