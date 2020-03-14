@@ -2,6 +2,7 @@
 #include <gen/jc_parser.hpp>
 #include <include/IREmitter.hpp>
 #include <include/TypeTokenizer.hpp>
+#include <include/TypeParser.hpp>
 
 #include <llvm/Bitcode/BitcodeWriter.h>
 #include <llvm/Support/raw_ostream.h>
@@ -19,11 +20,14 @@ int main(int argc, const char **args)
 {
     llvm::LLVMContext context;
     registry = new TypeRegistry(context);
-	TypeTokenizer type(*registry);
+	TypeTokenizer type_tokenizer;
+	TypeParser type_parser(*registry);
     registry->SetupBuiltinJCTypes();
 	std::ifstream t_in(args[1]);
 	std::string t_string((std::istreambuf_iterator<char>(t_in)), std::istreambuf_iterator<char>());
-	type.Tokenize(t_string);
+	t_in.close();
+	std::vector<Token> type_tokens = type_tokenizer.Tokenize(t_string);
+	type_parser.Parse(type_tokens);
     yyin = fopen(args[1], "r");
     if (!yyin)
         return 0;

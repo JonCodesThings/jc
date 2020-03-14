@@ -44,14 +44,16 @@ set(SOURCE_FILES src/main.cpp
     src/AST/Statement/ASTVariableDeclaration.cpp
     src/AST/Statement/ASTWhileStatement.cpp
 
-    src/IREmitter.cpp 
+    src/IREmitter.cpp
+	src/Parser.cpp
     src/SymbolTable.cpp
     src/SymbolTableStack.cpp
 	src/Tokenizer.cpp
+	src/TypeParser.cpp
 	src/TypeTokenizer.cpp
     src/TypeRegistry.cpp)
 
-add_executable(jc ${SOURCE_FILES} ${BISON_jc_type_parser_OUTPUTS} ${FLEX_jc_type_scanner_OUTPUTS} ${BISON_jc_parser_OUTPUTS} ${FLEX_jc_scanner_OUTPUTS})
+add_executable(jc ${SOURCE_FILES}  ${BISON_jc_parser_OUTPUTS} ${FLEX_jc_scanner_OUTPUTS})
 include_directories(.)
 target_link_libraries(jc ${llvm_libs})
 

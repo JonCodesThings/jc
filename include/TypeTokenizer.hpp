@@ -12,16 +12,14 @@ public:
 		TYPEDEF_T,
 		ALIAS_T,
 		STRUCT_T,
+		IDENTIFIER_T,
 		TYPE_TOKEN_COUNT
 	};
 
-	TypeTokenizer(TypeRegistry &registry);
+	TypeTokenizer();
 	~TypeTokenizer();
 
-	std::vector<int> Tokenize(const std::string &in);
-
-private:
-	TypeRegistry &registry;
+	std::vector<Token> Tokenize(const std::string &in);
 };
 
 #endif

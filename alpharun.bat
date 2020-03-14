@@ -48,6 +48,7 @@ pause
 cmd /k
 
 :run_test
+@echo OFF
 echo Running test %~1
 RelWithDebInfo\jc.exe %~1
 llc -filetype=obj -march=x86-64 %~1.ir

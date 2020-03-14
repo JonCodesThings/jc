@@ -1,12 +1,12 @@
 #include <include/TypeTokenizer.hpp>
 
-TypeTokenizer::TypeTokenizer(TypeRegistry &registry) : registry(registry) {}
+TypeTokenizer::TypeTokenizer() {}
 
 TypeTokenizer::~TypeTokenizer() {}
 
-std::vector<int> TypeTokenizer::Tokenize(const std::string &in)
+std::vector<Token> TypeTokenizer::Tokenize(const std::string &in)
 {
-	std::vector<int> tokens;
+	std::vector<Token> tokens;
 	std::string accum;
 	std::string current_keyword;
 
@@ -23,7 +23,15 @@ std::vector<int> TypeTokenizer::Tokenize(const std::string &in)
 		if (accum == "typedef" || accum == "struct" || accum == "alias")
 		{
 			current_keyword = accum;
+			Token t;
+			if (accum == "typedef")
+				t.token_type = TYPEDEF_T;
+			else if (accum == "struct")
+				t.token_type = STRUCT_T;
+			else
+				t.token_type = ALIAS_T;
 			accum.clear();
+			tokens.push_back(t);
 		}
 		else if ((accum.back() == ';' || accum.back() == '\n') && accum.length() > 1 && current_keyword.length() > 0)
 		{
@@ -31,23 +39,20 @@ std::vector<int> TypeTokenizer::Tokenize(const std::string &in)
 			accum.pop_back();
 			std::string first = accum.substr(0, accum.find(" "));
 			std::string second = accum.substr(accum.find(" ") + 1, accum.length() - 1);
-			if (current_keyword == "typedef")
-			{
+			Token t1, t2;
+			t2.token_type = t1.token_type = IDENTIFIER_T;
+			t1.string = new std::string(first);
+			t2.string = NULL;
 
-				const JCType *t = registry.GetTypeInfo(first);
-				registry.AddType(accum, *t->llvm_type, t->classification);
-			}
-			else if (current_keyword == "alias")
-			{
-				const JCType *t = registry.GetTypeInfo(first);
-				registry.AddAlias(second, first);
-			}
-			else if (current_keyword == "struct")
-			{
-				registry.AddBlankStructType(first);
-			}
+			if (current_keyword == "typedef" || current_keyword == "alias")
+				t2.string = new std::string(second);
+
+			tokens.push_back(t1);
+
+			if (t2.string != NULL)
+				tokens.push_back(t2);
 			current_keyword.clear();
 		}
 	}
-	return std::vector<int>();
+	return tokens;
 }
