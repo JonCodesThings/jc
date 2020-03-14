@@ -70,7 +70,7 @@ TypeRegistry *registry;
 . { return UNKNOWN; }
 <<EOF>> { return 0; }
 %%
-
+#define YY_NO_UNISTD_H 1
 
 #ifdef SCANNER_DRIVER
 

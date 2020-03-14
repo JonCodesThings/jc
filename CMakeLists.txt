@@ -45,6 +45,8 @@ set(SOURCE_FILES src/main.cpp
     src/AST/Statement/ASTWhileStatement.cpp
 
     src/IREmitter.cpp
+	src/ModuleParser.cpp
+	src/ModuleTokenizer.cpp
 	src/Parser.cpp
     src/SymbolTable.cpp
     src/SymbolTableStack.cpp
