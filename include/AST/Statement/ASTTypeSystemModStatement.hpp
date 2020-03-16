@@ -3,6 +3,10 @@
 
 #include <include/AST/ASTStatement.hpp>
 
+/*!
+* \brief AST Type System Modification Node
+* Class for type system modification statements. No functionality implemented here currently
+*/
 class ASTTypeSystemModStatement : public ASTStatement
 {
 public:

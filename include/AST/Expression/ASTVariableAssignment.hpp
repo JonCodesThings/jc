@@ -4,7 +4,10 @@
 #include <include/AST/ASTExpression.hpp>
 #include <include/AST/Expression/ASTIdentifier.hpp>
 
-
+/*!
+* \brief AST Variable Assignment Node
+* AST Node for variable assignments
+*/
 class ASTVariableAssignment : public ASTExpression
 {
 public:

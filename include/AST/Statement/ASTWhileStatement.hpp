@@ -4,6 +4,10 @@
 #include <include/AST/ASTStatement.hpp>
 #include <include/AST/Statement/ASTBlock.hpp>
 
+/*!
+* \brief AST While Statement Node
+* AST Node representing a while loop construct
+*/
 class ASTWhileStatement : public ASTStatement
 {
 public:

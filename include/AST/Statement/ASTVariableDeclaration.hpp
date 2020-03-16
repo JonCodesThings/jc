@@ -5,6 +5,10 @@
 #include <include/AST/Constant/ASTConstantInt.hpp>
 #include <include/AST/Expression/ASTIdentifier.hpp>
 
+/*!
+* \brief AST Variable Declaration Node
+* AST Node for variable declarations
+*/
 class ASTVariableDeclaration : public ASTStatement
 {
 public:

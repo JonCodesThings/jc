@@ -3,6 +3,10 @@
 
 #include <include/AST/ASTNode.hpp>
 
+/*!
+* \brief AST Statement Node
+* Base class for AST Nodes that represent statements
+*/
 class ASTStatement : public ASTNode
 {
 public:

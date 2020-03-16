@@ -3,6 +3,10 @@
 
 #include <include/AST/Expression/ASTIdentifier.hpp>
 
+/*!
+* \brief AST Function Args
+* Struct for representing function arguments
+*/
 struct ASTFunctionArg
 {
     ASTFunctionArg(ASTIdentifier &type, ASTIdentifier &name);
@@ -13,6 +17,11 @@ struct ASTFunctionArg
     bool variadic_arg = false;
 };
 
+
+/*!
+* \brief AST Function Args
+* Class for representing a complete set of function arguments. Contains a std::vector.
+*/
 class ASTFunctionArgs
 {
 public:

@@ -4,6 +4,10 @@
 #include <include/AST/ASTStatement.hpp>
 #include <include/AST/Statement/ASTBlock.hpp>
 
+/*!
+* \brief Conditional Block
+* Struct for a branch that will only run under a given condition expression
+*/
 struct ASTConditionalBlock
 {
     ASTConditionalBlock(ASTStatement &cond_expr, ASTBlock &then);
@@ -11,6 +15,10 @@ struct ASTConditionalBlock
     std::unique_ptr<ASTBlock> then;
 };
 
+/*!
+* \brief AST If Statement Node
+* AST Node representing an if-else branching chain. May be extended to support switch-case statements.
+*/
 class ASTIfStatement : public ASTStatement
 {
 public:

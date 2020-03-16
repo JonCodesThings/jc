@@ -3,6 +3,10 @@
 
 #include <include/AST/ASTStatement.hpp>
 
+/*!
+* \brief AST Expression Node
+* Base class for AST Nodes that represent expressions
+*/
 class ASTExpression : public ASTStatement
 {
 public:

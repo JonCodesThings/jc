@@ -3,6 +3,10 @@
 
 #include <include/AST/ASTStatement.hpp>
 
+/*!
+* \brief AST Deferred Statement Node
+* Class for AST Nodes that defer an action to current scope exit
+*/
 class ASTDeferredStatement : public ASTStatement
 {
 public:

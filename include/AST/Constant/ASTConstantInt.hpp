@@ -3,6 +3,10 @@
 
 #include <include/AST/ASTConstant.hpp>
 
+/*!
+* \brief AST Constant Int Node
+* Class for AST Nodes representing constant integers
+*/
 class ASTConstantInt : public ASTConstant
 {
 public:

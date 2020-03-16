@@ -5,6 +5,10 @@
 #include <include/AST/Statement/ASTBlock.hpp>
 #include <include/AST/Statement/ASTFunctionArgs.hpp>
 
+/*!
+* \brief AST Struct Definition Node
+* CAST Node representing the definition of a struct. Probably needs refactored
+*/
 class ASTStructDefinition : public ASTStatement
 {
 public:

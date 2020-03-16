@@ -4,6 +4,10 @@
 #include <include/AST/ASTExpression.hpp>
 #include <include/AST/Expression/ASTIdentifier.hpp>
 
+/*!
+* \brief AST Function Call Node
+* AST Node that represents a function call
+*/
 class ASTFunctionCall : public ASTExpression
 {
 public:

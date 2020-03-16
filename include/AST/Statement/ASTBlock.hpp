@@ -4,14 +4,17 @@
 #include <include/AST/ASTStatement.hpp>
 #include <include/AST/Statement/ASTFunctionArgs.hpp>
 
+/*!
+* \brief AST Block Node
+*/
 class ASTBlock : public ASTStatement
 {
 public:
-    std::unique_ptr<std::vector<std::unique_ptr<ASTStatement>>> block;
+    std::unique_ptr<std::vector<std::unique_ptr<ASTStatement>>> block; //\brief std::vector of statements that the block is composed of
 
-    llvm::BasicBlock *b;
+    llvm::BasicBlock *b; //\brief LLVM Basic Block representation
 
-    bool returned = false;
+    bool returned = false; //\brief Flag to check if the block contains a return statement
 
     ASTBlock();
 

@@ -3,6 +3,10 @@
 
 #include <include/AST/ASTConstant.hpp>
 
+/*!
+* \brief AST Constant Float Node
+* Node that represents float constants
+*/
 class ASTConstantFloat : public ASTConstant
 {
 public:

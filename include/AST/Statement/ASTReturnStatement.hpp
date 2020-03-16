@@ -3,6 +3,10 @@
 
 #include <include/AST/ASTStatement.hpp>
 
+/*!
+* \brief AST Return Statement Node
+* AST Node representing return statements
+*/
 class ASTReturnStatement : public ASTStatement
 {
 public:

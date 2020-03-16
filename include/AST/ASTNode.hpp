@@ -22,6 +22,10 @@
 #include <include/IREmitter.hpp>
 
 
+/*!
+* \brief AST Node
+* Base class for all AST Nodes
+*/
 class ASTNode
 {
 public:

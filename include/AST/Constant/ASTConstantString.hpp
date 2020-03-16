@@ -3,6 +3,10 @@
 
 #include <include/AST/ASTConstant.hpp>
 
+/*!
+* \brief AST Constant String Node
+* Class for AST Nodes representing constant string literals
+*/
 class ASTConstantString : public ASTConstant
 {
 public:

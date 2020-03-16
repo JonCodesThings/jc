@@ -5,6 +5,10 @@
 #include <include/AST/Constant/ASTConstantInt.hpp>
 #include <include/AST/Expression/ASTIdentifier.hpp>
 
+/*!
+* \brief AST Unary Operator Node
+* AST Node for unary operators
+*/
 class ASTUnaryOperator : public ASTExpression
 {
 public:

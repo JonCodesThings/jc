@@ -18,6 +18,10 @@
 
 class ASTBlock;
 
+/*!
+* \brief Class used to traverse the Abstract Syntax tree and emit LLVM IR into a given module.
+* 
+*/
 class IREmitter
 {
 public:

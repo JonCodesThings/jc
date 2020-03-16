@@ -5,6 +5,10 @@
 #include <include/AST/Expression/ASTIdentifier.hpp>
 #include <include/AST/Statement/ASTFunctionArgs.hpp>
 
+/*!
+* \brief AST Function Call Node
+* AST Node that represents a function declaration. These are typically used for FFI with C.
+*/
 class ASTFunctionDeclaration : public ASTStatement
 {
 public:
@@ -17,8 +21,6 @@ public:
         INTERNAL,
         EXTERN
     } linkage = EXTERN;
-
-    ASTFunctionDeclaration();
     
     ASTFunctionDeclaration(ASTIdentifier &ret_type, ASTIdentifier &id, ASTFunctionArgs &args);
 

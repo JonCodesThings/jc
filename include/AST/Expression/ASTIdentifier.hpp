@@ -3,6 +3,10 @@
 
 #include <include/AST/ASTExpression.hpp>
 
+/*!
+* \brief AST Identifier Node
+* AST Node that represent identifiers
+*/
 class ASTIdentifier : public ASTExpression
 {
 public:

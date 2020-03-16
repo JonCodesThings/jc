@@ -5,6 +5,10 @@
 #include <include/AST/Statement/ASTBlock.hpp>
 #include <include/AST/Statement/ASTFunctionDeclaration.hpp>
 
+/*!
+* \brief AST Function Call Node
+* AST Node that represents a function definition
+*/
 class ASTFunctionDefinition : public ASTStatement
 {
 public:

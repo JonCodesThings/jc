@@ -5,6 +5,10 @@
 
 #include <include/AST/Expression/ASTIdentifier.hpp>
 
+/*!
+* \brief AST Member Operator Node
+* AST Node that is used for member operators on a given identifier
+*/
 class ASTMemberOperator : public ASTExpression
 {
 public:

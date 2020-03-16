@@ -3,12 +3,16 @@
 
 #include <include/AST/ASTExpression.hpp>
 
+/*!
+* \brief AST Binary Operator Node
+*/
 class ASTBinaryOperator : public ASTExpression
 {
 public:
-    std::unique_ptr<ASTNode> left;
-    std::unique_ptr<ASTNode> right;
+    std::unique_ptr<ASTNode> left; // \brief Left side of operator node
+    std::unique_ptr<ASTNode> right; // \brief Right side of operator node
 
+	// \brief Operator type enum
     enum OP
     {
         ADD,

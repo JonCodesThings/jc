@@ -65,3 +65,11 @@ jc
 *.pdb
 *.ilk
 *.log
+*.html
+*.png
+*.js
+*.css
+*.eps
+*.tex
+*.sty
+doc/latex/make.bat

@@ -4,6 +4,10 @@
 #include <include/AST/ASTStatement.hpp>
 #include <include/AST/Statement/ASTBlock.hpp>
 
+/*!
+* \brief AST Constant Node
+* AST Node representing a for loop construct
+*/
 class ASTForStatement : public ASTStatement
 {
 public:
