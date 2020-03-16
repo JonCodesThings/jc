@@ -38,7 +38,7 @@ set(SOURCE_FILES src/main.cpp
     src/AST/Statement/ASTFunctionDeclaration.cpp
     src/AST/Statement/ASTFunctionDefinition.cpp
     src/AST/Statement/ASTIfStatement.cpp
-	   src/AST/Statement/ASTImportStatement.cpp
+	src/AST/Statement/ASTImportStatement.cpp
     src/AST/Statement/ASTReturnStatement.cpp
     src/AST/Statement/ASTStructDefinition.cpp
     src/AST/Statement/ASTTypeSystemModStatement.cpp
@@ -46,7 +46,9 @@ set(SOURCE_FILES src/main.cpp
     src/AST/Statement/ASTWhileStatement.cpp
 
     src/IREmitter.cpp
+	src/Module.cpp
 	src/ModuleParser.cpp
+	src/ModuleRegistry.cpp
 	src/ModuleTokenizer.cpp
 	src/Parser.cpp
     src/SymbolTable.cpp

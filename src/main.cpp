@@ -4,6 +4,7 @@
 #include <gen/jc_lex.hpp>
 #include <gen/jc_parser.hpp>
 #include <include/IREmitter.hpp>
+#include <include/Module.hpp>
 #include <include/ModuleTokenizer.hpp>
 #include <include/ModuleParser.hpp>
 #include <include/TypeTokenizer.hpp>
@@ -61,24 +62,31 @@ int main(int argc, const char **args)
 	yy_delete_buffer(s);
     if (base)
     {
-        llvm::Module module("jc alpha", context);
-        IREmitter emitter(module, context, *registry);
+        //llvm::Module module("jc alpha", context);
+        //IREmitter emitter(module, context, *registry);
 
-        if (emitter.EmitIR(base.get()))
-        {
-            std::error_code ec;
-            std::string o = args[1];
-            o.append(".ir");
-            llvm::raw_fd_ostream out(o, ec);
-            llvm::WriteBitcodeToFile(module, out);
-            out.close();
-        }
-        else
-        {
-            printf("Compilation failed. Please fix errors!\n");
-        }
+        //if (emitter.EmitIR(base.get()))
+        //{
+        //    std::error_code ec;
+        //    std::string o = args[1];
+        //    o.append(".ir");
+        //    llvm::raw_fd_ostream out(o, ec);
+        //    llvm::WriteBitcodeToFile(module, out);
+        //    out.close();
+        //}
+        //else
+        //{
+        //    printf("Compilation failed. Please fix errors!\n");
+        //}
 
-        
+		std::string stripped_module_name = args[1];
+		//stripped_module_name = stripped_module_name.substr(0, stripped_module_name.find('.'));
+		Module jc_mod(stripped_module_name, *new SymbolTable(stripped_module_name), *base.release());
+		
+		if (!jc_mod.EmitIR(context, *registry))
+			printf("Compilation failed. Please fix errors!\n");
+
+		base.reset();
     }
 
     return 0;

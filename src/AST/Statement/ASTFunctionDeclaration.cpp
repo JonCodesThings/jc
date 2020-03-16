@@ -41,6 +41,7 @@ llvm::Value *ASTFunctionDeclaration::EmitIR(IREmitter::EmitterState &state)
     s.identifier = identifier->identifier;
     s.type = return_type->identifier;
     s.classification = Symbol::Classification::FUNCTION;
+	s.function = Func;
 
     state.symbolStack.AddSymbol(s);
 

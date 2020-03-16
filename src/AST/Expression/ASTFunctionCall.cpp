@@ -7,7 +7,7 @@ ASTFunctionCall::ASTFunctionCall(ASTIdentifier &id, std::vector<std::unique_ptr<
 
 llvm::Value *ASTFunctionCall::EmitIR(IREmitter::EmitterState &state)
 {
-    auto Func = state.module.getFunction(identifier->identifier);
+	auto Func = state.symbolStack.GetSymbolByIdentifier(identifier->identifier)->function;
     
     std::vector<llvm::Value*> argvals;
 
@@ -23,6 +23,5 @@ llvm::Value *ASTFunctionCall::EmitIR(IREmitter::EmitterState &state)
 const std::string *ASTFunctionCall::GetType(IREmitter::EmitterState &state)
 {
     const Symbol *s = state.symbolStack.GetSymbolByIdentifier(identifier->identifier);
-    //printf("%s\n", s->type.c_str());
     return state.typeRegistry.GetLifetimeTypeString(s->type);
 }
