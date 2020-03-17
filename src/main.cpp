@@ -4,7 +4,7 @@
 #include <gen/jc_lex.hpp>
 #include <gen/jc_parser.hpp>
 #include <include/IREmitter.hpp>
-#include <include/Module.hpp>
+#include <include/ModuleRegistry.hpp>
 #include <include/ModuleTokenizer.hpp>
 #include <include/ModuleParser.hpp>
 #include <include/TypeTokenizer.hpp>
@@ -32,62 +32,68 @@ int main(int argc, const char **args)
 
 	ModuleTokenizer module_tokenizer;
 
+	ModuleRegistry module_registry;
+
     registry->SetupBuiltinJCTypes();
 
-	std::ifstream t_in(args[1]);
-	std::string t_string((std::istreambuf_iterator<char>(t_in)), std::istreambuf_iterator<char>());
-	t_in.close();
-	std::vector<Token> type_tokens = type_tokenizer.Tokenize(t_string);
-	type_parser.Parse(type_tokens);
+	std::vector<std::pair<std::string, bool>> modules_to_build;
 
-	std::vector<Token> module_tokens = module_tokenizer.Tokenize(t_string);
+	std::string initial = args[1];
+	initial = initial.substr(initial.find('\\') + 1, initial.find('.'));
 
-	std::string processed_input;
+	modules_to_build.push_back(std::make_pair(args[1], false));
 
-	for (auto imp : module_tokens)
+	bool found_all_modules = false;
+	int prev_module_count = 1;
+	do
 	{
-		if (imp.token_type == ModuleTokenizer::IDENTIFIER_T)
+		for (int i = 0; i < modules_to_build.size(); i++)
 		{
-			processed_input += *imp.string;
-			delete imp.string;
+			if (modules_to_build[i].second)
+				continue;
+
+			std::ifstream m_in(modules_to_build[i].first);
+			std::string m_string((std::istreambuf_iterator<char>(m_in)), std::istreambuf_iterator<char>());
+			m_in.close();
+
+			std::vector<Token> type_tokens = type_tokenizer.Tokenize(m_string);
+			type_parser.Parse(type_tokens);
+
+			std::vector<Token> module_tokens = module_tokenizer.Tokenize(m_string);
+
+			YY_BUFFER_STATE s = yy_scan_string(m_string.c_str());
+
+			int p = yyparse();
+			yy_delete_buffer(s);
+
+			for (auto imp : module_tokens)
+			{
+				if (imp.token_type == ModuleTokenizer::IDENTIFIER_T)
+				{
+					auto not_built = std::find(modules_to_build.begin(), modules_to_build.end(), std::make_pair(*imp.string, false));
+					auto built = std::find(modules_to_build.begin(), modules_to_build.end(), std::make_pair(*imp.string, true));
+
+					if (not_built == modules_to_build.end() && built == modules_to_build.end())
+						modules_to_build.push_back(std::make_pair(*imp.string, false));
+
+					delete imp.string;
+				}
+			}
+			module_tokens.clear();
+
+			module_registry.AddModule(modules_to_build[i].first, *new Module(modules_to_build[i].first, *new SymbolTable(modules_to_build[i].first), *base.release()));
+			modules_to_build[i].second = true;
 		}
-	}
+		if (modules_to_build.size() == prev_module_count)
+		{
+			found_all_modules = true;
+			break;
+		}
+		prev_module_count = modules_to_build.size();
+	} while (!found_all_modules);
 
-	processed_input += t_string;
-
-	YY_BUFFER_STATE s = yy_scan_string(processed_input.c_str());
-
-    yycurrentfilename = args[1];
-    int p = yyparse();
-	yy_delete_buffer(s);
-    if (base)
-    {
-        //llvm::Module module("jc alpha", context);
-        //IREmitter emitter(module, context, *registry);
-
-        //if (emitter.EmitIR(base.get()))
-        //{
-        //    std::error_code ec;
-        //    std::string o = args[1];
-        //    o.append(".ir");
-        //    llvm::raw_fd_ostream out(o, ec);
-        //    llvm::WriteBitcodeToFile(module, out);
-        //    out.close();
-        //}
-        //else
-        //{
-        //    printf("Compilation failed. Please fix errors!\n");
-        //}
-
-		std::string stripped_module_name = args[1];
-		//stripped_module_name = stripped_module_name.substr(0, stripped_module_name.find('.'));
-		Module jc_mod(stripped_module_name, *new SymbolTable(stripped_module_name), *base.release());
-		
-		if (!jc_mod.EmitIR(context, *registry))
-			printf("Compilation failed. Please fix errors!\n");
-
-		base.reset();
-    }
+	if (!module_registry.EmitIRAll(context, *registry))
+		printf("Compilation failed. Please fix errors!\n");
 
     return 0;
 }

@@ -15,7 +15,12 @@ bool IREmitter::EmitIR(ASTBlock *root)
             return false;
     }
 
-    state.module.print(llvm::errs(), nullptr);
+    state.module->print(llvm::errs(), nullptr);
 
     return true;
+}
+
+void IREmitter::SetModule(llvm::Module & module)
+{
+	state.module = &module;
 }

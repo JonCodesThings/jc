@@ -38,13 +38,13 @@ std::vector<Token> ModuleTokenizer::Tokenize(const std::string &in)
 			accum.pop_back();
 
 			
-			std::ifstream imp(accum + ".jc");
-			std::string *import_contents = new std::string((std::istreambuf_iterator<char>(imp)), std::istreambuf_iterator<char>());
-			imp.close();
+			//std::ifstream imp(accum + ".jc");
+			//std::string *import_contents = new std::string((std::istreambuf_iterator<char>(imp)), std::istreambuf_iterator<char>());
+			//imp.close();
 
 			Token t;
 			t.token_type = IDENTIFIER_T;
-			t.string = import_contents;
+			t.string = new std::string(accum + ".jc");
 			tokens.push_back(t);
 			importing = false;
 			accum.clear();

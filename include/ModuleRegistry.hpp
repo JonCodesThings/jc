@@ -15,10 +15,8 @@ public:
 
 	const Module *GetModule(const std::string &module_name);
 
-	bool EmitIRAll();
+	bool EmitIRAll(llvm::LLVMContext &context, TypeRegistry &registry);
 private:
-	void EmitModuleIR(Module *module);
-
 	std::vector<std::pair<std::string, std::unique_ptr<Module>>> registry;
 };
 

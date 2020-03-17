@@ -22,7 +22,7 @@ const Module *ModuleRegistry::GetModule(const std::string &module_name)
 	return NULL;
 }
 
-bool ModuleRegistry::EmitIRAll()
+bool ModuleRegistry::EmitIRAll(llvm::LLVMContext &context, TypeRegistry &t_registry)
 {
 	bool all_compiled = false;
 
@@ -34,11 +34,38 @@ bool ModuleRegistry::EmitIRAll()
 			{
 				if (m.second->GetModuleDependencies().empty())
 				{
-
+					if (!m.second->EmitIR(context, t_registry))
+						return false;
 				}
 			}
 		}
-	}
+		for (auto &m : registry)
+		{
+			for (auto it = m.second->GetModuleDependencies().begin(); it != m.second->GetModuleDependencies().end(); it++)
+			{
+				for (auto &d : registry)
+				{
+					if (d.first == (*it))
+					{
+						if (!d.second->IREmitted())
+						{
+							if (!d.second->EmitIR(context, t_registry))
+								return false;
+						}
+					}
+				}
+			}
+		}
 
+		all_compiled = true;
+
+		for (auto &m : registry)
+		{
+			if (!m.second->IREmitted())
+			{
+				all_compiled = false;
+			}
+		}
+	}
 	return true;
 }

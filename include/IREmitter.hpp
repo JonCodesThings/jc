@@ -28,8 +28,8 @@ public:
     struct EmitterState
     {
         EmitterState(llvm::Module &module, llvm::LLVMContext &context, TypeRegistry &r) 
-        : module(module), context(context), builder(context), typeRegistry(r) {}
-        llvm::Module &module;
+        : module(&module), context(context), builder(context), typeRegistry(r) {}
+        llvm::Module *module;
         llvm::LLVMContext &context;
         llvm::IRBuilder<> builder;
 
@@ -39,7 +39,7 @@ public:
 
     IREmitter(llvm::Module &module, llvm::LLVMContext &context, TypeRegistry &r) : state(module, context, r) {}
     bool EmitIR(ASTBlock *root);
-    
+	void SetModule(llvm::Module &module);
 private:
     EmitterState state;
 };
