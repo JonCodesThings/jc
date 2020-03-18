@@ -37,7 +37,7 @@ bool Module::EmitIR(llvm::LLVMContext &context, TypeRegistry &registry)
 {
 	llvm_mod = std::make_unique<llvm::Module>(module_namespace, context);
 	IREmitter emit(*llvm_mod.get(), context, registry);
-	printf("Emitting IR for module %s\n...", module_namespace.c_str());
+	printf("Emitting IR for module %s...\n", module_namespace.c_str());
 	ir_flag = emit.EmitIR(module_block.get());
 
 	if (!ir_flag)

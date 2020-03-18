@@ -50,6 +50,7 @@ set(SOURCE_FILES src/main.cpp
     src/AST/Statement/ASTWhileStatement.cpp
 
     src/IREmitter.cpp
+	src/LinkerInvoke.cpp
 	src/Module.cpp
 	src/ModuleParser.cpp
 	src/ModuleRegistry.cpp

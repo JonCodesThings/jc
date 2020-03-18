@@ -4,6 +4,7 @@
 #include <gen/jc_lex.hpp>
 #include <gen/jc_parser.hpp>
 #include <include/IREmitter.hpp>
+#include <include/LinkerInvoke.hpp>
 #include <include/ModuleRegistry.hpp>
 #include <include/ModuleTokenizer.hpp>
 #include <include/ModuleParser.hpp>
@@ -37,6 +38,9 @@ int main(int argc, const char **args)
 
 	ObjectFileEmitter object_file_emitter(context);
 	object_file_emitter.Initialize();
+
+	//TODO: actually detect what linker we're using
+	LinkerInvoke invoke(LinkerInvoke::MSVC_LINK_EXE);
 
     registry->SetupBuiltinJCTypes();
 
@@ -100,6 +104,13 @@ int main(int argc, const char **args)
 		printf("Compilation failed. Please fix errors!\n");
 
 	object_file_emitter.EmitObjectFile(*module_registry.GetModule(modules_to_build[0].first)->GetLLVMModule());
+
+	invoke.AddObjectFile(modules_to_build[0].first);
+
+	printf("Invoking linker...\n");
+	invoke.Invoke(modules_to_build[0].first.substr(0, modules_to_build[0].first.find('.')));
+
+	printf("Compilation and linking complete!");
 
     return 0;
 }
