@@ -7,6 +7,7 @@
 #include <include/ModuleRegistry.hpp>
 #include <include/ModuleTokenizer.hpp>
 #include <include/ModuleParser.hpp>
+#include <include/ObjectFileEmitter.hpp>
 #include <include/TypeTokenizer.hpp>
 #include <include/TypeParser.hpp>
 
@@ -33,6 +34,9 @@ int main(int argc, const char **args)
 	ModuleTokenizer module_tokenizer;
 
 	ModuleRegistry module_registry;
+
+	ObjectFileEmitter object_file_emitter(context);
+	object_file_emitter.Initialize();
 
     registry->SetupBuiltinJCTypes();
 
@@ -94,6 +98,8 @@ int main(int argc, const char **args)
 
 	if (!module_registry.EmitIRAll(context, *registry))
 		printf("Compilation failed. Please fix errors!\n");
+
+	object_file_emitter.EmitObjectFile(*module_registry.GetModule(modules_to_build[0].first)->GetLLVMModule());
 
     return 0;
 }

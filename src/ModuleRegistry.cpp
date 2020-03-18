@@ -12,7 +12,7 @@ void ModuleRegistry::AddModule(const std::string &id, Module &module)
 	registry.push_back(std::make_pair(id, std::unique_ptr<Module>(std::move(&module))));
 }
 
-const Module *ModuleRegistry::GetModule(const std::string &module_name)
+Module *ModuleRegistry::GetModule(const std::string &module_name)
 {
 	for (auto &m : registry)
 	{

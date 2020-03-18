@@ -53,9 +53,8 @@ cmd /k
 @echo OFF
 echo Running test %~1
 RelWithDebInfo\jc.exe %~1
-llc -filetype=obj -march=x86-64 %~1.ir
 set retval=%ERRORLEVEL%
-if not retval==0 (link.exe %~1.ir.obj /OUT:%~1.exe libcmt.lib > NUL) 
+if not retval==0 (link.exe %~1.o /OUT:%~1.exe libcmt.lib > NUL) 
 %~1.exe
 set return_code=%ERRORLEVEL%
 if not return_code == %~2 (echo "Test successful!")

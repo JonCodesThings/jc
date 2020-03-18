@@ -13,7 +13,7 @@ public:
 
 	void AddModule(const std::string &module_name, Module &module);
 
-	const Module *GetModule(const std::string &module_name);
+	Module *GetModule(const std::string &module_name);
 
 	bool EmitIRAll(llvm::LLVMContext &context, TypeRegistry &registry);
 private:

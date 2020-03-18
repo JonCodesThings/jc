@@ -35,8 +35,8 @@ const std::string &Module::GetModuleNamespace()
 
 bool Module::EmitIR(llvm::LLVMContext &context, TypeRegistry &registry)
 {
-	std::unique_ptr<llvm::Module> m = std::make_unique<llvm::Module>(module_namespace, context);
-	IREmitter emit(*m.get(), context, registry);
+	llvm_mod = std::make_unique<llvm::Module>(module_namespace, context);
+	IREmitter emit(*llvm_mod.get(), context, registry);
 	printf("Emitting IR for module %s\n...", module_namespace.c_str());
 	ir_flag = emit.EmitIR(module_block.get());
 
@@ -47,7 +47,7 @@ bool Module::EmitIR(llvm::LLVMContext &context, TypeRegistry &registry)
 	std::string o = module_namespace;
 	o.append(".ir");
 	llvm::raw_fd_ostream out(o, ec);
-	llvm::WriteBitcodeToFile(*m.get(), out);
+	llvm::WriteBitcodeToFile(*llvm_mod.get(), out);
 	out.close();
 
 	return ir_flag;
