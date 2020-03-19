@@ -1,7 +1,10 @@
 import io;
 
+i32 x;
+
 i32 main()
 {
+	x = 0;
 	printf("IO successfully imported.\n");
 	return 0;
 }

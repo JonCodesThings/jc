@@ -35,7 +35,12 @@ llvm::Value *ASTFunctionDeclaration::EmitIR(IREmitter::EmitterState &state)
 
     auto funcType = llvm::FunctionType::get(state.typeRegistry.GetType(return_type->identifier), argTypeVector, variadic);
 
-    auto Func = llvm::Function::Create(funcType, llvm::GlobalValue::ExternalLinkage, identifier->identifier, state.module);
+	llvm::GlobalValue::LinkageTypes l = llvm::GlobalValue::ExternalLinkage;
+	if (exporting)
+		l = llvm::GlobalValue::ExternalLinkage;
+
+
+    auto Func = llvm::Function::Create(funcType, l, identifier->identifier, state.module);
 
     Symbol s;
     s.identifier = identifier->identifier;

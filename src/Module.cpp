@@ -68,6 +68,16 @@ bool Module::EmitIR(llvm::LLVMContext &context, TypeRegistry &registry)
 
 			se.symbolStack.AddSymbol(s);
 		}
+		else if (e.classification == e.VARIABLE)
+		{
+			Symbol s;
+			s.identifier = e.identifier;
+			s.type = e.type;
+			s.classification = Symbol::Classification::VARIABLE;
+			s.exported = false;
+
+			se.symbolStack.AddSymbol(s);
+		}
 	}
 
 	ir_flag = emit.EmitIR(module_block.get());

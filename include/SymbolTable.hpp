@@ -16,7 +16,7 @@ struct Symbol
 
     std::string identifier;
     std::string type;
-    llvm::AllocaInst *alloc_inst;
+    llvm::Value *alloc_inst;
 	llvm::Function *function;
     unsigned int array_size = 1;
 	bool exported = false;

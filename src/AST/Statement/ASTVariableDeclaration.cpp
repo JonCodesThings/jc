@@ -25,8 +25,6 @@ llvm::Value * ASTVariableDeclaration::EmitIR(IREmitter::EmitterState &state)
         state.typeRegistry.AddType(type->identifier, *t, JCType::TYPE_CLASSIFICATION::POINTER);
     }
 
-    
-
     auto temp = static_cast<ASTConstantInt*>(array_size.get());
 
     if (array_size)
@@ -34,7 +32,16 @@ llvm::Value * ASTVariableDeclaration::EmitIR(IREmitter::EmitterState &state)
 
     symbol.type = type->identifier;
 
-    symbol.alloc_inst = state.builder.CreateAlloca(t, NULL, id->identifier);
+	if (state.builder.GetInsertBlock()->getParent() == NULL)
+	{
+		//symbol.alloc_inst = new llvm::GlobalVariable(t, false, llvm::GlobalValue::ExternalLinkage, nullptr, symbol.identifier);
+		state.module->getOrInsertGlobal(id->identifier, t);
+		symbol.alloc_inst = state.module->getNamedGlobal(id->identifier);
+		state.module->getNamedGlobal(id->identifier)->setLinkage(llvm::GlobalValue::ExternalLinkage);
+		state.module->getNamedGlobal(id->identifier)->setInitializer(llvm::UndefValue::get(t));
+	}
+	else
+		symbol.alloc_inst = state.builder.CreateAlloca(t, NULL, id->identifier);
 
     state.symbolStack.AddSymbol(symbol);
 
