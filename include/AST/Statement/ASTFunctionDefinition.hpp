@@ -19,6 +19,8 @@ public:
     ASTFunctionDefinition(ASTIdentifier &id, ASTIdentifier &ret_type, ASTFunctionArgs &args, ASTBlock &block);
 
     llvm::Value *EmitIR(IREmitter::EmitterState &state);
+
+	void SetExporting(const bool expa);
 };
 
 #endif

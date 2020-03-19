@@ -18,6 +18,7 @@ llvm::Value *ASTFunctionDefinition::EmitIR(IREmitter::EmitterState &state)
         s.type = arg->type->identifier;
         s.classification = Symbol::Classification::VARIABLE;
         s.alloc_inst = NULL;
+		s.exported = declaration->exporting;
         state.symbolStack.AddSymbol(s);
     }
 
@@ -27,4 +28,10 @@ llvm::Value *ASTFunctionDefinition::EmitIR(IREmitter::EmitterState &state)
     state.symbolStack.Pop();
 
     return func;
+}
+
+
+void ASTFunctionDefinition::SetExporting(const bool expa)
+{
+	declaration->SetExporting(expa);
 }

@@ -19,6 +19,7 @@ struct Symbol
     llvm::AllocaInst *alloc_inst;
 	llvm::Function *function;
     unsigned int array_size = 1;
+	bool exported = false;
 };
 
 class SymbolTable
@@ -28,6 +29,7 @@ public:
     ~SymbolTable();
     bool AddSymbol(const Symbol &symbol);
     Symbol *GetSymbolByIdentifier(const std::string &identifier);
+	std::vector<Symbol> GetExportedSymbols() const;
 private:
     std::vector<Symbol> symbols;
 

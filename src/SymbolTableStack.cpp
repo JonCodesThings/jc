@@ -1,7 +1,7 @@
 #include <include/SymbolTableStack.hpp>
 
 
-SymbolTableStack::SymbolTableStack() { stack.push_back(SymbolTable("global")); }
+SymbolTableStack::SymbolTableStack() { stack.push_back(SymbolTable("module")); }
 SymbolTableStack::~SymbolTableStack() {}
 
 bool SymbolTableStack::AddSymbol(const Symbol &symbol) 
@@ -30,4 +30,9 @@ void SymbolTableStack::Push(const std::string &id)
 void SymbolTableStack::Pop()
 {
     stack.pop_back();
+}
+
+SymbolTable & SymbolTableStack::Top()
+{
+	return stack.back();
 }

@@ -1,6 +1,11 @@
 #include <include/IREmitter.hpp>
 #include <include/AST.hpp>
 
+IREmitter::EmitterState &IREmitter::GetEmitterState()
+{
+	return state;
+}
+
 bool IREmitter::EmitIR(ASTBlock *root)
 {
     state.typeRegistry.SetupBuiltinJCTypes();
@@ -15,7 +20,7 @@ bool IREmitter::EmitIR(ASTBlock *root)
             return false;
     }
 
-    //state.module->print(llvm::errs(), nullptr);
+    state.module->print(llvm::errs(), nullptr);
 
     return true;
 }

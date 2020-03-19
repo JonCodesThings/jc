@@ -58,6 +58,13 @@ void LinkerInvoke::Invoke(const std::string &output_name)
 		break;
 	case CLANG_LINKER:
 		final_command.append("clang");
+
+		for (auto o : object_files)
+			final_command.append(" " + o + ".o ");
+
+		final_command.append("-o");
+
+		final_command.append(output_name + ".out");
 		break;
 	}
 

@@ -26,3 +26,16 @@ Symbol *SymbolTable::GetSymbolByIdentifier(const std::string &identifier)
     }        
     return NULL;
 }
+
+std::vector<Symbol> SymbolTable::GetExportedSymbols() const
+{
+	std::vector<Symbol> exported;
+
+	for (auto s : symbols)
+	{
+		if (s.exported)
+			exported.push_back(s);
+	}
+
+	return exported;
+}

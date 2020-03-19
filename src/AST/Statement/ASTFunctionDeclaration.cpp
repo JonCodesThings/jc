@@ -42,6 +42,7 @@ llvm::Value *ASTFunctionDeclaration::EmitIR(IREmitter::EmitterState &state)
     s.type = return_type->identifier;
     s.classification = Symbol::Classification::FUNCTION;
 	s.function = Func;
+	s.exported = exporting;
 
     state.symbolStack.AddSymbol(s);
 
@@ -50,4 +51,9 @@ llvm::Value *ASTFunctionDeclaration::EmitIR(IREmitter::EmitterState &state)
         arg.setName(arguments->args[arg_name_index++]->name->identifier);
 
     return Func;
+}
+
+void ASTFunctionDeclaration::SetExporting(const bool exp)
+{
+	exporting = exp;
 }

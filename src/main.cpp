@@ -74,6 +74,8 @@ int main(int argc, const char **args)
 			int p = yyparse();
 			yy_delete_buffer(s);
 
+			std::vector<std::string> module_depends;
+
 			for (auto imp : module_tokens)
 			{
 				if (imp.token_type == ModuleTokenizer::IDENTIFIER_T)
@@ -84,12 +86,15 @@ int main(int argc, const char **args)
 					if (not_built == modules_to_build.end() && built == modules_to_build.end())
 						modules_to_build.push_back(std::make_pair(*imp.string, false));
 
+					module_depends.push_back(*imp.string);
+
 					delete imp.string;
 				}
 			}
 			module_tokens.clear();
 
-			module_registry.AddModule(modules_to_build[i].first, *new Module(modules_to_build[i].first, *new SymbolTable(modules_to_build[i].first), *base.release()));
+			Module *module = new Module(modules_to_build[i].first, *base.release(), module_depends);
+			module_registry.AddModule(modules_to_build[i].first, *module);
 			modules_to_build[i].second = true;
 		}
 		if (modules_to_build.size() == prev_module_count)
@@ -101,16 +106,23 @@ int main(int argc, const char **args)
 	} while (!found_all_modules);
 
 	if (!module_registry.EmitIRAll(context, *registry))
+	{
 		printf("Compilation failed. Please fix errors!\n");
+		return 0;
+	}
 
-	object_file_emitter.EmitObjectFile(*module_registry.GetModule(modules_to_build[0].first)->GetLLVMModule());
+	for (auto m : modules_to_build)
+	{
+		object_file_emitter.EmitObjectFile(*module_registry.GetModule(m.first)->GetLLVMModule());
 
-	invoke.AddObjectFile(modules_to_build[0].first);
+		invoke.AddObjectFile(m.first);
+	}
 
 	printf("Invoking linker...\n");
-	invoke.Invoke(modules_to_build[0].first.substr(0, modules_to_build[0].first.find('.')));
+	//invoke.Invoke(modules_to_build[0].first.substr(0, modules_to_build[0].first.find('.')));
+	invoke.Invoke(modules_to_build[0].first);
 
-	printf("Compilation and linking complete!");
+	printf("Compilation and linking complete!\n");
 
     return 0;
 }

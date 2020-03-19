@@ -15,6 +15,7 @@ public:
     std::unique_ptr<ASTIdentifier> identifier;
     std::unique_ptr<ASTIdentifier> return_type;
     std::unique_ptr<ASTFunctionArgs> arguments;
+	bool exporting = false;
 
     enum FUNCTION_LINKAGE
     {
@@ -23,6 +24,8 @@ public:
     } linkage = EXTERN;
     
     ASTFunctionDeclaration(ASTIdentifier &ret_type, ASTIdentifier &id, ASTFunctionArgs &args);
+
+	void SetExporting(const bool exp);
 
     llvm::Value *EmitIR(IREmitter::EmitterState &state);
 };

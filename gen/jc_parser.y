@@ -102,7 +102,9 @@ int token;
 
 %token UNKNOWN
 
-%type<statement> node_setup semicoloned_statement statement function_def function_decl variable_decl assign_op variable_assign unary_op binary_op member_op struct_def
+%type<statement> node_setup semicoloned_statement statement variable_decl assign_op variable_assign unary_op binary_op member_op struct_def
+%type<function_definition> function_def
+%type<function_declaration> function_decl
 %type<statement> assignable_statement array_decl import
 %type<unary_operator> cast increment decrement address_of dereference array_index
 %type<function_args> arg_list struct_list
@@ -218,10 +220,12 @@ greater_or_equal: id_or_constant GREATER_EQUAL id_or_constant { $$ = new ASTBina
 
 function_def: type id LEFT_BRACKET arg_list RIGHT_BRACKET scope {  $$ = new ASTFunctionDefinition(*$1, *$2, *$4, *$6);  }
     | type id LEFT_BRACKET RIGHT_BRACKET scope {  $$ = new ASTFunctionDefinition(*$1, *$2, *new ASTFunctionArgs(), *$5);  };
+    | EXPORT function_def { $$ = $2; $$->SetExporting(true); };
 
 function_decl: type id LEFT_BRACKET RIGHT_BRACKET SEMICOLON { $$ = new ASTFunctionDeclaration(*$1, *$2, *new ASTFunctionArgs());  }
     | type id LEFT_BRACKET arg_list RIGHT_BRACKET SEMICOLON { $$ = new ASTFunctionDeclaration(*$1, *$2, *$4);  }
-    | EXTERN function_decl SEMICOLON;
+    | EXTERN function_decl SEMICOLON
+    | EXPORT function_decl { $$ = $2; $$->SetExporting(true); };
 
 function_call: id LEFT_BRACKET RIGHT_BRACKET { $$ = new ASTFunctionCall(*$1); }
     | id LEFT_BRACKET statement_list RIGHT_BRACKET { $$ = new ASTFunctionCall(*$1, *$3); };

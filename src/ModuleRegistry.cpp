@@ -41,6 +41,7 @@ bool ModuleRegistry::EmitIRAll(llvm::LLVMContext &context, TypeRegistry &t_regis
 		}
 		for (auto &m : registry)
 		{
+			bool can_module_be_built = true;
 			for (auto it = m.second->GetModuleDependencies().begin(); it != m.second->GetModuleDependencies().end(); it++)
 			{
 				for (auto &d : registry)
@@ -52,8 +53,32 @@ bool ModuleRegistry::EmitIRAll(llvm::LLVMContext &context, TypeRegistry &t_regis
 							if (!d.second->EmitIR(context, t_registry))
 								return false;
 						}
+						m.second->AddDependencySymbols(d.second->GetModuleSymbolTable().GetExportedSymbols());
+						if (!d.second->IREmitted())
+							can_module_be_built = false;
 					}
 				}
+			}
+			if (can_module_be_built && !m.second->IREmitted())
+			{
+				for (auto it = m.second->GetModuleDependencies().begin(); it != m.second->GetModuleDependencies().end(); it++)
+				{
+					for (auto &d : registry)
+					{
+						if (d.first == (*it))
+						{
+							if (!d.second->IREmitted())
+							{
+								if (!d.second->EmitIR(context, t_registry))
+									return false;
+							}
+							if (!d.second->IREmitted())
+								can_module_be_built = false;
+						}
+					}
+				}
+				if (!m.second->EmitIR(context, t_registry))
+					return false;
 			}
 		}
 
@@ -62,9 +87,7 @@ bool ModuleRegistry::EmitIRAll(llvm::LLVMContext &context, TypeRegistry &t_regis
 		for (auto &m : registry)
 		{
 			if (!m.second->IREmitted())
-			{
 				all_compiled = false;
-			}
 		}
 	}
 	return true;

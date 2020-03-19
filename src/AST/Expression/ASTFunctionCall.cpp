@@ -7,7 +7,11 @@ ASTFunctionCall::ASTFunctionCall(ASTIdentifier &id, std::vector<std::unique_ptr<
 
 llvm::Value *ASTFunctionCall::EmitIR(IREmitter::EmitterState &state)
 {
+	if (!state.symbolStack.GetSymbolByIdentifier(identifier->identifier))
+		return false;
+
 	auto Func = state.symbolStack.GetSymbolByIdentifier(identifier->identifier)->function;
+
     
     std::vector<llvm::Value*> argvals;
 

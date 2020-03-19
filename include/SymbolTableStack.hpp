@@ -16,6 +16,7 @@ public:
     Symbol *GetSymbolByIdentifier(const std::string &identifier);
     void Push(const std::string &id);
     void Pop();
+	SymbolTable &Top();
 private:
     std::vector<SymbolTable> stack;
 };

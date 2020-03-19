@@ -66,6 +66,7 @@ TypeRegistry *registry;
 "defer" { return DEFER; yycurrentlinechar += yyleng; }
 "alias" { return ALIAS; yycurrentlinechar += yyleng; }
 "typedef" { return TYPEDEF; yycurrentlinechar += yyleng; }
+"export" { return EXPORT; yycurrentlinechar += yyleng; }
 [a-zA-Z0-9]+ { yylval.string = yytext; if (!registry->GetType(yylval.string)) return IDENTIFIER; else return TYPE; yycurrentlinechar += yyleng; }
 
 . { return UNKNOWN; }

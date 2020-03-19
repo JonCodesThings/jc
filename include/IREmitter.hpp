@@ -39,6 +39,7 @@ public:
 
     IREmitter(llvm::Module &module, llvm::LLVMContext &context, TypeRegistry &r) : state(module, context, r) {}
     bool EmitIR(ASTBlock *root);
+	EmitterState &GetEmitterState();
 	void SetModule(llvm::Module &module);
 private:
     EmitterState state;

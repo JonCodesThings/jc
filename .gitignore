@@ -73,3 +73,5 @@ jc
 *.tex
 *.sty
 doc/latex/make.bat
+*.un~
+*.jc~
