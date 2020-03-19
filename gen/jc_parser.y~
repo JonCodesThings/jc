@@ -50,7 +50,6 @@ ASTFunctionCall *function_call;
 ASTFunctionDeclaration *function_declaration;
 ASTFunctionDefinition *function_definition;
 ASTStructDefinition *struct_definition;
-ASTVariableDeclaration *variable_declaration;
 ASTMemberOperator *member_operator;
 ASTIfStatement *if_statement;
 ASTForStatement *for_loop;
@@ -103,8 +102,7 @@ int token;
 
 %token UNKNOWN
 
-%type<statement> node_setup semicoloned_statement statement assign_op variable_assign unary_op binary_op member_op struct_def
-%type<variable_declaration> variable_decl
+%type<statement> node_setup semicoloned_statement statement variable_decl assign_op variable_assign unary_op binary_op member_op struct_def
 %type<function_definition> function_def
 %type<function_declaration> function_decl
 %type<statement> assignable_statement array_decl import
@@ -235,7 +233,6 @@ function_call: id LEFT_BRACKET RIGHT_BRACKET { $$ = new ASTFunctionCall(*$1); }
 variable_decl: type id { $$ = new ASTVariableDeclaration(*$1, *$2);  }
     | type id EQUAL assignable_statement { $$ = new ASTVariableDeclaration(*$1, *$2, *$4);  }
     | array_decl;
-    | EXPORT variable_decl { $$ = $2; $$->exporting = true; };
 
 array_decl: type id LEFT_SQUARE_BRACKET constant_int RIGHT_SQUARE_BRACKET { $$ = new ASTVariableDeclaration(*$1, *$2, *$4); }
 

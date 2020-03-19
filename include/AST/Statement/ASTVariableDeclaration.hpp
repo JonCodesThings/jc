@@ -15,6 +15,8 @@ public:
     std::unique_ptr<ASTIdentifier> type;
     std::unique_ptr<ASTIdentifier> id;
 
+	bool exporting = false;
+
     std::unique_ptr<ASTNode> node;
     std::unique_ptr<ASTConstant> array_size;
 

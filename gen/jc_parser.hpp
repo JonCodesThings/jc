@@ -110,6 +110,7 @@ ASTFunctionCall *function_call;
 ASTFunctionDeclaration *function_declaration;
 ASTFunctionDefinition *function_definition;
 ASTStructDefinition *struct_definition;
+ASTVariableDeclaration *variable_declaration;
 ASTMemberOperator *member_operator;
 ASTIfStatement *if_statement;
 ASTForStatement *for_loop;
@@ -129,7 +130,7 @@ int token;
 
 
 /* Line 2058 of yacc.c  */
-#line 133 "gen/jc_parser.hpp"
+#line 134 "gen/jc_parser.hpp"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

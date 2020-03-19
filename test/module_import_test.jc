@@ -1,7 +1,5 @@
 import io;
 
-i32 x;
-
 i32 main()
 {
 	x = 0;

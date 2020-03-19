@@ -1,3 +1,5 @@
 export i32 printf(i8 *str, ...);
 
 export i32 getchar();
+
+export i32 x;

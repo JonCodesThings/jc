@@ -70,11 +70,15 @@ bool Module::EmitIR(llvm::LLVMContext &context, TypeRegistry &registry)
 		}
 		else if (e.classification == e.VARIABLE)
 		{
+			llvm_mod->getOrInsertGlobal(e.identifier, se.typeRegistry.GetType(e.type));
+
 			Symbol s;
 			s.identifier = e.identifier;
 			s.type = e.type;
 			s.classification = Symbol::Classification::VARIABLE;
 			s.exported = false;
+			s.alloc_inst = llvm_mod->getNamedGlobal(e.identifier);
+			llvm_mod->getNamedGlobal(e.identifier)->setLinkage(llvm::GlobalValue::ExternalLinkage);
 
 			se.symbolStack.AddSymbol(s);
 		}
