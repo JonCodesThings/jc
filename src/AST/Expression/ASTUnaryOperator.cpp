@@ -8,9 +8,11 @@ ASTUnaryOperator::ASTUnaryOperator(ASTNode &operatee, ASTConstantInt &index, OP 
 
 llvm::Value *ASTUnaryOperator::EmitIR(IREmitter::EmitterState &state)
 {
+	//get the type string pointer and symbol of the node being operated on
     const std::string *type = operatee->GetType(state);
     const Symbol *s = operatee->GetSymbol(state);
 
+	//do different things based on the op
     switch (op)
     {
         default:
@@ -26,13 +28,17 @@ llvm::Value *ASTUnaryOperator::EmitIR(IREmitter::EmitterState &state)
         }
         case ARRAY_INDEX:
         {
+			//if there is nothing in the identifier variable then we use GEP
             if (!cast)
                 return state.builder.CreateGEP(s->alloc_inst, { llvm::ConstantInt::get(llvm::Type::getInt32Ty(state.context), 0), index->EmitIR(state) });
+
+			//otherwise we get the symbol, load it and then use GEP
 
             Symbol *cs = state.symbolStack.GetSymbolByIdentifier(cast->identifier);
 
             llvm::Value *v  = state.builder.CreateLoad(cs->alloc_inst, "temp");
 
+			//TODO: fix this awful hack
             if (v->getType() == llvm::Type::getInt32Ty(state.context))
                 v = state.builder.CreateGEP(s->alloc_inst, { llvm::ConstantInt::get(llvm::Type::getInt32Ty(state.context), 0), v});
 
@@ -40,8 +46,10 @@ llvm::Value *ASTUnaryOperator::EmitIR(IREmitter::EmitterState &state)
         }
         case CAST:
         {
+			//find out what we're casting to
             const std::string *cast_to = cast->GetType(state);
 
+			//do the conversion and then do the correct cast
             if (state.typeRegistry.IsTypeNumeric(*type) && state.typeRegistry.IsTypeNumeric(*cast_to))
             {
                 llvm::Type *conver = state.typeRegistry.GetNarrowingConversion(*type, *cast_to);
@@ -56,9 +64,6 @@ llvm::Value *ASTUnaryOperator::EmitIR(IREmitter::EmitterState &state)
 
                 if (s)
                     v = state.builder.CreateLoad(s->alloc_inst, "temp");
-
-
-                //TODO: allow this to support unsigned types
 
                 JCType::TYPE_CLASSIFICATION t = state.typeRegistry.GetTypeInfo(*cast_to)->classification;
                 JCType::TYPE_CLASSIFICATION f = state.typeRegistry.GetTypeInfo(*type)->classification;
@@ -75,12 +80,16 @@ llvm::Value *ASTUnaryOperator::EmitIR(IREmitter::EmitterState &state)
             }
             return NULL;
         }
+		//increment
+		//TODO: allow this to support other types
         case INCREMENT:
         {
             llvm::Value *temp = state.builder.CreateLoad(s->alloc_inst, "temp");
             llvm::Value *added = state.builder.CreateAdd(temp, llvm::ConstantInt::get(state.typeRegistry.GetType(*type), 1));
             return state.builder.CreateStore(added, s->alloc_inst);
         }
+		//decrement
+		//TODO: allow this to support other types
         case DECREMENT:
         {
             llvm::Value *temp = state.builder.CreateLoad(s->alloc_inst, "temp");

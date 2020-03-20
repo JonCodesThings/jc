@@ -8,11 +8,13 @@ IREmitter::EmitterState &IREmitter::GetEmitterState()
 
 bool IREmitter::EmitIR(ASTBlock *root)
 {
+	//set up the built in types
     state.typeRegistry.SetupBuiltinJCTypes();
 
     if (!root)
         return false;
 
+	//emit the IR for the entire AST
     for (auto &statement : *root->block)
     {
         auto result = statement->EmitIR(state);

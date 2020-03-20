@@ -8,6 +8,7 @@ ASTVariableAssignment::ASTVariableAssignment(ASTNode &assign_to, ASTNode &val) :
 
 llvm::Value *ASTVariableAssignment::EmitIR(IREmitter::EmitterState &state)
 {
+	//handy lambda for doing implicit casting
     auto implicit_cast = [&state, this](std::unique_ptr<ASTNode> &node, const Symbol *symbol) -> llvm::Value*
     {
         std::unique_ptr<ASTUnaryOperator> cast;
@@ -37,24 +38,31 @@ llvm::Value *ASTVariableAssignment::EmitIR(IREmitter::EmitterState &state)
             return NULL;
     };
 
+	//get the assigning and assigned value symbols
     const Symbol *assign_symbol = assign_to->GetSymbol(state);
     const Symbol *val_symbol = val->GetSymbol(state);
 
+	//if the assigned symbol exists
     if (assign_symbol)
     {
+		//if the value symbol exists
         if (val_symbol)
         {
+			//perform an implicit cast as required or just emit store operation
             if (assign_symbol->type != val_symbol->type)
                 return implicit_cast(val, assign_symbol);
             else
                 return state.builder.CreateStore(state.builder.CreateLoad(val->EmitIR(state), "load_val_var_assign"), assign_symbol->alloc_inst);
         }
+		//otherwise
         else
         {
+			//perform an implicit cast if required
             if (assign_to->GetType(state) != val->GetType(state))
                 return implicit_cast(val, assign_symbol);
             else
             {
+				//otherwise do a whole load of hacks to ensure the correct value is loaded
                 llvm::Value *store = val->EmitIR(state);
                 if (val->GetNodeType() == UNARY_OP)
                 {
@@ -64,18 +72,24 @@ llvm::Value *ASTVariableAssignment::EmitIR(IREmitter::EmitterState &state)
                 }
                 else if (val->GetNodeType() == MEMBER_OP)
                     store = state.builder.CreateLoad(store, "load_val_to_store");
+
+				//return a store operation
                 return state.builder.CreateStore(store, assign_symbol->alloc_inst);
             }
         }
     }
+	//otherwise
     else
     {
+		//emit the IR for gep assignment
         llvm::Value *gep_assign = assign_to->EmitIR(state);
+		//if there is a value symbol load it and then store it
         if (val_symbol)
         {
             llvm::Value *val_load = state.builder.CreateLoad(val->EmitIR(state), "load_val_var_assign_val");
             return state.builder.CreateStore(val_load, gep_assign);
         }
+		//otherwise just do a straight store
         else
             return state.builder.CreateStore(val->EmitIR(state), gep_assign);
     }

@@ -1,5 +1,7 @@
 #include <include/AST/Constant/ASTConstantString.hpp>
 
+//absolutely horrific hack for handling escape characters in string literals
+//seriously this is awful
 const std::string PreProcess(std::string s)
 {
     std::string n;

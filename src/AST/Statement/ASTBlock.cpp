@@ -11,6 +11,7 @@ ASTBlock::ASTBlock(std::vector<std::unique_ptr<ASTStatement>> &block) : block(&b
 
 bool ASTBlock::ContainsReturnStatement()
 {
+	//loop until wee find a return statement
     for (auto &statement : *block)
     {
         if (statement)
@@ -22,6 +23,7 @@ bool ASTBlock::ContainsReturnStatement()
     return false;
 }
 
+//helper function to create a basic block and set it as the insert point
 llvm::Value *ASTBlock::CreateBasicBlock(IREmitter::EmitterState &state, const std::string &name)
 {
     b = llvm::BasicBlock::Create(state.context, name, current_function);
@@ -33,12 +35,15 @@ llvm::Value *ASTBlock::CreateBasicBlock(IREmitter::EmitterState &state, const st
 
 llvm::Value *ASTBlock::EmitIR(IREmitter::EmitterState &state)
 {
+	//if we don't have a block create it
     if (!b)
         CreateBasicBlock(state, "new_block");
 
+	//vectors of deferred and return statements
     std::vector<std::unique_ptr<ASTStatement>> deferred;
     std::vector<std::unique_ptr<ASTStatement>> r;
 
+	//preprocess the block, removing redundant statements and adding them to the vectors as required
     for (auto &statement : *block)
     {
         if (statement->GetNodeType() == ASTNode::NODE_TYPE::TYPE_MOD || statement->GetNodeType() == ASTNode::NODE_TYPE::IMPORT_STATEMENT)
@@ -60,6 +65,7 @@ llvm::Value *ASTBlock::EmitIR(IREmitter::EmitterState &state)
         }
     }
 
+	//loop through, downcast and move the deferred statement to the end of the block
     for (auto &s : deferred)
     {
         ASTDeferredStatement *casted = static_cast<ASTDeferredStatement*>(s.get());
@@ -67,11 +73,13 @@ llvm::Value *ASTBlock::EmitIR(IREmitter::EmitterState &state)
         block->push_back(std::move(a));
     }
 
+	//do the same with the return statements
     for (auto &s : r)
     {
         block->push_back(std::move(s));
     }
 
+	//loop through and emit IR for all statements in the block
     for (auto &statement : *block)
     {
         if (statement)
@@ -89,10 +97,13 @@ llvm::Value *ASTBlock::EmitIR(IREmitter::EmitterState &state)
     return b;
 }
 
+//this is for creating a function's entry block
 llvm::Value *ASTBlock::EmitIR(IREmitter::EmitterState &state, ASTFunctionArgs &args)
 {        
+	//create a basic block as normal
     CreateBasicBlock(state, "entry");
 
+	//store all the argument values
     for (auto &arg : current_function->args())
     {
         Symbol *s = state.symbolStack.GetSymbolByIdentifier(arg.getName());
@@ -100,6 +111,7 @@ llvm::Value *ASTBlock::EmitIR(IREmitter::EmitterState &state, ASTFunctionArgs &a
         state.builder.CreateStore(&arg, s->alloc_inst);
     }
 
+	//emit the IR as normal
     auto ret = EmitIR(state);
 
     return ret;

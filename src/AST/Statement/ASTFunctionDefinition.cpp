@@ -5,12 +5,16 @@ ASTFunctionDefinition::ASTFunctionDefinition(ASTIdentifier &id, ASTIdentifier &r
 
 llvm::Value *ASTFunctionDefinition::EmitIR(IREmitter::EmitterState &state)
 {
-    auto func = declaration->EmitIR(state);
+	//get the function by emitting the declaration's IR
+    llvm::Value *func = declaration->EmitIR(state);
 
+	//push a new symbol table onto the stack
     state.symbolStack.Push(declaration->identifier->identifier);
 
+	//downcast the current function
     current_function = (llvm::Function*)func;
 
+	//add the args as symbols on that new symbol table
     for (auto &arg : declaration->arguments->args)
     {
         Symbol s;
@@ -22,11 +26,14 @@ llvm::Value *ASTFunctionDefinition::EmitIR(IREmitter::EmitterState &state)
         state.symbolStack.AddSymbol(s);
     }
 
+	//emit the function body's IR
     if (!block->EmitIR(state, *declaration->arguments))
         return NULL;
 
+	//pop the symbol table
     state.symbolStack.Pop();
 
+	//return the function
     return func;
 }
 

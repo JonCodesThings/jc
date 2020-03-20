@@ -32,8 +32,7 @@ public:
     unsigned int line_number;
     unsigned int start_char;
 
-    static llvm::Function *current_function;
-    static llvm::BasicBlock *prev_block;
+	static llvm::Function *ASTNode::current_function;
 
     enum NODE_TYPE
     {
@@ -69,8 +68,6 @@ public:
 
         NODE_TYPE_COUNT
     } node_type;
-
-    static NODE_TYPE prev_processed;
 
     ASTNode(const NODE_TYPE &type);
     virtual ~ASTNode();

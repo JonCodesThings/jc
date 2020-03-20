@@ -32,10 +32,13 @@ void LinkerInvoke::Invoke(const std::string &output_name)
 {
 	std::string final_command;
 
+	//depending on what platform we're on and what linker is available we'll do different things
 	switch (l)
 	{
 	default:
 		break;
+	//THIS ONLY WORKS IN THE DEVELOPER PROMT CURRENTLY
+	//set up the MSVC linker with args
 	case MSVC_LINK_EXE:
 	{
 		final_command.append("link.exe");
@@ -56,6 +59,8 @@ void LinkerInvoke::Invoke(const std::string &output_name)
 		//printf("%s\n", final_command.c_str());
 	}
 		break;
+	//TODO: Jon
+	//properly set up the CLANG linker stuff
 	case CLANG_LINKER:
 		final_command.append("clang");
 
@@ -68,5 +73,6 @@ void LinkerInvoke::Invoke(const std::string &output_name)
 		break;
 	}
 
+	//invoke the linker
 	system(final_command.c_str());
 }

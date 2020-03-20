@@ -4,12 +4,16 @@ ASTReturnStatement::ASTReturnStatement(ASTStatement &expr) : expr(&expr), ASTSta
 
 llvm::Value *ASTReturnStatement::EmitIR(IREmitter::EmitterState &state)
 {
+	//variable to store the retval in
     llvm::Value *retval;
+
+	//if the expression has a symbol get it by emitting the IR and loading the result
     if (expr->GetSymbol(state))
     {
         retval = expr->EmitIR(state);
         retval = state.builder.CreateLoad(retval);
     }
+	//otherwise emit the IR and depending on the node type do different things
     else
     {
         retval = expr->EmitIR(state);
@@ -22,6 +26,5 @@ llvm::Value *ASTReturnStatement::EmitIR(IREmitter::EmitterState &state)
                 break;
         }
     }
-    prev_processed = node_type;
     return state.builder.CreateRet(retval);
 }
