@@ -42,26 +42,30 @@ set(SOURCE_FILES src/main.cpp
     src/AST/Statement/ASTFunctionDeclaration.cpp
     src/AST/Statement/ASTFunctionDefinition.cpp
     src/AST/Statement/ASTIfStatement.cpp
-	src/AST/Statement/ASTImportStatement.cpp
+    src/AST/Statement/ASTImportStatement.cpp
     src/AST/Statement/ASTReturnStatement.cpp
     src/AST/Statement/ASTStructDefinition.cpp
     src/AST/Statement/ASTTypeSystemModStatement.cpp
     src/AST/Statement/ASTVariableDeclaration.cpp
     src/AST/Statement/ASTWhileStatement.cpp
 
+    src/Build/BuildConfig.cpp
+    src/Build/LinkerInvoke.cpp
+    src/Build/ObjectFileEmitter.cpp
+
+    src/Parsers/Parser.cpp
+    src/Parsers/ModuleParser.cpp
+    src/Parsers/TypeParser.cpp
+
+    src/Tokenizers/Tokenizer.cpp
+    src/Tokenizers/ModuleTokenizer.cpp
+    src/Tokenizers/TypeTokenizer.cpp
+
     src/IREmitter.cpp
-	src/LinkerInvoke.cpp
-	src/Module.cpp
-	src/ModuleParser.cpp
-	src/ModuleRegistry.cpp
-	src/ModuleTokenizer.cpp
-	src/ObjectFileEmitter.cpp
-	src/Parser.cpp
+    src/Module.cpp
+    src/ModuleRegistry.cpp
     src/SymbolTable.cpp
     src/SymbolTableStack.cpp
-	src/Tokenizer.cpp
-	src/TypeParser.cpp
-	src/TypeTokenizer.cpp
     src/TypeRegistry.cpp)
 
 add_executable(jc ${SOURCE_FILES}  ${BISON_jc_parser_OUTPUTS} ${FLEX_jc_scanner_OUTPUTS})

@@ -1,6 +1,6 @@
-#include <include/ModuleParser.hpp>
+#include <include/Parsers/ModuleParser.hpp>
 
-#include <include/ModuleTokenizer.hpp>
+#include <include/Tokenizers/ModuleTokenizer.hpp>
 
 ModuleParser::ModuleParser()
 {

@@ -1,7 +1,7 @@
 #ifndef JC_MODULETOKENIZER_H
 #define JC_MODULETOKENIZER_H
 
-#include <include/Tokenizer.hpp>
+#include <include/Tokenizers/Tokenizer.hpp>
 #include<include/TypeRegistry.hpp>
 
 class ModuleTokenizer : public Tokenizer

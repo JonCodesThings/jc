@@ -1,4 +1,4 @@
-#include <include/TypeTokenizer.hpp>
+#include <include/Tokenizers/TypeTokenizer.hpp>
 
 TypeTokenizer::TypeTokenizer() {}
 
@@ -21,7 +21,7 @@ std::vector<Token> TypeTokenizer::Tokenize(const std::string &in)
 
 		accum.push_back(ch);
 
-		if (accum == "typedef" || accum == "struct" || accum == "alias")
+		if (accum == "typedef" || accum == "struct" || accum == "alias" || accum == "func_ptr")
 		{
 			current_keyword = accum;
 			Token t;
@@ -29,6 +29,8 @@ std::vector<Token> TypeTokenizer::Tokenize(const std::string &in)
 				t.token_type = TYPEDEF_T;
 			else if (accum == "struct")
 				t.token_type = STRUCT_T;
+			else if (accum == "func_ptr")
+				t.token_type = FUNC_PTR_T;
 			else
 				t.token_type = ALIAS_T;
 			accum.clear();

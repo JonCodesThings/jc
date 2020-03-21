@@ -75,3 +75,8 @@ jc
 doc/latex/make.bat
 *.un~
 *.jc~
+gen/jc_lex.cpp
+gen/jc_lex.cpp
+gen/jc_lex.hpp
+gen/jc_parser.cpp
+gen/jc_parser.hpp

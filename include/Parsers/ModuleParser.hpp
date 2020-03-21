@@ -1,8 +1,8 @@
 #ifndef JC_MODULEPARSER_H
 #define JC_MODULEPARSER_H
 
-#include <include/Parser.hpp>
-#include <include/TypeTokenizer.hpp>
+#include <include/Parsers/Parser.hpp>
+#include <include/Tokenizers/TypeTokenizer.hpp>
 
 class ModuleParser : public Parser
 {

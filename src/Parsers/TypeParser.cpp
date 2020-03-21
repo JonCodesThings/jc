@@ -1,4 +1,4 @@
-#include <include/TypeParser.hpp>
+#include <include/Parsers/TypeParser.hpp>
 
 TypeParser::TypeParser(TypeRegistry &registry) : registry(registry) {}
 

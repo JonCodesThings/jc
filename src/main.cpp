@@ -4,13 +4,13 @@
 #include <gen/jc_lex.hpp>
 #include <gen/jc_parser.hpp>
 #include <include/IREmitter.hpp>
-#include <include/LinkerInvoke.hpp>
+#include <include/Build/LinkerInvoke.hpp>
 #include <include/ModuleRegistry.hpp>
-#include <include/ModuleTokenizer.hpp>
-#include <include/ModuleParser.hpp>
-#include <include/ObjectFileEmitter.hpp>
-#include <include/TypeTokenizer.hpp>
-#include <include/TypeParser.hpp>
+#include <include/Tokenizers/ModuleTokenizer.hpp>
+#include <include/Parsers/ModuleParser.hpp>
+#include <include/Build/ObjectFileEmitter.hpp>
+#include <include/Tokenizers/TypeTokenizer.hpp>
+#include <include/Parsers/TypeParser.hpp>
 
 #include <llvm/Bitcode/BitcodeWriter.h>
 #include <llvm/Support/raw_ostream.h>

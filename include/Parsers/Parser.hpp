@@ -3,7 +3,7 @@
 
 #include <vector>
 
-#include <include/Tokenizer.hpp>
+#include <include/Tokenizers/Tokenizer.hpp>
 
 class Parser
 {
