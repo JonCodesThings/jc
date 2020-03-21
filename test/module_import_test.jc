@@ -1,3 +1,4 @@
+include "stdilib";
 import io;
 
 i32 main()

@@ -12,6 +12,8 @@
 #include <include/Tokenizers/TypeTokenizer.hpp>
 #include <include/Parsers/TypeParser.hpp>
 #include <include/Build/BuildConfig.hpp>
+#include <include/Tokenizers/BuildTokenizer.hpp>
+#include <include/Parsers/BuildParser.hpp>
 
 #include <llvm/Bitcode/BitcodeWriter.h>
 #include <llvm/Support/raw_ostream.h>
@@ -41,6 +43,8 @@ int main(int argc, const char **args)
 	object_file_emitter.Initialize();
 
 	BuildConfig config;
+	BuildTokenizer build_tokenizer;
+	BuildParser build_parser(config);
 
 	//TODO: actually detect what linker we're using
 	LinkerInvoke invoke(LinkerInvoke::MSVC_LINK_EXE);
@@ -84,10 +88,11 @@ int main(int argc, const char **args)
 				}
 			}
 
-
-			m_in.good();
 			std::string m_string((std::istreambuf_iterator<char>(m_in)), std::istreambuf_iterator<char>());
 			m_in.close();
+
+			std::vector<Token> build_tokens = build_tokenizer.Tokenize(m_string);
+			build_parser.Parse(build_tokens);
 
 			std::vector<Token> type_tokens = type_tokenizer.Tokenize(m_string);
 			type_parser.Parse(type_tokens);

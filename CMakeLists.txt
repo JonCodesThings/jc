@@ -43,6 +43,7 @@ set(SOURCE_FILES src/main.cpp
     src/AST/Statement/ASTFunctionDefinition.cpp
     src/AST/Statement/ASTIfStatement.cpp
     src/AST/Statement/ASTImportStatement.cpp
+	src/AST/Statement/ASTIncludeStatement.cpp
     src/AST/Statement/ASTReturnStatement.cpp
     src/AST/Statement/ASTStructDefinition.cpp
     src/AST/Statement/ASTTypeSystemModStatement.cpp
@@ -54,10 +55,12 @@ set(SOURCE_FILES src/main.cpp
     src/Build/ObjectFileEmitter.cpp
 
     src/Parsers/Parser.cpp
+	src/Parsers/BuildParser.cpp
     src/Parsers/ModuleParser.cpp
     src/Parsers/TypeParser.cpp
 
     src/Tokenizers/Tokenizer.cpp
+	src/Tokenizers/BuildTokenizer.cpp
     src/Tokenizers/ModuleTokenizer.cpp
     src/Tokenizers/TypeTokenizer.cpp
 

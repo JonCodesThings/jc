@@ -59,6 +59,7 @@ public:
         DEFER_STATEMENT,
 
         IMPORT_STATEMENT,
+		INCLUDE_STATEMENT,
 
         TYPE_MOD,
 

@@ -103,7 +103,7 @@ int token;
 
 %token UNKNOWN
 
-%type<statement> node_setup semicoloned_statement statement assign_op variable_assign unary_op binary_op member_op struct_def
+%type<statement> node_setup semicoloned_statement statement assign_op variable_assign unary_op binary_op member_op struct_def include
 %type<variable_declaration> variable_decl
 %type<function_definition> function_def
 %type<function_declaration> function_decl
@@ -145,7 +145,7 @@ semicoloned_statements: semicoloned_statement { $$ = new ASTBlock(); auto statem
 semicoloned_statement: statement SEMICOLON { SetNodeInfo(*$1); }; | assignable_statement SEMICOLON { SetNodeInfo(*$1); } | flow_control { SetNodeInfo(*$1); }
     | defer_statement SEMICOLON { SetNodeInfo(*$1); }; ;
 
-statement: return_statement | function_def | function_decl | variable_decl | assign_op | flow_control | alias_statement | typedef_statement | struct_def | import;
+statement: return_statement | function_def | function_decl | variable_decl | assign_op | flow_control | alias_statement | typedef_statement | struct_def | import | include;
 
 alias_statement: ALIAS TYPE TYPE { $$ = new ASTTypeSystemModStatement(ASTTypeSystemModStatement::TYPE_MOD_OP::ALIAS); };
 
@@ -277,7 +277,7 @@ arg_pair: type id { $$ = new ASTFunctionArg(*$1, *$2); } | FSTOP FSTOP FSTOP { $
 
 id_or_constant: id | constant;
 
-include: INCLUDE STRING  { }
+include: INCLUDE STRING  { $$ = new ASTIncludeStatement(yylval.string); };
 
 constant: constant_int | FLOAT { $$ = new ASTConstantFloat(yylval.fl); } | STRING { $$ = new ASTConstantString(yylval.string); };
 

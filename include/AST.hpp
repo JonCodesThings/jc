@@ -26,6 +26,7 @@
 #include <include/AST/Statement/ASTFunctionDefinition.hpp>
 #include <include/AST/Statement/ASTIfStatement.hpp>
 #include <include/AST/Statement/ASTImportStatement.hpp>
+#include <include/AST/Statement/ASTIncludeStatement.hpp>
 #include <include/AST/Statement/ASTReturnStatement.hpp>
 #include <include/AST/Statement/ASTStructDefinition.hpp>
 #include <include/AST/Statement/ASTTypeSystemModStatement.hpp>
