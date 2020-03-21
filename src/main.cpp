@@ -11,6 +11,7 @@
 #include <include/Build/ObjectFileEmitter.hpp>
 #include <include/Tokenizers/TypeTokenizer.hpp>
 #include <include/Parsers/TypeParser.hpp>
+#include <include/Build/BuildConfig.hpp>
 
 #include <llvm/Bitcode/BitcodeWriter.h>
 #include <llvm/Support/raw_ostream.h>
@@ -39,6 +40,8 @@ int main(int argc, const char **args)
 	ObjectFileEmitter object_file_emitter(context);
 	object_file_emitter.Initialize();
 
+	BuildConfig config;
+
 	//TODO: actually detect what linker we're using
 	LinkerInvoke invoke(LinkerInvoke::MSVC_LINK_EXE);
 
@@ -53,6 +56,11 @@ int main(int argc, const char **args)
 
 	bool found_all_modules = false;
 	int prev_module_count = 1;
+
+	config.AddModuleIncludeDirectory("stdlib");
+
+	auto include = config.GetIncludeDirs();
+
 	do
 	{
 		for (int i = 0; i < modules_to_build.size(); i++)
@@ -61,6 +69,23 @@ int main(int argc, const char **args)
 				continue;
 
 			std::ifstream m_in(modules_to_build[i].first);
+
+			bool is_good = m_in.good();
+
+			if (!is_good)
+			{
+				for (auto it = include.begin(); it != include.end(); it++)
+				{
+					m_in = std::ifstream((*it) + "/" + modules_to_build[i].first);
+					is_good = m_in.good();
+
+					if (is_good)
+						break;
+				}
+			}
+
+
+			m_in.good();
 			std::string m_string((std::istreambuf_iterator<char>(m_in)), std::istreambuf_iterator<char>());
 			m_in.close();
 
@@ -119,7 +144,6 @@ int main(int argc, const char **args)
 	}
 
 	printf("Invoking linker...\n");
-	//invoke.Invoke(modules_to_build[0].first.substr(0, modules_to_build[0].first.find('.')));
 	invoke.Invoke(modules_to_build[0].first);
 
 	printf("Compilation and linking complete!\n");

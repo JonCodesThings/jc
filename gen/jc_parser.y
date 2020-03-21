@@ -97,7 +97,7 @@ int token;
 
 %token TYPEDEF ALIAS
 
-%token EXTERN IMPORT EXPORT
+%token EXTERN IMPORT EXPORT INCLUDE
 
 %token STRUCT ARROW
 
@@ -276,6 +276,8 @@ statement_list: statement_list COMMA assignable_statement { auto s = std::unique
 arg_pair: type id { $$ = new ASTFunctionArg(*$1, *$2); } | FSTOP FSTOP FSTOP { $$ = new ASTFunctionArg(); };
 
 id_or_constant: id | constant;
+
+include: INCLUDE STRING  { }
 
 constant: constant_int | FLOAT { $$ = new ASTConstantFloat(yylval.fl); } | STRING { $$ = new ASTConstantString(yylval.string); };
 

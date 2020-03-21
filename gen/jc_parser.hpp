@@ -87,9 +87,10 @@ extern int yydebug;
      EXTERN = 296,
      IMPORT = 297,
      EXPORT = 298,
-     STRUCT = 299,
-     ARROW = 300,
-     UNKNOWN = 301
+     INCLUDE = 299,
+     STRUCT = 300,
+     ARROW = 301,
+     UNKNOWN = 302
    };
 #endif
 
@@ -130,7 +131,7 @@ int token;
 
 
 /* Line 2058 of yacc.c  */
-#line 134 "gen/jc_parser.hpp"
+#line 135 "gen/jc_parser.hpp"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
