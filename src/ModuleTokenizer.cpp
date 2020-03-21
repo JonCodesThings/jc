@@ -11,6 +11,7 @@ std::vector<Token> ModuleTokenizer::Tokenize(const std::string &in)
 	std::string accum;
 	bool importing = false;
 
+	//very much hacked together way of doing this
 	for (auto ch : in)
 	{
 		if (ch == '\t' || ch == ' ' || ch == '\n')

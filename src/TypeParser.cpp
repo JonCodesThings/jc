@@ -6,6 +6,7 @@ TypeParser::~TypeParser() {}
 
 const bool TypeParser::Parse(const std::vector<Token> &in)
 {
+	//this is another hacked together parsing pass to add types to the type registry
 	for (int i = 0; i < in.size(); i++)
 	{
 		switch (in.at(i).token_type)

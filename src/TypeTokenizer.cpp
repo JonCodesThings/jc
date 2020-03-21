@@ -10,6 +10,7 @@ std::vector<Token> TypeTokenizer::Tokenize(const std::string &in)
 	std::string accum;
 	std::string current_keyword;
 
+	//very hacky way of dealing with type system modifications
 	for (auto ch : in)
 	{
 		if (ch == '\t' || ch == ' ' || ch == '\n')

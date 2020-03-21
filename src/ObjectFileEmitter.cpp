@@ -46,13 +46,18 @@ ObjectFileEmitter::~ObjectFileEmitter() {}
 
 void ObjectFileEmitter::Initialize()
 {
+	//surely we don't need all of this stuff????
+
+	//set up the pass registry
 	pass_registry = llvm::PassRegistry::getPassRegistry();
 
+	//initialize some things
 	llvm::InitializeAllTargets();
 	llvm::InitializeAllTargetMCs();
 	llvm::InitializeAllAsmPrinters();
 	llvm::InitializeAllAsmParsers();
 
+	//initialize more things
 	llvm::initializeCore(*pass_registry);
 	llvm::initializeCodeGen(*pass_registry);
 	llvm::initializeLoopStrengthReducePass(*pass_registry);
@@ -70,20 +75,36 @@ void ObjectFileEmitter::Initialize()
 
 bool ObjectFileEmitter::EmitObjectFile(llvm::Module & module)
 {
+	//set up the output file using the module name
 	std::string outfile = module.getName();
 	printf("Emitting object file for module: %s\n", outfile.c_str());
 
+	//set up the target triple
 	llvm::Triple triple;
 	module.setTargetTriple(target_triple);
 
+	//set the triple in the target triple
 	triple.setTriple(llvm::sys::getDefaultTargetTriple());
 
+
+	//verify the module
+	if (llvm::verifyModule(module, &errs()))
+	{
+		printf("Module failed to verify!");
+		return false;
+	}
+
+	//get the target
 	std::string er;
 	const Target *T = llvm::TargetRegistry::lookupTarget(triple.getTriple(), er);
 
+	//get the cpu and feature string if needed
 	std::string CPU_str = getCPUStr();
 	std::string Feature_str = getFeaturesStr();
 
+	//set the target options
+	//TODO: Jon
+	//figure out what stuff we actually need here
 	TargetOptions Options = InitTargetOptionsFromCodeGenFlags();
 	Options.DisableIntegratedAS = false;
 	Options.MCOptions.ShowMCEncoding = false;
@@ -93,31 +114,31 @@ bool ObjectFileEmitter::EmitObjectFile(llvm::Module & module)
 	Options.MCOptions.IASSearchPaths = std::vector<std::string>();
 	Options.MCOptions.SplitDwarfFile = std::string();
 
+	//set the optimizer level to default
 	CodeGenOpt::Level OLvl = CodeGenOpt::Default;
 
+	//create a target machine instance
 	std::unique_ptr<TargetMachine> Target(T->createTargetMachine(
 		triple.getTriple(), CPU_str, Feature_str, Options, getRelocModel(),
 		getCodeModel(), OLvl));
 
-	if (llvm::verifyModule(module, &errs()))
-		printf("Module failed to verify!");
-
+	//create a legacy pass manager and hack together a few things
 	llvm::legacy::PassManager pm;
 	LLVMTargetMachine &LLVMTM = static_cast<LLVMTargetMachine &>(*Target);
 	TargetPassConfig &TPC = *LLVMTM.createPassConfig(pm);
 	MachineModuleInfo *MMI = new MachineModuleInfo(&LLVMTM);
 
-
+	//set up up the pass manager
 	std::error_code ec;
 	outfile += ".o";
 	llvm::raw_fd_ostream out(outfile, ec);
 	TargetLibraryInfoImpl TLII(Triple(module.getTargetTriple()));
 	pm.add(new TargetLibraryInfoWrapperPass(TLII));
 	pm.add(MMI);
-
 	pm.add(createPrintMIRPass(out));
 	pm.add(createFreeMachineFunctionPass());
 
+	//emit the file
 	Target->addPassesToEmitFile(pm, out, nullptr, llvm::TargetMachine::CodeGenFileType::CGFT_ObjectFile);
 	pm.run(module);
 

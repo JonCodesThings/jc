@@ -45,14 +45,18 @@ const SymbolTable & Module::GetModuleSymbolTable() const
 }
 
 bool Module::EmitIR(llvm::LLVMContext &context, TypeRegistry &registry)
-{
+{	
+	//create a new llvm module
 	llvm_mod = std::make_unique<llvm::Module>(module_namespace, context);
 
+	//set up a new IR emitter instance
 	IREmitter emit(*llvm_mod.get(), context, registry);
 	printf("Emitting IR for module %s...\n", module_namespace.c_str());
 
+	//get the emitter state
 	IREmitter::EmitterState &se = emit.GetEmitterState();
 	
+	//inject the symbols for the imported modules into the current module's global symbol table
 	for (auto &e : module_dependency_symbols)
 	{
 		if (e.classification == e.FUNCTION)
@@ -84,12 +88,14 @@ bool Module::EmitIR(llvm::LLVMContext &context, TypeRegistry &registry)
 		}
 	}
 
+	//set the ir flag and copy the global symbol table for the module
 	ir_flag = emit.EmitIR(module_block.get());
 	module_symbol_table = emit.GetEmitterState().symbolStack.Top();
 
 	if (!ir_flag)
 		return ir_flag;
 
+	//write the IR out to a file
 	std::error_code ec;
 	std::string o = module_namespace;
 	o.append(".ir");

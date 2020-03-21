@@ -24,26 +24,34 @@ Module *ModuleRegistry::GetModule(const std::string &module_name)
 
 bool ModuleRegistry::EmitIRAll(llvm::LLVMContext &context, TypeRegistry &t_registry)
 {
+	//flag for checking everything has compiled
 	bool all_compiled = false;
 
+	//emit IR for every module that has no dependencies first
+	for (auto &m : registry)
+	{
+		if (!m.second->IREmitted())
+		{
+			if (m.second->GetModuleDependencies().empty())
+			{
+				if (!m.second->EmitIR(context, t_registry))
+					return false;
+			}
+		}
+	}
+
+	//while that flag isn't set
 	while (!all_compiled)
 	{
 		for (auto &m : registry)
 		{
-			if (!m.second->IREmitted())
-			{
-				if (m.second->GetModuleDependencies().empty())
-				{
-					if (!m.second->EmitIR(context, t_registry))
-						return false;
-				}
-			}
-		}
-		for (auto &m : registry)
-		{
+			//check if the module can be built
 			bool can_module_be_built = true;
+			if (m.second->IREmitted())
+				continue;
 			for (auto it = m.second->GetModuleDependencies().begin(); it != m.second->GetModuleDependencies().end(); it++)
 			{
+				//find each dependency in the registry, build it and add the dependency symbols to the module
 				for (auto &d : registry)
 				{
 					if (d.first == (*it))
@@ -59,24 +67,9 @@ bool ModuleRegistry::EmitIRAll(llvm::LLVMContext &context, TypeRegistry &t_regis
 					}
 				}
 			}
+			//if the module can be built and it hasn't been built yet do it
 			if (can_module_be_built && !m.second->IREmitted())
 			{
-				for (auto it = m.second->GetModuleDependencies().begin(); it != m.second->GetModuleDependencies().end(); it++)
-				{
-					for (auto &d : registry)
-					{
-						if (d.first == (*it))
-						{
-							if (!d.second->IREmitted())
-							{
-								if (!d.second->EmitIR(context, t_registry))
-									return false;
-							}
-							if (!d.second->IREmitted())
-								can_module_be_built = false;
-						}
-					}
-				}
 				if (!m.second->EmitIR(context, t_registry))
 					return false;
 			}
@@ -84,6 +77,7 @@ bool ModuleRegistry::EmitIRAll(llvm::LLVMContext &context, TypeRegistry &t_regis
 
 		all_compiled = true;
 
+		//check if everything has been built
 		for (auto &m : registry)
 		{
 			if (!m.second->IREmitted())

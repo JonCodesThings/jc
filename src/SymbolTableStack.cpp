@@ -18,7 +18,6 @@ Symbol *SymbolTableStack::GetSymbolByIdentifier(const std::string &identifier)
         if (symbol)
             break;
     }
-    //printf("Symbol %s at %p\n", identifier.c_str(), symbol);
     return symbol;
 }
 
