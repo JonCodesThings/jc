@@ -1,5 +1,5 @@
-include "stdilib";
 import io;
+include "stdlib";
 
 i32 main()
 {

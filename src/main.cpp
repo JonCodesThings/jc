@@ -63,10 +63,10 @@ int main(int argc, const char **args)
 
 	config.AddModuleIncludeDirectory("stdlib");
 
-	auto include = config.GetIncludeDirs();
-
 	do
 	{
+		auto include = config.GetIncludeDirs();
+
 		for (int i = 0; i < modules_to_build.size(); i++)
 		{
 			if (modules_to_build[i].second)
@@ -74,16 +74,16 @@ int main(int argc, const char **args)
 
 			std::ifstream m_in(modules_to_build[i].first);
 
-			bool is_good = m_in.good();
+			bool open = m_in.is_open();
 
-			if (!is_good)
+			if (!open)
 			{
 				for (auto it = include.begin(); it != include.end(); it++)
 				{
 					m_in = std::ifstream((*it) + "/" + modules_to_build[i].first);
-					is_good = m_in.good();
+					open = m_in.is_open();
 
-					if (is_good)
+					if (open)
 						break;
 				}
 			}

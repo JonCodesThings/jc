@@ -21,6 +21,7 @@ std::vector<Token> ModuleTokenizer::Tokenize(const std::string &in)
 		}
 
 		accum.push_back(ch);
+		//printf("%s\n", accum.c_str());
 
 		if (accum == "import")
 		{
@@ -38,7 +39,7 @@ std::vector<Token> ModuleTokenizer::Tokenize(const std::string &in)
 			accum.erase(accum.begin());
 			accum.pop_back();
 
-			
+
 			//std::ifstream imp(accum + ".jc");
 			//std::string *import_contents = new std::string((std::istreambuf_iterator<char>(imp)), std::istreambuf_iterator<char>());
 			//imp.close();
@@ -51,6 +52,8 @@ std::vector<Token> ModuleTokenizer::Tokenize(const std::string &in)
 			accum.clear();
 			continue;
 		}
+		else if (accum.back() == ';')
+			accum.clear();
 	}
 
 	return tokens;
