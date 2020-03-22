@@ -2,7 +2,7 @@
 
 #include <stdlib.h>
 
-LinkerInvoke::LinkerInvoke(const NATIVE_LINKER &l) : l(l) {}
+LinkerInvoke::LinkerInvoke(const NATIVE_LINKER &l, BuildConfig &config) : l(l), config(config) {}
 
 LinkerInvoke::~LinkerInvoke() {}
 
@@ -55,7 +55,12 @@ void LinkerInvoke::Invoke(const std::string &output_name)
 		//final_command.append(" /LIBPATH:\"C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\Community\\VC\\Tools\\MSVC\\14.16.27023\\lib\\x64\"");
 		/*final_command.append(" /LIBPATH:\"C:\\Program Files(x86)\\Microsoft Visual Studio\\2017\\Community\\VC\\Tools\\MSVC\\14.16.27023\\atlmfc\\lib\\x64\"");
 		final_command.append(" /LIBPATH:\"C:\\Program Files(x86)\\Microsoft Visual Studio\\2017\\Community\\VC\\Auxiliary\\VS\\lib\\x64\"");*/
-		final_command.append(" libcmt.lib");
+		final_command.append(" libcmt.lib ");
+
+		auto libs = config.GetLibraries();
+
+		for (auto lib : libs)
+			final_command.append(lib + " ");
 		//printf("%s\n", final_command.c_str());
 	}
 		break;

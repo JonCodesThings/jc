@@ -30,10 +30,21 @@ std::vector<Token> BuildTokenizer::Tokenize(const std::string &in)
 			accum.clear();
 			continue;
 		}
+		else if (accum == "link")
+		{
+			current_keyword = accum;
+
+			Token t;
+			t.token_type = LINK_T;
+			tokens.push_back(t);
+
+			accum.clear();
+			continue;
+		}
 
 		if (ch == ';')
 		{
-			if (current_keyword == "include")
+			if (current_keyword == "include" || current_keyword == "link")
 			{
 				std::string path = accum;
 				path = path.substr(path.find('\"') + 1, path.length() - 2);

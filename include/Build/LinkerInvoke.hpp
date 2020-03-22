@@ -4,6 +4,8 @@
 #include <string>
 #include <vector>
 
+#include <include/Build/BuildConfig.hpp>
+
 class LinkerInvoke
 {
 public:
@@ -15,7 +17,7 @@ public:
 		NATIVE_LINKER_COUNT
 	};
 
-	LinkerInvoke(const NATIVE_LINKER &linker);
+	LinkerInvoke(const NATIVE_LINKER &linker, BuildConfig &config);
 	~LinkerInvoke();
 
 	void AddObjectFile(const std::string &object_filename);
@@ -28,6 +30,7 @@ private:
 	std::vector<std::string> libnames;
 
 	NATIVE_LINKER l;
+	BuildConfig &config;
 };
 
 #endif

@@ -47,7 +47,7 @@ int main(int argc, const char **args)
 	BuildParser build_parser(config);
 
 	//TODO: actually detect what linker we're using
-	LinkerInvoke invoke(LinkerInvoke::MSVC_LINK_EXE);
+	LinkerInvoke invoke(LinkerInvoke::MSVC_LINK_EXE, config);
 
     registry->SetupBuiltinJCTypes();
 

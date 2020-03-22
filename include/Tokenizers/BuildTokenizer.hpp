@@ -12,6 +12,7 @@ public:
 	{
 		INCLUDE_T,
 		IDENTIFIER_T,
+		LINK_T,
 		BUILD_TOKEN_COUNT
 	};
 
