@@ -5,12 +5,15 @@ func_ptr i32 op(i32,i32);
 
 i32 add(i32 x, i32 y)
 {
+	printf("%d\n", x + y);
 	return x + y;
 }
 
 i32 main()
 {
 	op operator;
+	operator = &add;
 	printf("IO successfully imported.\n");
+	operator(1, 2);
 	return 0;
 }

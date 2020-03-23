@@ -7,25 +7,38 @@ ASTFunctionCall::ASTFunctionCall(ASTIdentifier &id, std::vector<std::unique_ptr<
 
 llvm::Value *ASTFunctionCall::EmitIR(IREmitter::EmitterState &state)
 {
+	const Symbol *s = state.symbolStack.GetSymbolByIdentifier(identifier->identifier);
+
 	//if we can't find the function on the symbol table stack return nothing
-	if (!state.symbolStack.GetSymbolByIdentifier(identifier->identifier))
+	if (!s)
 		return NULL;
 
-	//get the function for the symbol
-	llvm::Function *func = state.symbolStack.GetSymbolByIdentifier(identifier->identifier)->function;
-    
 	//vector to store the argument values
-    std::vector<llvm::Value*> argvals;
+	std::vector<llvm::Value*> argvals;
 
 	//get the argument values by emitting the IR
-    if (args)
-    {
-        for (auto &arg : *args)
-            argvals.push_back(arg->EmitIR(state));
-    }
-    
-	//add the call properly
-    return state.builder.CreateCall(func, argvals, identifier->identifier + "_call");
+	if (args)
+	{
+		for (auto &arg : *args)
+			argvals.push_back(arg->EmitIR(state));
+	}
+
+	if (s->classification == Symbol::Classification::FUNCTION)
+	{
+		//get the function for the symbol
+		llvm::Function *func = s->function;
+
+		//add the call properly
+		return state.builder.CreateCall(func, argvals, identifier->identifier + "_call");
+	}
+	else if (s->classification == Symbol::Classification::VARIABLE)
+	{
+		llvm::Value *v = state.builder.CreateLoad(s->alloc_inst, "funky_func");
+
+		return state.builder.CreateCall(v, argvals, identifier->identifier + "_call");
+
+	}
+
 }
 
 const std::string *ASTFunctionCall::GetType(IREmitter::EmitterState &state)

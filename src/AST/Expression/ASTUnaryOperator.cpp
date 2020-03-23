@@ -19,7 +19,14 @@ llvm::Value *ASTUnaryOperator::EmitIR(IREmitter::EmitterState &state)
             return NULL;
         case ADDRESS_OF:
         {
-            return s->alloc_inst;
+			if (s->classification == Symbol::Classification::FUNCTION)
+			{
+				return s->function;
+			}
+			else if (s->classification == Symbol::Classification::VARIABLE)
+			{
+				return s->alloc_inst;
+			}
         }
         case DEREFERENCE:
         {
@@ -120,12 +127,18 @@ const std::string *ASTUnaryOperator::GetType(IREmitter::EmitterState &state)
             std::string pointer_ty = s->type + "*";
             const std::string *exists = state.typeRegistry.GetLifetimeTypeString(pointer_ty);
 
-            if (!exists)
-            {
-                llvm::Type *t = state.typeRegistry.UnwindPointerType(pointer_ty);
-                state.typeRegistry.AddType(pointer_ty, *t, JCType::TYPE_CLASSIFICATION::POINTER);
-            }
-
+			if (s->classification == Symbol::FUNCTION)
+			{
+				return state.typeRegistry.GetLifetimeTypeString(*s->function->getFunctionType());
+			}
+			else if (s->classification == Symbol::VARIABLE)
+			{
+				if (!exists)
+				{
+					llvm::Type *t = state.typeRegistry.UnwindPointerType(pointer_ty);
+					state.typeRegistry.AddType(pointer_ty, *t, JCType::TYPE_CLASSIFICATION::POINTER);
+				}
+			}
             return state.typeRegistry.GetLifetimeTypeString(pointer_ty);
         }
         case ARRAY_INDEX:

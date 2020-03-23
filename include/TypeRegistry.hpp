@@ -52,6 +52,7 @@ public:
     llvm::Type *UnwindPointerType(const std::string &id);
     const JCType *GetTypeInfo(const std::string &id);
     const std::string *GetLifetimeTypeString(const std::string &id);
+	const std::string *GetLifetimeTypeString(llvm::FunctionType &type);
     //bool IsTypeNumeric(const JCType &type);
     bool IsTypeNumeric(const std::string &id);
     llvm::Type *GetWideningConversion(const std::string &current, const std::string &to);

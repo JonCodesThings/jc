@@ -149,6 +149,20 @@ const std::string *TypeRegistry::GetLifetimeTypeString(const std::string &id)
     return NULL;
 }
 
+const std::string *TypeRegistry::GetLifetimeTypeString(llvm::FunctionType &type)
+{
+	std::string concrete;
+	for (int i = 0; i < registry.size(); i++)
+	{
+		if (registry[i].llvm_type == llvm::PointerType::get(&type, 0))
+		{
+			concrete = registry[i].type_string;
+			break;
+		}
+	}
+	return GetLifetimeTypeString(concrete);
+}
+
 void TypeRegistry::SetStructType(const std::string &id, const std::vector<llvm::Type *> &members, const std::vector<std::string> &member_names, const std::vector<std::string> &member_typenames)
 {
     for (int i = 0; i < registry.size(); i++)
