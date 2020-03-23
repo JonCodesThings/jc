@@ -53,7 +53,13 @@ llvm::Value *ASTFunctionDeclaration::EmitIR(IREmitter::EmitterState &state)
 
 	//set up the symbol for the function
     Symbol s;
-    s.identifier = identifier->identifier;
+	if (current_function)
+	{
+		if (identifier->identifier.find(std::string(current_function->getName()) + "__") != std::string::npos)
+			s.identifier = identifier->identifier.substr(identifier->identifier.find_last_of('_') + 1, identifier->identifier.length() - identifier->identifier.find_last_of('_') + 1);
+	}
+	else
+		s.identifier = identifier->identifier;
     s.type = return_type->identifier;
     s.classification = Symbol::Classification::FUNCTION;
 	s.function = func;

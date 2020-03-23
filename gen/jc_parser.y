@@ -143,7 +143,8 @@ semicoloned_statements: semicoloned_statement { $$ = new ASTBlock(); auto statem
     | semicoloned_statements semicoloned_statement { auto statement = std::unique_ptr<ASTStatement>($2); $1->block->push_back(std::move(statement)); };
 
 semicoloned_statement: statement SEMICOLON { SetNodeInfo(*$1); }; | assignable_statement SEMICOLON { SetNodeInfo(*$1); } | flow_control { SetNodeInfo(*$1); }
-    | defer_statement SEMICOLON { SetNodeInfo(*$1); }; ;
+    | defer_statement SEMICOLON { SetNodeInfo(*$1); }
+    | function_def { SetNodeInfo(*$1); } ;
 
 statement: return_statement | function_def | function_decl | variable_decl | assign_op | flow_control | alias_statement | typedef_statement | struct_def | import | include_or_link | func_ptr
 

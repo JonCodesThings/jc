@@ -1,0 +1,13 @@
+import io;
+include "stdlib";
+link "libcmt.lib";
+
+i32 main()
+{
+	void Greet()
+	{
+		printf("Greetings!\n");
+	}
+	Greet();
+	return 0;
+}

@@ -1,6 +1,7 @@
 #include <include/AST/Statement/ASTBlock.hpp>
 
 #include <include/AST/Statement/ASTDeferredStatement.hpp>
+#include <include/AST/Statement/ASTFunctionDefinition.hpp>
 #include <include/AST/Statement/ASTReturnStatement.hpp>
 
 #include <algorithm>
@@ -84,6 +85,19 @@ llvm::Value *ASTBlock::EmitIR(IREmitter::EmitterState &state)
     {
         if (statement)
         {
+			if (statement->GetNodeType() == ASTNode::NODE_TYPE::FUNCTION_DEFINITION && current_function != NULL)
+			{
+				ASTFunctionDefinition *def = (ASTFunctionDefinition*)statement.get();
+				def->declaration->identifier->identifier = std::string(current_function->getName()) + "__" + def->declaration->identifier->identifier;
+				auto current_insert = state.builder.GetInsertBlock();
+				auto c = current_function;
+
+				def->EmitIR(state);
+				current_function = c;
+				state.builder.SetInsertPoint(current_insert);
+
+				continue;
+			}
             if (!statement->EmitIR(state))
                 return NULL;
             if (statement->GetNodeType() == ASTNode::NODE_TYPE::RETURN_STATEMENT)
