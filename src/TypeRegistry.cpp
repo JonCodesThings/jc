@@ -98,7 +98,12 @@ llvm::Type *TypeRegistry::GetType(const std::string &id)
             return type_.llvm_type;
     }
 
-    //llvm::Type * ptr_type = UnwindPointerType(id);
+	if (id.find('*') != std::string::npos)
+	{
+		llvm::Type * ptr_type = UnwindPointerType(id);
+		AddType(id, *ptr_type, JCType::TYPE_CLASSIFICATION::POINTER);
+	}
+    
 
     return NULL;
 }

@@ -3,6 +3,16 @@ include "stdlib";
 link "libcmt.lib";
 func_ptr i32 op(i32,i32);
 
+void greet()
+{
+	printf("Hello there!\n");
+}
+
+void print_greeting(i8 *name)
+{
+	printf("Hello there %p!\n", name);
+}
+
 i32 add(i32 x, i32 y)
 {
 	printf("%d\n", x + y);
@@ -13,6 +23,8 @@ i32 main()
 {
 	op operator;
 	operator = &add;
+	print_greeting("Jon");
+	greet();
 	printf("IO successfully imported.\n");
 	operator(1, 2);
 	return 0;

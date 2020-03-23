@@ -114,5 +114,10 @@ llvm::Value *ASTBlock::EmitIR(IREmitter::EmitterState &state, ASTFunctionArgs &a
 	//emit the IR as normal
     auto ret = EmitIR(state);
 
+	if (current_function->getReturnType() == state.typeRegistry.GetType("void"))
+	{
+		state.builder.CreateRetVoid();
+	}
+
     return ret;
 }

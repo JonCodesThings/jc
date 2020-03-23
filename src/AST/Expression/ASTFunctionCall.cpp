@@ -28,6 +28,11 @@ llvm::Value *ASTFunctionCall::EmitIR(IREmitter::EmitterState &state)
 		//get the function for the symbol
 		llvm::Function *func = s->function;
 
+		if (func->getReturnType() == state.typeRegistry.GetType("void"))
+		{
+			return state.builder.CreateCall(func, argvals);
+		}
+
 		//add the call properly
 		return state.builder.CreateCall(func, argvals, identifier->identifier + "_call");
 	}
