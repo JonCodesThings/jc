@@ -1,5 +1,10 @@
 #include <include/Tokenizers/TypeTokenizer.hpp>
 
+static void EraseAllInstances(std::string &str, const char character)
+{
+	str.erase(std::remove(str.begin(), str.end(), character), str.end());
+}
+
 TypeTokenizer::TypeTokenizer() {}
 
 TypeTokenizer::~TypeTokenizer() {}
@@ -37,7 +42,7 @@ std::vector<Token> TypeTokenizer::Tokenize(const std::string &in)
 			accum.clear();
 			tokens.push_back(t);
 		}
-		else if ((accum.back() == ';' || accum.back() == '\n'))
+		else if ((accum.back() == ';'))
 		{
 			if (accum.length() > 1 && current_keyword.length() > 0)
 			{
@@ -108,6 +113,19 @@ std::vector<Token> TypeTokenizer::Tokenize(const std::string &in)
 				}
 			}
 			accum.clear();
+		}
+		if (accum.back() == '{' && !current_keyword.empty())
+		{
+			EraseAllInstances(accum, ' ');
+			EraseAllInstances(accum, '\n');
+			EraseAllInstances(accum, '{');
+			std::string id = accum;
+			Token t;
+			t.token_type = IDENTIFIER_T;
+			t.string = new std::string(id);
+			tokens.push_back(t);
+			accum.clear();
+			current_keyword.clear();
 		}
 	}
 	return tokens;
