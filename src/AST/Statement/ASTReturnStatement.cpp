@@ -1,5 +1,7 @@
 #include <include/AST/Statement/ASTReturnStatement.hpp>
 
+#include <include/AST/Expression/ASTUnaryOperator.hpp>
+
 ASTReturnStatement::ASTReturnStatement(ASTStatement &expr) : expr(&expr), ASTStatement(RETURN_STATEMENT) {}
 
 llvm::Value *ASTReturnStatement::EmitIR(IREmitter::EmitterState &state)
@@ -24,6 +26,15 @@ llvm::Value *ASTReturnStatement::EmitIR(IREmitter::EmitterState &state)
             case MEMBER_OP:
                 retval = state.builder.CreateLoad(retval, "load_gep_retval");
                 break;
+			case UNARY_OP:
+			{
+				ASTUnaryOperator *unary_downcast = (ASTUnaryOperator*)expr.get();
+				if (unary_downcast->op == ASTUnaryOperator::ARRAY_INDEX)
+				{
+					retval = state.builder.CreateLoad(retval, "load_gep_array_retaval");
+					break;
+				}
+			}
         }
     }
     return state.builder.CreateRet(retval);

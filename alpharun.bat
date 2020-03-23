@@ -1,5 +1,9 @@
 setlocal EnableDelayedExpansion
 
+del test\*.ir /F
+del test\*.o /F
+del test\*.exe /F
+
 CALL :run_test test\10.jc 10
 CALL :run_test test\11.jc 11
 CALL :run_test test\12.jc 12
@@ -48,6 +52,8 @@ CALL :run_test test\struct_test.jc 5
 CALL :run_test test\module_import_test.jc 0
 
 CALL :run_test test\nested_functions_test.jc 0
+
+CALL :run_test test\array_initializer_list_test.jc 5
 pause
 cmd /k
 

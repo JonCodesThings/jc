@@ -2,6 +2,8 @@
 
 #include <include/AST/Expression/ASTVariableAssignment.hpp>
 
+#include <include/AST/Expression/ASTUnaryOperator.hpp>
+
 ASTVariableDeclaration::ASTVariableDeclaration(ASTIdentifier &type, ASTIdentifier &id) : 
     type(&type), id(&id), node(), array_size(), ASTStatement(VARIABLE_DECLARATION) {}
 
@@ -10,6 +12,9 @@ ASTVariableDeclaration::ASTVariableDeclaration(ASTIdentifier &type, ASTIdentifie
 
 ASTVariableDeclaration::ASTVariableDeclaration(ASTIdentifier &type, ASTIdentifier &id, ASTConstant &array_size) : 
     type(&type), id(&id), node(), array_size(&array_size), ASTStatement(VARIABLE_DECLARATION)  {}
+
+ASTVariableDeclaration::ASTVariableDeclaration(ASTIdentifier &type, ASTIdentifier &id, ASTConstant &array_size, std::vector<std::unique_ptr<ASTNode>> &init_list) :
+	type(&type), id(&id), node(), array_size(&array_size), init_list(&init_list), ASTStatement(VARIABLE_DECLARATION) {}
 
 llvm::Value * ASTVariableDeclaration::EmitIR(IREmitter::EmitterState &state)
 {
@@ -66,6 +71,17 @@ llvm::Value * ASTVariableDeclaration::EmitIR(IREmitter::EmitterState &state)
         node.release();
         assignment.EmitIR(state);
     }
+	else if (init_list)
+	{
+		printf("%d\n", init_list->size());
+		int index = 0;
+		for (auto &node : *init_list.get())
+		{
+			ASTVariableAssignment assign(*new ASTUnaryOperator(*new ASTIdentifier(symbol.identifier), *new ASTConstantInt(index), ASTUnaryOperator::ARRAY_INDEX), *node.release());
+			assign.EmitIR(state);
+			index++;
+		}
+	}
 	
 	//return the symbols allocinst
     return symbol.alloc_inst;

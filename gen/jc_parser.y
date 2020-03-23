@@ -64,6 +64,7 @@ ASTIdentifier *id;
 const char *string;
 std::vector<std::unique_ptr<ASTConditionalBlock>> *cond_block;
 std::vector<std::unique_ptr<ASTStatement>> *statement_list;
+std::vector<std::unique_ptr<ASTNode>> *node_list;
 int integer;
 float fl;
 int token;
@@ -126,6 +127,7 @@ int token;
 %type<constant> constant
 %type<constant_int> constant_int
 %type<function_arg> arg_pair struct_pair
+%type<node_list> init_list
 %type<node> id_or_constant
 
 %start module
@@ -239,6 +241,10 @@ variable_decl: type id { $$ = new ASTVariableDeclaration(*$1, *$2);  }
     | EXPORT variable_decl { $$ = $2; $$->exporting = true; };
 
 array_decl: type id LEFT_SQUARE_BRACKET constant_int RIGHT_SQUARE_BRACKET { $$ = new ASTVariableDeclaration(*$1, *$2, *$4); }
+	| type id LEFT_SQUARE_BRACKET constant_int RIGHT_SQUARE_BRACKET EQUAL LEFT_BRACE init_list RIGHT_BRACE {$$ = new ASTVariableDeclaration(*$1, *$2, *$4, *$8); } 
+
+init_list: id_or_constant { $$ = new std::vector<std::unique_ptr<ASTNode>>; auto s = std::unique_ptr<ASTNode>($1); $$->push_back(std::move(s)); }
+	| init_list COMMA id_or_constant { auto s = std::unique_ptr<ASTNode>($3);  $1->push_back(std::move(s)); $$ = $1; }
 
 return_statement: RETURN assignable_statement { $$ = new ASTReturnStatement(*$2); };
 

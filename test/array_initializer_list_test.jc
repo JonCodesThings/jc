@@ -1,0 +1,9 @@
+import io;
+include "stdlib";
+link "libcmt.lib";
+
+i32 main()
+{
+	i32 x[10] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+	return x[6];
+}
