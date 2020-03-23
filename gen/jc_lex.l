@@ -69,6 +69,8 @@ TypeRegistry *registry;
 "export" { return EXPORT; yycurrentlinechar += yyleng; }
 "include" { return INCLUDE; yycurrentlinechar += yyleng; }
 "link" { return LINK; ; yycurrentlinechar += yyleng; }
+"auto" { return AUTO; yycurrentlinechar += yyleng; }
+"func_ptr" { return FUNC_PTR; yycurrentlinechar += yyleng; }
 [_a-zA-Z0-9]+ { yylval.string = yytext; if (!registry->GetType(yylval.string)) return IDENTIFIER; else return TYPE; yycurrentlinechar += yyleng; }
 
 . { return UNKNOWN; }

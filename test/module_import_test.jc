@@ -1,10 +1,16 @@
 import io;
 include "stdlib";
 link "libcmt.lib";
+func_ptr i32 op(i32,i32);
+
+i32 add(i32 x, i32 y)
+{
+	return x + y;
+}
 
 i32 main()
 {
-	x = 0;
+	op operator;
 	printf("IO successfully imported.\n");
 	return 0;
 }

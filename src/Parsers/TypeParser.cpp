@@ -48,6 +48,33 @@ const bool TypeParser::Parse(const std::vector<Token> &in)
 			delete in.at(i).string;
 			break;
 		}
+		case TypeTokenizer::FUNC_PTR_T:
+		{
+			std::string ret_type = *in.at(i + 1).string;
+			delete in.at(i + 1).string;
+
+			std::string type_n = *in.at(i + 2).string;
+			delete in.at(i + 2).string;
+
+			i += 2;
+
+			std::vector<llvm::Type*> types;
+
+			do
+			{
+				if (in.at(i + 1).token_type != TypeTokenizer::IDENTIFIER_T)
+					break;
+				types.push_back(registry.GetType(*in.at(i + 1).string));
+				delete in.at(i + 1).string;
+				i++;
+			} while (i + 1 < in.size());
+
+			auto func_type = llvm::FunctionType::get(registry.GetType(ret_type), types, false);
+
+			auto ptr_type = llvm::PointerType::get(func_type, 0);
+
+			registry.AddType(type_n, *ptr_type, JCType::TYPE_CLASSIFICATION::POINTER);
+		}
 		}
 	}
 	/*if (current_keyword == "typedef")

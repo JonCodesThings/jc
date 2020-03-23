@@ -41,6 +41,7 @@ set(SOURCE_FILES src/main.cpp
     src/AST/Statement/ASTFunctionArgs.cpp
     src/AST/Statement/ASTFunctionDeclaration.cpp
     src/AST/Statement/ASTFunctionDefinition.cpp
+	src/AST/Statement/ASTFunctionPointerDefinition.cpp
     src/AST/Statement/ASTIfStatement.cpp
     src/AST/Statement/ASTImportStatement.cpp
 	src/AST/Statement/ASTIncludeStatement.cpp
@@ -63,6 +64,8 @@ set(SOURCE_FILES src/main.cpp
 	src/Tokenizers/BuildTokenizer.cpp
     src/Tokenizers/ModuleTokenizer.cpp
     src/Tokenizers/TypeTokenizer.cpp
+
+	include/AST.hpp
 
     src/IREmitter.cpp
     src/Module.cpp

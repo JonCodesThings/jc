@@ -24,6 +24,7 @@
 #include <include/AST/Statement/ASTFunctionArgs.hpp>
 #include <include/AST/Statement/ASTFunctionDeclaration.hpp>
 #include <include/AST/Statement/ASTFunctionDefinition.hpp>
+#include <include/AST/Statement/ASTFunctionPointerDefinition.hpp>
 #include <include/AST/Statement/ASTIfStatement.hpp>
 #include <include/AST/Statement/ASTImportStatement.hpp>
 #include <include/AST/Statement/ASTIncludeStatement.hpp>

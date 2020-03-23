@@ -95,15 +95,15 @@ int token;
 
 %token FOR WHILE
 
-%token TYPEDEF ALIAS
+%token TYPEDEF ALIAS AUTO
 
-%token EXTERN IMPORT EXPORT INCLUDE LINK
+%token EXTERN IMPORT EXPORT INCLUDE LINK FUNC_PTR
 
 %token STRUCT ARROW
 
 %token UNKNOWN
 
-%type<statement> node_setup semicoloned_statement statement assign_op variable_assign unary_op binary_op member_op struct_def include_or_link
+%type<statement> node_setup semicoloned_statement statement assign_op variable_assign unary_op binary_op member_op struct_def include_or_link  func_ptr
 %type<variable_declaration> variable_decl
 %type<function_definition> function_def
 %type<function_declaration> function_decl
@@ -145,7 +145,7 @@ semicoloned_statements: semicoloned_statement { $$ = new ASTBlock(); auto statem
 semicoloned_statement: statement SEMICOLON { SetNodeInfo(*$1); }; | assignable_statement SEMICOLON { SetNodeInfo(*$1); } | flow_control { SetNodeInfo(*$1); }
     | defer_statement SEMICOLON { SetNodeInfo(*$1); }; ;
 
-statement: return_statement | function_def | function_decl | variable_decl | assign_op | flow_control | alias_statement | typedef_statement | struct_def | import | include_or_link
+statement: return_statement | function_def | function_decl | variable_decl | assign_op | flow_control | alias_statement | typedef_statement | struct_def | import | include_or_link | func_ptr
 
 alias_statement: ALIAS TYPE TYPE { $$ = new ASTTypeSystemModStatement(ASTTypeSystemModStatement::TYPE_MOD_OP::ALIAS); };
 
@@ -272,6 +272,11 @@ arg_list: arg_list COMMA arg_pair { auto s = std::unique_ptr<ASTFunctionArg>($3)
 
 statement_list: statement_list COMMA assignable_statement { auto s = std::unique_ptr<ASTStatement>($3); $1->push_back(std::move(s)); }
     | assignable_statement { $$ = new std::vector<std::unique_ptr<ASTStatement>>(); auto s = std::unique_ptr<ASTStatement>($1); $$->push_back(std::move(s)); };
+
+type_list: type_list COMMA type { }
+	| type { };
+
+func_ptr: FUNC_PTR type type LEFT_BRACKET type_list RIGHT_BRACKET{ $$ = new ASTFunctionPointerDefinition(); };
 
 arg_pair: type id { $$ = new ASTFunctionArg(*$1, *$2); } | FSTOP FSTOP FSTOP { $$ = new ASTFunctionArg(); };
 

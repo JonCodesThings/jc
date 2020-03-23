@@ -65,6 +65,8 @@ public:
 
         STRUCT_DEFINITION,
 
+		FUNCTION_PTR_DEFINITION,
+
         BLOCK,
 
         NODE_TYPE_COUNT
