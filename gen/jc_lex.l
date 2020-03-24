@@ -31,6 +31,7 @@ TypeRegistry *registry;
 "," { return COMMA; yycurrentlinechar += yyleng; }
 "." { return FSTOP; yycurrentlinechar += yyleng; }
 ";" { return SEMICOLON; yycurrentlinechar += yyleng; }
+":" { return COLON; yycurrentlinechar += yyleng; }
 
 "+" { return PLUS; yycurrentlinechar += yyleng; }
 "-" { return MINUS; yycurrentlinechar += yyleng; }

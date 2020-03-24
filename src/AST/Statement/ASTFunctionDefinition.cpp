@@ -11,6 +11,8 @@ llvm::Value *ASTFunctionDefinition::EmitIR(IREmitter::EmitterState &state)
 	//push a new symbol table onto the stack
     state.symbolStack.Push(declaration->identifier->identifier);
 
+	auto prev_curr_func = current_function;
+
 	//downcast the current function
     current_function = (llvm::Function*)func;
 
@@ -32,6 +34,8 @@ llvm::Value *ASTFunctionDefinition::EmitIR(IREmitter::EmitterState &state)
 
 	//pop the symbol table
     state.symbolStack.Pop();
+
+	current_function = prev_curr_func;
 
 	//return the function
     return func;

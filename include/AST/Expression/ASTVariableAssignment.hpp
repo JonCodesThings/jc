@@ -15,6 +15,7 @@ public:
     std::unique_ptr<ASTNode> val;
 
     ASTVariableAssignment(ASTNode &assign_to, ASTNode &val);
+
     llvm::Value *EmitIR(IREmitter::EmitterState &state);
 };
 

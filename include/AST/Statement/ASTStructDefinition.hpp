@@ -3,7 +3,7 @@
 
 #include <include/AST/ASTStatement.hpp>
 #include <include/AST/Statement/ASTBlock.hpp>
-#include <include/AST/Statement/ASTFunctionArgs.hpp>
+#include <include/AST/Statement/ASTStructMemberDeclarations.hpp>
 
 /*!
 * \brief AST Struct Definition Node
@@ -12,11 +12,11 @@
 class ASTStructDefinition : public ASTStatement
 {
 public:
-    std::unique_ptr<ASTFunctionArgs> contains;
+    std::unique_ptr<ASTStructMemberDeclarations> contains;
     std::unique_ptr<ASTIdentifier> id;
 
 
-    ASTStructDefinition(ASTIdentifier &id, ASTFunctionArgs &contains);
+    ASTStructDefinition(ASTIdentifier &id, ASTStructMemberDeclarations &contains);
 
     llvm::Value *EmitIR(IREmitter::EmitterState &state);
 };

@@ -48,6 +48,7 @@ set(SOURCE_FILES src/main.cpp
 	src/AST/Statement/ASTIncludeStatement.cpp
     src/AST/Statement/ASTReturnStatement.cpp
     src/AST/Statement/ASTStructDefinition.cpp
+	src/AST/Statement/ASTStructMemberDeclarations.cpp
     src/AST/Statement/ASTTypeSystemModStatement.cpp
     src/AST/Statement/ASTVariableDeclaration.cpp
     src/AST/Statement/ASTWhileStatement.cpp
@@ -66,8 +67,6 @@ set(SOURCE_FILES src/main.cpp
     src/Tokenizers/ModuleTokenizer.cpp
     src/Tokenizers/TypeTokenizer.cpp
 
-	include/AST.hpp
-
     src/IREmitter.cpp
     src/Module.cpp
     src/ModuleRegistry.cpp
@@ -75,7 +74,57 @@ set(SOURCE_FILES src/main.cpp
     src/SymbolTableStack.cpp
     src/TypeRegistry.cpp)
 
-add_executable(jc ${SOURCE_FILES}  ${BISON_jc_parser_OUTPUTS} ${FLEX_jc_scanner_OUTPUTS})
+set(HEADER_FILES  include/AST.hpp
+
+	include/AST/ASTConstant.hpp
+    include/AST/ASTExpression.hpp
+    include/AST/ASTNode.hpp
+    include/AST/ASTStatement.hpp
+
+    include/AST/Constant/ASTConstantFloat.hpp
+    include/AST/Constant/ASTConstantInt.hpp
+    include/AST/Constant/ASTConstantString.hpp
+
+    include/AST/Expression/ASTBinaryOperator.hpp
+    include/AST/Expression/ASTFunctionCall.hpp
+    include/AST/Expression/ASTIdentifier.hpp
+	include/AST/Expression/ASTInitializerList.hpp
+    include/AST/Expression/ASTMemberOperator.hpp
+    include/AST/Expression/ASTUnaryOperator.hpp
+    include/AST/Expression/ASTVariableAssignment.hpp
+
+    include/AST/Statement/ASTBlock.hpp
+    include/AST/Statement/ASTDeferredStatement.hpp
+    include/AST/Statement/ASTForStatement.hpp
+    include/AST/Statement/ASTFunctionArgs.hpp
+    include/AST/Statement/ASTFunctionDeclaration.hpp
+    include/AST/Statement/ASTFunctionDefinition.hpp
+	include/AST/Statement/ASTFunctionPointerDefinition.hpp
+    include/AST/Statement/ASTIfStatement.hpp
+    include/AST/Statement/ASTImportStatement.hpp
+	include/AST/Statement/ASTIncludeStatement.hpp
+    include/AST/Statement/ASTReturnStatement.hpp
+    include/AST/Statement/ASTStructDefinition.hpp
+	include/AST/Statement/ASTStructMemberDeclarations.hpp
+    include/AST/Statement/ASTTypeSystemModStatement.hpp
+    include/AST/Statement/ASTVariableDeclaration.hpp
+    include/AST/Statement/ASTWhileStatement.hpp
+
+    include/Build/BuildConfig.hpp
+    include/Build/LinkerInvoke.hpp
+    include/Build/ObjectFileEmitter.hpp
+
+    include/Parsers/Parser.hpp
+	include/Parsers/BuildParser.hpp
+    include/Parsers/ModuleParser.hpp
+    include/Parsers/TypeParser.hpp
+
+    include/Tokenizers/Tokenizer.hpp
+	include/Tokenizers/BuildTokenizer.hpp
+    include/Tokenizers/ModuleTokenizer.hpp
+    include/Tokenizers/TypeTokenizer.hpp)
+
+add_executable(jc ${SOURCE_FILES} ${HEADER_FILES} ${BISON_jc_parser_OUTPUTS} ${FLEX_jc_scanner_OUTPUTS})
 include_directories(.)
 target_link_libraries(jc ${llvm_libs})
 

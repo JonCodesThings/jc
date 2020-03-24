@@ -1,0 +1,11 @@
+struct MyCoolStruct
+{
+    i32 x = 5;
+    f32 f;
+}
+
+i32 main()
+{
+    MyCoolStruct s;
+    return s.x;
+}

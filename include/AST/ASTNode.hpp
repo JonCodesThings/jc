@@ -31,6 +31,7 @@ class ASTNode
 public:
     unsigned int line_number;
     unsigned int start_char;
+	std::string filename;
 
 	static llvm::Function *ASTNode::current_function;
 

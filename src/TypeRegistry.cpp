@@ -1,5 +1,7 @@
 #include <include/TypeRegistry.hpp>
 
+#include <include/AST/Statement/ASTStructMemberDeclarations.hpp>
+
 #include <stdio.h>
 
 void TypeRegistry::SetupBuiltinJCTypes()
@@ -92,7 +94,7 @@ llvm::Type *TypeRegistry::GetType(const std::string &id)
     if (t)
         return t;
 
-    for (auto type_ : registry)
+    for (auto &type_ : registry)
     {
         if (type_.type_string == id)
             return type_.llvm_type;
@@ -168,7 +170,7 @@ const std::string *TypeRegistry::GetLifetimeTypeString(llvm::FunctionType &type)
 	return GetLifetimeTypeString(concrete);
 }
 
-void TypeRegistry::SetStructType(const std::string &id, const std::vector<llvm::Type *> &members, const std::vector<std::string> &member_names, const std::vector<std::string> &member_typenames)
+void TypeRegistry::SetStructType(const std::string &id, const std::vector<llvm::Type *> &members, const std::vector<std::string> &member_names, const std::vector<std::string> &member_typenames, const std::vector<llvm::Value*> &member_defaults)
 {
     for (int i = 0; i < registry.size(); i++)
     {
@@ -178,6 +180,7 @@ void TypeRegistry::SetStructType(const std::string &id, const std::vector<llvm::
             registry[i].llvm_type = StructType;
             registry[i].MEMBER_NAMES = member_names;
             registry[i].MEMBER_TYPENAMES = member_typenames;
+			registry[i].MEMBER_DEFAULTS = member_defaults;
             return;
         }
     }

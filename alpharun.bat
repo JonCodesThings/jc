@@ -54,6 +54,10 @@ CALL :run_test test\module_import_test.jc 0
 CALL :run_test test\nested_functions_test.jc 0
 
 CALL :run_test test\array_initializer_list_test.jc 5
+
+CALL :run_test test\struct_default_values_test.jc 5
+
+CALL :run_test test\type_inference_test.jc 2
 pause
 cmd /k
 

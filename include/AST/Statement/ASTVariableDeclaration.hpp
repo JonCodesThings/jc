@@ -30,6 +30,8 @@ public:
 
 	ASTVariableDeclaration(ASTIdentifier &type, ASTIdentifier &id, ASTConstant &array_size, std::vector<std::unique_ptr<ASTNode>> &init_list);
 
+	ASTVariableDeclaration(ASTIdentifier &id, ASTNode &node);
+
     llvm::Value *EmitIR(IREmitter::EmitterState &state);
 };
 

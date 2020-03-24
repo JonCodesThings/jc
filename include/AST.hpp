@@ -30,6 +30,7 @@
 #include <include/AST/Statement/ASTIncludeStatement.hpp>
 #include <include/AST/Statement/ASTReturnStatement.hpp>
 #include <include/AST/Statement/ASTStructDefinition.hpp>
+#include <include/AST/Statement/ASTStructMemberDeclarations.hpp>
 #include <include/AST/Statement/ASTTypeSystemModStatement.hpp>
 #include <include/AST/Statement/ASTVariableDeclaration.hpp>
 #include <include/AST/Statement/ASTWhileStatement.hpp>

@@ -33,6 +33,7 @@ struct JCType
     unsigned int INT_UPPER_LIMIT;
     std::vector<std::string> MEMBER_NAMES;
     std::vector<std::string> MEMBER_TYPENAMES;
+	std::vector<llvm::Value*> MEMBER_DEFAULTS;
 };
 
 class TypeRegistry
@@ -58,7 +59,8 @@ public:
     llvm::Type *GetWideningConversion(const std::string &current, const std::string &to);
     llvm::Type *GetNarrowingConversion(const std::string &current, const std::string &to);
     llvm::Type *GetImplicitCast(const std::string &current, const std::string &to);
-    void SetStructType(const std::string &id, const std::vector<llvm::Type *> &members, const std::vector<std::string> &member_names, const std::vector<std::string> &member_typenames);
+    void SetStructType(const std::string &id, const std::vector<llvm::Type *> &members, const std::vector<std::string> &member_names, 
+		const std::vector<std::string> &member_typenames, const std::vector<llvm::Value*> &member_defaults);
 private:
     void AddType(const std::string &id, llvm::Type &type, const JCType::TYPE_CLASSIFICATION &classification, unsigned int integer_limit);
 

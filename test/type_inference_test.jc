@@ -1,0 +1,9 @@
+import io;
+include "stdlib";
+link "libcmt.lib";
+
+i32 main()
+{
+	x := 2;
+	return x;
+}

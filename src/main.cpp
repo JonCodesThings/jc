@@ -82,6 +82,7 @@ int main(int argc, const char **args)
 				{
 					m_in = std::ifstream((*it) + "/" + modules_to_build[i].first);
 					open = m_in.is_open();
+					yycurrentfilename = std::string((*it) + "/" + modules_to_build[i].first).c_str();
 
 					if (open)
 						break;

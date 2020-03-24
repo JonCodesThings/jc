@@ -1,6 +1,6 @@
 #include <include/AST/Statement/ASTStructDefinition.hpp>
 
-ASTStructDefinition::ASTStructDefinition(ASTIdentifier &id, ASTFunctionArgs &contains) : id(&id), contains(&contains), ASTStatement(STRUCT_DEFINITION) {}
+ASTStructDefinition::ASTStructDefinition(ASTIdentifier &id, ASTStructMemberDeclarations &contains) : id(&id), contains(&contains), ASTStatement(STRUCT_DEFINITION) {}
 
 llvm::Value *ASTStructDefinition::EmitIR(IREmitter::EmitterState &state)
 {
@@ -31,8 +31,25 @@ llvm::Value *ASTStructDefinition::EmitIR(IREmitter::EmitterState &state)
         member_typenames.push_back(member->type->identifier);
     }
 
+	std::vector<llvm::Value*> member_default_vals;
+	member_default_vals.resize(member_names.size());
+
+	for (int i = 0; i < member_default_vals.size(); i++)
+	{
+		member_default_vals[i] = NULL;
+		for (int j = 0; j < contains->args.size(); j++)
+		{
+			if (member_names[i] == contains->args[j]->name->identifier)
+			{
+				if (contains->args[j]->default_assign)
+				member_default_vals[i] = contains->args[j]->default_assign->EmitIR(state);
+				break;
+			}
+		}
+	}
+
 	//set the struct type
-    state.typeRegistry.SetStructType(id->identifier, members, member_names, member_typenames);
+    state.typeRegistry.SetStructType(id->identifier, members, member_names, member_typenames, member_default_vals);
 
 	//return the type
     return (llvm::Value*)state.typeRegistry.GetType(id->identifier);

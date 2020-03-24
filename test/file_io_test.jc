@@ -1,0 +1,9 @@
+import io;
+include "stdlib";
+link "libcmit.lib";
+
+i32 main()
+{
+	
+	return 0;
+}

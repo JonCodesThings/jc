@@ -10,6 +10,7 @@ extern int yylex();
 extern int yyparse();
 extern int yylineno;
 extern unsigned int yycurrentlinechar;
+extern const char *yycurrentfilename;
 
 void yyerror (char *error)
 {
@@ -20,6 +21,7 @@ void SetNodeInfo(ASTNode &node)
 {
     node.line_number = yylineno;
     node.start_char = yycurrentlinechar;
+	node.filename = yycurrentfilename;
 }
 
 
@@ -46,6 +48,8 @@ ASTDeferredStatement *defer_statement;
 ASTExpression *expression;
 ASTFunctionArg *function_arg;
 ASTFunctionArgs *function_args;
+ASTStructMemberDeclaration *struct_decl;
+ASTStructMemberDeclarations *struct_declarations;
 ASTFunctionCall *function_call;
 ASTFunctionDeclaration *function_declaration;
 ASTFunctionDefinition *function_definition;
@@ -74,7 +78,7 @@ int token;
 
 %token LEFT_BRACKET RIGHT_BRACKET LEFT_BRACE RIGHT_BRACE LEFT_SQUARE_BRACKET RIGHT_SQUARE_BRACKET
 
-%token COMMA FSTOP SEMICOLON
+%token COMMA FSTOP SEMICOLON COLON
 
 %token PLUS MINUS ASTERISK FORWARD_SLASH
 
@@ -110,7 +114,8 @@ int token;
 %type<function_declaration> function_decl
 %type<statement> assignable_statement array_decl import
 %type<unary_operator> cast increment decrement address_of dereference array_index
-%type<function_args> arg_list struct_list
+%type<function_args> arg_list 
+%type<struct_declarations> struct_list
 %type<function_call> function_call
 %type<if_statement> if_statement
 %type<id> id type
@@ -126,7 +131,8 @@ int token;
 %type<for_loop> for_loop
 %type<constant> constant
 %type<constant_int> constant_int
-%type<function_arg> arg_pair struct_pair
+%type<function_arg> arg_pair
+%type<struct_decl> struct_pair
 %type<node_list> init_list
 %type<node> id_or_constant
 
@@ -236,6 +242,7 @@ function_call: id LEFT_BRACKET RIGHT_BRACKET { $$ = new ASTFunctionCall(*$1); }
     | id LEFT_BRACKET statement_list RIGHT_BRACKET { $$ = new ASTFunctionCall(*$1, *$3); };
 
 variable_decl: type id { $$ = new ASTVariableDeclaration(*$1, *$2);  }
+	| id COLON EQUAL assignable_statement { $$ = new ASTVariableDeclaration(*$1, *$4); }
     | type id EQUAL assignable_statement { $$ = new ASTVariableDeclaration(*$1, *$2, *$4);  }
     | array_decl;
     | EXPORT variable_decl { $$ = $2; $$->exporting = true; };
@@ -269,10 +276,11 @@ for_loop: FOR LEFT_BRACKET statement SEMICOLON assignable_statement SEMICOLON as
  $$ = new ASTForStatement(*$3, *$5, *$7, *$9);
 }
 
-struct_list: struct_list struct_pair { auto s = std::unique_ptr<ASTFunctionArg>($2); $1->args.push_back(std::move(s)); }
-    | struct_pair { $$ = new ASTFunctionArgs(); auto s = std::unique_ptr<ASTFunctionArg>($1); $$->args.push_back(std::move(s)); };
+struct_list: struct_list struct_pair { auto s = std::unique_ptr<ASTStructMemberDeclaration>($2); $1->args.push_back(std::move(s)); }
+    | struct_pair { $$ = new ASTStructMemberDeclarations(); auto s = std::unique_ptr<ASTStructMemberDeclaration>($1); $$->args.push_back(std::move(s)); };
 
-struct_pair: type id SEMICOLON { $$ = new ASTFunctionArg(*$1, *$2); }
+struct_pair: type id SEMICOLON { $$ = new ASTStructMemberDeclaration(*$1, *$2, NULL); }
+	| type id EQUAL assignable_statement SEMICOLON { $$ = new ASTStructMemberDeclaration(*$1, *$2, $4); }
 
 arg_list: arg_list COMMA arg_pair { auto s = std::unique_ptr<ASTFunctionArg>($3); $1->args.push_back(std::move(s)); }
     | arg_pair { $$ = new ASTFunctionArgs(); auto s = std::unique_ptr<ASTFunctionArg>($1); $$->args.push_back(std::move(s)); };

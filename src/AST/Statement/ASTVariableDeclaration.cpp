@@ -4,6 +4,8 @@
 
 #include <include/AST/Expression/ASTUnaryOperator.hpp>
 
+#include <include/AST/Expression/ASTMemberOperator.hpp>
+
 ASTVariableDeclaration::ASTVariableDeclaration(ASTIdentifier &type, ASTIdentifier &id) : 
     type(&type), id(&id), node(), array_size(), ASTStatement(VARIABLE_DECLARATION) {}
 
@@ -16,32 +18,47 @@ ASTVariableDeclaration::ASTVariableDeclaration(ASTIdentifier &type, ASTIdentifie
 ASTVariableDeclaration::ASTVariableDeclaration(ASTIdentifier &type, ASTIdentifier &id, ASTConstant &array_size, std::vector<std::unique_ptr<ASTNode>> &init_list) :
 	type(&type), id(&id), node(), array_size(&array_size), init_list(&init_list), ASTStatement(VARIABLE_DECLARATION) {}
 
+ASTVariableDeclaration::ASTVariableDeclaration(ASTIdentifier &id, ASTNode &node) : type(), id(&id), node(&node), array_size(), ASTStatement(VARIABLE_DECLARATION) {}
+
 llvm::Value * ASTVariableDeclaration::EmitIR(IREmitter::EmitterState &state)
 {
+	llvm::Type *t;
+	std::string typestring;
+
 	//create a symbol struct instance
     Symbol symbol;
     symbol.classification = Symbol::VARIABLE;
     symbol.identifier = id->identifier;
 
+	if (!type)
+	{
+		const std::string *s = node->GetType(state);
+		typestring = *s;
+	}
+	else
+		typestring = type->identifier;
+
 	//get the llvm type
-    llvm::Type *t = state.typeRegistry.GetType(type->identifier);
+	t = state.typeRegistry.GetType(typestring);
 
 	//otherwise unwind the pointer type and store it in the registry
-    if (!t)
-    {
-        t = state.typeRegistry.UnwindPointerType(type->identifier);
-        state.typeRegistry.AddType(type->identifier, *t, JCType::TYPE_CLASSIFICATION::POINTER);
-    }
+	if (!t)
+	{
+		t = state.typeRegistry.UnwindPointerType(typestring);
+		state.typeRegistry.AddType(typestring, *t, JCType::TYPE_CLASSIFICATION::POINTER);
+	}
 
 	//temp cast to an ASTConstantInt
-    auto temp = static_cast<ASTConstantInt*>(array_size.get());
+	auto temp = static_cast<ASTConstantInt*>(array_size.get());
 
 	//if it is valid get the array type instead
-    if (array_size)
-        t = state.typeRegistry.GetArrayType(type->identifier, temp->constant);
+	if (array_size)
+		t = state.typeRegistry.GetArrayType(typestring, temp->constant);
 
 	//set the type string
-    symbol.type = type->identifier;
+	symbol.type = typestring;
+
+
 
 	//if there is no parent function set up a global variable
 	if (state.builder.GetInsertBlock()->getParent() == NULL)
@@ -62,6 +79,8 @@ llvm::Value * ASTVariableDeclaration::EmitIR(IREmitter::EmitterState &state)
 	//add the symbol to the stack
     state.symbolStack.AddSymbol(symbol);
 
+	const JCType *typeinfo = state.typeRegistry.GetTypeInfo(symbol.type);
+
 	//if there is a node to assign the first value
     if (node)
     {
@@ -80,6 +99,17 @@ llvm::Value * ASTVariableDeclaration::EmitIR(IREmitter::EmitterState &state)
 			ASTVariableAssignment assign(*new ASTUnaryOperator(*new ASTIdentifier(symbol.identifier), *new ASTConstantInt(index), ASTUnaryOperator::ARRAY_INDEX), *node.release());
 			assign.EmitIR(state);
 			index++;
+		}
+	}
+	else if (typeinfo->classification == JCType::TYPE_CLASSIFICATION::STRUCT)
+	{
+		for (int i = 0; i < typeinfo->MEMBER_NAMES.size(); i++)
+		{
+			if (typeinfo->MEMBER_DEFAULTS[i] != NULL)
+			{
+				ASTMemberOperator member(*new ASTIdentifier(*id), *new ASTIdentifier(typeinfo->MEMBER_NAMES[i]), ASTMemberOperator::DOT);
+				state.builder.CreateStore(typeinfo->MEMBER_DEFAULTS[i], member.EmitIR(state));
+			}
 		}
 	}
 	
