@@ -231,11 +231,12 @@ greater_or_equal: id_or_constant GREATER_EQUAL id_or_constant { $$ = new ASTBina
 
 function_def: type id LEFT_BRACKET arg_list RIGHT_BRACKET scope {  $$ = new ASTFunctionDefinition(*$1, *$2, *$4, *$6);  }
     | type id LEFT_BRACKET RIGHT_BRACKET scope {  $$ = new ASTFunctionDefinition(*$1, *$2, *new ASTFunctionArgs(), *$5);  };
+	| id LEFT_BRACKET arg_list RIGHT_BRACKET scope {  $$ = new ASTFunctionDefinition(*$1, *$3, *$5);  }
+	| id LEFT_BRACKET RIGHT_BRACKET scope {  $$ = new ASTFunctionDefinition(*$1, *new ASTFunctionArgs(), *$4);  }
     | EXPORT function_def { $$ = $2; $$->SetExporting(true); };
 
 function_decl: type id LEFT_BRACKET RIGHT_BRACKET SEMICOLON { $$ = new ASTFunctionDeclaration(*$1, *$2, *new ASTFunctionArgs());  }
     | type id LEFT_BRACKET arg_list RIGHT_BRACKET SEMICOLON { $$ = new ASTFunctionDeclaration(*$1, *$2, *$4);  }
-    | EXTERN function_decl SEMICOLON
     | EXPORT function_decl { $$ = $2; $$->SetExporting(true); };
 
 function_call: id LEFT_BRACKET RIGHT_BRACKET { $$ = new ASTFunctionCall(*$1); }

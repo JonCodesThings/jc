@@ -6,13 +6,15 @@
 
 #include <algorithm>
 
+#include <unordered_set>
+
 ASTBlock::ASTBlock() : block(std::make_unique<std::vector<std::unique_ptr<ASTStatement>>>()), b(NULL), ASTStatement(BLOCK) {}
 
 ASTBlock::ASTBlock(std::vector<std::unique_ptr<ASTStatement>> &block) : block(&block), b(NULL), ASTStatement(BLOCK) {}
 
 bool ASTBlock::ContainsReturnStatement()
 {
-	//loop until wee find a return statement
+	//loop until we find a return statement
     for (auto &statement : *block)
     {
         if (statement)
@@ -23,6 +25,26 @@ bool ASTBlock::ContainsReturnStatement()
     }
     return false;
 }
+
+const std::string * ASTBlock::GetType(IREmitter::EmitterState & state)
+{
+	if (!ContainsReturnStatement())
+		return NULL;
+
+	std::unordered_set<const std::string *>ret_types;
+
+	for (auto &statement : *block)
+	{
+		if (statement->GetNodeType() == ASTNode::NODE_TYPE::RETURN_STATEMENT)
+			ret_types.insert(statement->GetType(state));
+	}
+
+	if (ret_types.size() != 1)
+		return NULL;
+	return *ret_types.begin();
+}
+
+
 
 //helper function to create a basic block and set it as the insert point
 llvm::Value *ASTBlock::CreateBasicBlock(IREmitter::EmitterState &state, const std::string &name)

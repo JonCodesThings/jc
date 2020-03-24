@@ -4,6 +4,11 @@
 
 ASTReturnStatement::ASTReturnStatement(ASTStatement &expr) : expr(&expr), ASTStatement(RETURN_STATEMENT) {}
 
+const std::string * ASTReturnStatement::GetType(IREmitter::EmitterState & state)
+{
+	return expr->GetType(state);
+}
+
 llvm::Value *ASTReturnStatement::EmitIR(IREmitter::EmitterState &state)
 {
 	//variable to store the retval in

@@ -14,9 +14,13 @@ class ASTFunctionDefinition : public ASTStatement
 public:
     std::unique_ptr<ASTFunctionDeclaration> declaration;
     std::unique_ptr<ASTBlock> block;
+	std::unique_ptr<ASTIdentifier> id;
+	std::unique_ptr<ASTFunctionArgs> args;
 
 
     ASTFunctionDefinition(ASTIdentifier &id, ASTIdentifier &ret_type, ASTFunctionArgs &args, ASTBlock &block);
+	ASTFunctionDefinition(ASTIdentifier &id, ASTFunctionArgs &args, ASTBlock &block);
+
 
     llvm::Value *EmitIR(IREmitter::EmitterState &state);
 

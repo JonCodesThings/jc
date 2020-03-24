@@ -13,6 +13,8 @@ public:
     std::unique_ptr<ASTStatement> expr;
 
     ASTReturnStatement(ASTStatement &expr);
+
+	const std::string *GetType(IREmitter::EmitterState &state);
     
     llvm::Value *EmitIR(IREmitter::EmitterState &state);
 };

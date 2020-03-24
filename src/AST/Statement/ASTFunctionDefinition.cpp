@@ -3,8 +3,19 @@
 ASTFunctionDefinition::ASTFunctionDefinition(ASTIdentifier &id, ASTIdentifier &ret_type, ASTFunctionArgs &args, ASTBlock &block) : 
     declaration(new ASTFunctionDeclaration(id, ret_type, args)), block(&block), ASTStatement(FUNCTION_DEFINITION) {}
 
+ASTFunctionDefinition::ASTFunctionDefinition(ASTIdentifier &id, ASTFunctionArgs &args, ASTBlock &block) :
+	declaration(), id(&id), args(&args), block(&block), ASTStatement(FUNCTION_DEFINITION) {}
+
 llvm::Value *ASTFunctionDefinition::EmitIR(IREmitter::EmitterState &state)
 {
+	if (!declaration)
+	{
+		const std::string *typestring = block->GetType(state);
+		if (!typestring)
+			return NULL;
+		declaration = std::make_unique<ASTFunctionDeclaration>(*new ASTIdentifier(*typestring), *id.release(), *args.release());
+	}
+
 	//get the function by emitting the declaration's IR
     llvm::Value *func = declaration->EmitIR(state);
 

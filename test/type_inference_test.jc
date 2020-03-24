@@ -2,8 +2,13 @@ import io;
 include "stdlib";
 link "libcmt.lib";
 
+test()
+{
+	return 1;
+}
+
 i32 main()
 {
-	x := 2;
+	x := test();
 	return x;
 }

@@ -22,6 +22,8 @@ public:
 
     bool ContainsReturnStatement();
 
+	const std::string *GetType(IREmitter::EmitterState &state);
+
     llvm::Value *EmitIR(IREmitter::EmitterState &state);
     
     llvm::Value *EmitIR(IREmitter::EmitterState &state, ASTFunctionArgs &args);
