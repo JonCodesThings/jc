@@ -93,7 +93,8 @@ llvm::Value *ASTUnaryOperator::EmitIR(IREmitter::EmitterState &state)
         {
             llvm::Value *temp = state.builder.CreateLoad(s->alloc_inst, "temp");
             llvm::Value *added = state.builder.CreateAdd(temp, llvm::ConstantInt::get(state.typeRegistry.GetType(*type), 1));
-            return state.builder.CreateStore(added, s->alloc_inst);
+            state.builder.CreateStore(added, s->alloc_inst);
+			return state.builder.CreateLoad(s->alloc_inst, "temp");
         }
 		//decrement
 		//TODO: allow this to support other types
@@ -101,7 +102,8 @@ llvm::Value *ASTUnaryOperator::EmitIR(IREmitter::EmitterState &state)
         {
             llvm::Value *temp = state.builder.CreateLoad(s->alloc_inst, "temp");
             llvm::Value *added = state.builder.CreateSub(temp, llvm::ConstantInt::get(state.typeRegistry.GetType(*type), 1));
-            return state.builder.CreateStore(added, s->alloc_inst);
+            state.builder.CreateStore(added, s->alloc_inst);
+			return state.builder.CreateLoad(s->alloc_inst, "temp");
         }
     }
     return NULL;
@@ -111,8 +113,14 @@ const std::string *ASTUnaryOperator::GetType(IREmitter::EmitterState &state)
 {
     //TODO: Jon
     //get the type stuff working for more types of unary operators
-
     const Symbol *s = operatee->GetSymbol(state);
+
+	if (s == NULL)
+	{
+		operatee->SyntheticEval(state);
+		s = operatee->GetSymbol(state);
+	}
+
     switch (op)
     {
         default:
@@ -144,4 +152,9 @@ const std::string *ASTUnaryOperator::GetType(IREmitter::EmitterState &state)
         case ARRAY_INDEX:
             return state.typeRegistry.GetLifetimeTypeString(s->type);
     }
+}
+
+const bool ASTUnaryOperator::SyntheticEval(IREmitter::EmitterState &state)
+{
+	return operatee->SyntheticEval(state);
 }

@@ -39,6 +39,7 @@ llvm::Value *ASTReturnStatement::EmitIR(IREmitter::EmitterState &state)
 					retval = state.builder.CreateLoad(retval, "load_gep_array_retaval");
 					break;
 				}
+				break;
 			}
         }
     }

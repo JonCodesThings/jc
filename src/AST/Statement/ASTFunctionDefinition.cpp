@@ -13,6 +13,8 @@ llvm::Value *ASTFunctionDefinition::EmitIR(IREmitter::EmitterState &state)
 		state.syntheticStack.Clear();
 		state.syntheticStack = state.symbolStack;
 
+		state.syntheticStack.Push(id->identifier);
+
 		for (auto &arg : args->args)
 		{
 			Symbol s;

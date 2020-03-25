@@ -67,14 +67,21 @@ llvm::Value *ASTVariableAssignment::EmitIR(IREmitter::EmitterState &state)
                 if (val->GetNodeType() == UNARY_OP)
                 {
                     ASTUnaryOperator *cast_down = (ASTUnaryOperator*)val.get();
-                    if (cast_down->op == ASTUnaryOperator::OP::ARRAY_INDEX)
-                        store = state.builder.CreateLoad(store, "load_val_to_store");
+					switch (cast_down->op)
+					{
+					default:
+						break;
+					case ASTUnaryOperator::OP::ARRAY_INDEX:
+						store = state.builder.CreateLoad(store, "load_val_to_store");
+						break;
+					}   
                 }
                 else if (val->GetNodeType() == MEMBER_OP)
                     store = state.builder.CreateLoad(store, "load_val_to_store");
 
 				//return a store operation
-                return state.builder.CreateStore(store, assign_symbol->alloc_inst);
+				state.module->print(llvm::errs(), nullptr);
+				return state.builder.CreateStore(store, assign_symbol->alloc_inst);
             }
         }
     }

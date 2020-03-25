@@ -22,7 +22,11 @@ const std::string *ASTIdentifier::GetType(IREmitter::EmitterState &state)
 
 const Symbol *ASTIdentifier::GetSymbol(IREmitter::EmitterState &state)
 {
-    return state.symbolStack.GetSymbolByIdentifier(identifier);
+	const Symbol *s = state.symbolStack.GetSymbolByIdentifier(identifier);
+
+	if (!s)
+		s = state.syntheticStack.GetSymbolByIdentifier(identifier);
+	return s;
 }
 
 llvm::Value *ASTIdentifier::EmitIR(IREmitter::EmitterState &state)

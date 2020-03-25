@@ -8,8 +8,15 @@ punch(i32 x, i32 y)
 	return z;
 }
 
+kick(i32 k)
+{
+	ki := k++;
+	return ki;
+}
+
 main()
 {
 	p := punch(1, 1);
+	k := kick(3);
 	return p;
 }
