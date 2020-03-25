@@ -1,11 +1,13 @@
-i8 *malloc(i32)
+i8 *malloc(i32 b);
+void free(i8 *b);
 
-export alloc(i32 bytes)
+export i8 *alloc(i32 bytes)
 {
 	return malloc(bytes);
 }
 
-export void free(i8 *chunk)
+export i8 *dealloc(i8 *chunk)
 {
 	free(chunk);
+	return nullptr;
 }

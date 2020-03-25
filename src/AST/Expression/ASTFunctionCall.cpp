@@ -20,7 +20,12 @@ llvm::Value *ASTFunctionCall::EmitIR(IREmitter::EmitterState &state)
 	if (args)
 	{
 		for (auto &arg : *args)
-			argvals.push_back(arg->EmitIR(state));
+		{
+			if (arg->GetNodeType() == ASTNode::IDENTIFIER)
+				argvals.push_back(state.builder.CreateLoad(arg->EmitIR(state), "load_var_value"));
+			else
+				argvals.push_back(arg->EmitIR(state));
+		}
 	}
 
 	if (s->classification == Symbol::Classification::FUNCTION)
@@ -43,7 +48,7 @@ llvm::Value *ASTFunctionCall::EmitIR(IREmitter::EmitterState &state)
 		return state.builder.CreateCall(v, argvals, identifier->identifier + "_call");
 
 	}
-
+	return NULL;
 }
 
 const std::string *ASTFunctionCall::GetType(IREmitter::EmitterState &state)

@@ -2,6 +2,8 @@
 
 #include <include/AST/Expression/ASTUnaryOperator.hpp>
 
+#include <include/AST/Constant/ASTConstantNullptr.hpp>
+
 ASTReturnStatement::ASTReturnStatement(ASTStatement &expr) : expr(&expr), ASTStatement(RETURN_STATEMENT) {}
 
 const std::string * ASTReturnStatement::GetType(IREmitter::EmitterState & state)
@@ -23,6 +25,11 @@ llvm::Value *ASTReturnStatement::EmitIR(IREmitter::EmitterState &state)
 	//otherwise emit the IR and depending on the node type do different things
     else
     {
+		if (expr->GetNodeType() == NULLPTR)
+		{
+			ASTConstantNullptr *np = (ASTConstantNullptr*)expr.get();
+			np->nulltype = (llvm::PointerType*)current_function->getReturnType();
+		}
         retval = expr->EmitIR(state);
         switch (expr->GetNodeType())
         {

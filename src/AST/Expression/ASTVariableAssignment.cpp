@@ -89,7 +89,6 @@ llvm::Value *ASTVariableAssignment::EmitIR(IREmitter::EmitterState &state)
                     store = state.builder.CreateLoad(store, "load_val_to_store");
 
 				//return a store operation
-				state.module->print(llvm::errs(), nullptr);
 				return state.builder.CreateStore(store, assign_symbol->alloc_inst);
             }
         }
