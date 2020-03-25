@@ -132,3 +132,11 @@ const std::string *ASTBinaryOperator::GetType(IREmitter::EmitterState &state)
 {
     return right->GetType(state);
 }
+
+const bool ASTBinaryOperator::SyntheticEval(IREmitter::EmitterState & state)
+{
+	left->SyntheticEval(state);
+	right->SyntheticEval(state);
+
+	return true;
+}

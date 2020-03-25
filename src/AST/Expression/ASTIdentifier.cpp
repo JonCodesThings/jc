@@ -6,9 +6,17 @@ ASTIdentifier::ASTIdentifier() : ASTExpression(IDENTIFIER) {}
 
 const std::string *ASTIdentifier::GetType(IREmitter::EmitterState &state)
 {
+	if (!state.syntheticStack.Empty())
+	{
+		Symbol *symbol = state.syntheticStack.GetSymbolByIdentifier(identifier);
+		if (symbol)
+			return state.typeRegistry.GetLifetimeTypeString(symbol->type);
+	}
+
     Symbol *symbol = state.symbolStack.GetSymbolByIdentifier(identifier);
     if (symbol)
         return state.typeRegistry.GetLifetimeTypeString(symbol->type);
+
     return state.typeRegistry.GetLifetimeTypeString(identifier);
 }
 
@@ -23,4 +31,9 @@ llvm::Value *ASTIdentifier::EmitIR(IREmitter::EmitterState &state)
     if (s)
         return s->alloc_inst;
     return NULL;
+}
+
+const bool ASTIdentifier::SyntheticEval(IREmitter::EmitterState & state)
+{
+	return state.syntheticStack.GetSymbolByIdentifier(identifier);
 }

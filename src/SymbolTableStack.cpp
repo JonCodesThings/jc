@@ -9,6 +9,11 @@ bool SymbolTableStack::AddSymbol(const Symbol &symbol)
     return stack.back().AddSymbol(symbol);
 }
 
+void SymbolTableStack::Clear()
+{
+	stack.clear();
+}
+
 Symbol *SymbolTableStack::GetSymbolByIdentifier(const std::string &identifier)
 {
     Symbol *symbol = NULL;
@@ -19,6 +24,11 @@ Symbol *SymbolTableStack::GetSymbolByIdentifier(const std::string &identifier)
             break;
     }
     return symbol;
+}
+
+bool SymbolTableStack::Empty()
+{
+	return stack.empty();
 }
 
 void SymbolTableStack::Push(const std::string &id) 

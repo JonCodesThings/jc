@@ -116,3 +116,50 @@ llvm::Value * ASTVariableDeclaration::EmitIR(IREmitter::EmitterState &state)
 	//return the symbols allocinst
     return symbol.alloc_inst;
 }
+
+const bool ASTVariableDeclaration::SyntheticEval(IREmitter::EmitterState &state)
+{
+	llvm::Type *t;
+	std::string typestring;
+
+	//create a symbol struct instance
+	Symbol symbol;
+	symbol.classification = Symbol::VARIABLE;
+	symbol.identifier = id->identifier;
+
+	if (!type)
+	{
+		const std::string *s = node->GetType(state);
+		typestring = *s;
+	}
+	else
+		typestring = type->identifier;
+
+	//get the llvm type
+	t = state.typeRegistry.GetType(typestring);
+
+	//otherwise unwind the pointer type and store it in the registry
+	if (!t)
+	{
+		t = state.typeRegistry.UnwindPointerType(typestring);
+		state.typeRegistry.AddType(typestring, *t, JCType::TYPE_CLASSIFICATION::POINTER);
+	}
+
+	//temp cast to an ASTConstantInt
+	auto temp = static_cast<ASTConstantInt*>(array_size.get());
+
+	//if it is valid get the array type instead
+	if (array_size)
+		t = state.typeRegistry.GetArrayType(typestring, temp->constant);
+
+	//set the type string
+	symbol.type = typestring;
+
+	//set the export flag to the appropriate value
+	symbol.exported = exporting;
+
+	//add the symbol to the stack
+	state.syntheticStack.AddSymbol(symbol);
+
+	return true;
+}

@@ -28,6 +28,7 @@ public:
     
     llvm::Value *EmitIR(IREmitter::EmitterState &state, ASTFunctionArgs &args);
 
+	const bool SyntheticEval(IREmitter::EmitterState &state);
 private:
     llvm::Value *CreateBasicBlock(IREmitter::EmitterState &state, const std::string &name);
 };

@@ -35,6 +35,8 @@ public:
 
         SymbolTableStack symbolStack;
         TypeRegistry &typeRegistry;
+
+		SymbolTableStack syntheticStack;
     };
 
     IREmitter(llvm::Module &module, llvm::LLVMContext &context, TypeRegistry &r) : state(module, context, r) {}

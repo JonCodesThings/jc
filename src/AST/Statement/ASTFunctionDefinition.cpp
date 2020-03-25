@@ -10,9 +10,22 @@ llvm::Value *ASTFunctionDefinition::EmitIR(IREmitter::EmitterState &state)
 {
 	if (!declaration)
 	{
+		state.syntheticStack.Clear();
+		state.syntheticStack = state.symbolStack;
+
+		for (auto &arg : args->args)
+		{
+			Symbol s;
+			s.identifier = arg->name->identifier;
+			s.type = arg->type->identifier;
+			s.classification = s.VARIABLE;
+			state.syntheticStack.AddSymbol(s);
+		}
+
 		const std::string *typestring = block->GetType(state);
 		if (!typestring)
 			return NULL;
+		state.syntheticStack.Clear();
 		declaration = std::make_unique<ASTFunctionDeclaration>(*new ASTIdentifier(*typestring), *id.release(), *args.release());
 	}
 

@@ -44,3 +44,8 @@ llvm::Value *ASTReturnStatement::EmitIR(IREmitter::EmitterState &state)
     }
     return state.builder.CreateRet(retval);
 }
+
+const bool ASTReturnStatement::SyntheticEval(IREmitter::EmitterState & state)
+{
+	return expr->SyntheticEval(state);
+}

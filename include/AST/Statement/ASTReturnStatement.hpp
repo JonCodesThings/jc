@@ -17,6 +17,8 @@ public:
 	const std::string *GetType(IREmitter::EmitterState &state);
     
     llvm::Value *EmitIR(IREmitter::EmitterState &state);
+
+	const bool SyntheticEval(IREmitter::EmitterState &state);
 };
 
 #endif

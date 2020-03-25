@@ -2,13 +2,14 @@ import io;
 include "stdlib";
 link "libcmt.lib";
 
-test()
+punch(i32 x, i32 y)
 {
-	return 1;
+	z := x + y;
+	return z;
 }
 
-i32 main()
+main()
 {
-	x := test();
-	return x;
+	p := punch(1, 1);
+	return p;
 }

@@ -13,6 +13,8 @@ public:
     SymbolTableStack();
     ~SymbolTableStack();
     bool AddSymbol(const Symbol &symbol);
+	void Clear();
+	bool Empty();
     Symbol *GetSymbolByIdentifier(const std::string &identifier);
     void Push(const std::string &id);
     void Pop();

@@ -41,10 +41,25 @@ const std::string * ASTBlock::GetType(IREmitter::EmitterState & state)
 
 	if (ret_types.size() != 1)
 		return NULL;
+	
+	if (*ret_types.begin() == NULL)
+	{
+		SyntheticEval(state);
+
+		ret_types.clear();
+
+		for (auto &statement : *block)
+		{
+			if (statement->GetNodeType() == ASTNode::NODE_TYPE::RETURN_STATEMENT)
+				ret_types.insert(statement->GetType(state));
+		}
+
+		if (ret_types.size() != 1)
+			return NULL;
+	}
+
 	return *ret_types.begin();
 }
-
-
 
 //helper function to create a basic block and set it as the insert point
 llvm::Value *ASTBlock::CreateBasicBlock(IREmitter::EmitterState &state, const std::string &name)
@@ -156,4 +171,13 @@ llvm::Value *ASTBlock::EmitIR(IREmitter::EmitterState &state, ASTFunctionArgs &a
 	}
 
     return ret;
+}
+
+const bool ASTBlock::SyntheticEval(IREmitter::EmitterState & state)
+{
+	for (auto &statement : *block)
+	{
+		statement->SyntheticEval(state);
+	}
+	return true;
 }

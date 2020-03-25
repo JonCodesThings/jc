@@ -79,6 +79,7 @@ public:
     virtual const std::string *GetType(IREmitter::EmitterState &state);
     virtual const NODE_TYPE GetNodeType();
     virtual llvm::Value *EmitIR(IREmitter::EmitterState &state) = 0;
+	virtual const bool SyntheticEval(IREmitter::EmitterState &state);
 };
 
 #endif
