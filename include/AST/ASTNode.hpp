@@ -70,6 +70,8 @@ public:
 
         BLOCK,
 
+		NULLPTR,
+
         NODE_TYPE_COUNT
     } node_type;
 

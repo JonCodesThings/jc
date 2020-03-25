@@ -102,7 +102,7 @@ int token;
 
 %token TYPEDEF ALIAS AUTO
 
-%token EXTERN IMPORT EXPORT INCLUDE LINK FUNC_PTR
+%token EXTERN IMPORT EXPORT INCLUDE LINK FUNC_PTR NULLPTR
 
 %token STRUCT ARROW
 
@@ -300,7 +300,7 @@ id_or_constant: id | constant;
 
 include_or_link: INCLUDE STRING  { $$ = new ASTIncludeStatement(yylval.string); } | LINK STRING { $$ = new ASTIncludeStatement(yylval.string); };
 
-constant: constant_int | FLOAT { $$ = new ASTConstantFloat(yylval.fl); } | STRING { $$ = new ASTConstantString(yylval.string); };
+constant: constant_int | FLOAT { $$ = new ASTConstantFloat(yylval.fl); } | STRING { $$ = new ASTConstantString(yylval.string); } | NULLPTR { $$ = new ASTConstantNullptr(); };
 
 constant_int: INTEGER { $$ = new ASTConstantInt(yylval.integer); };
 

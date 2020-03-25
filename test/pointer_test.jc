@@ -1,7 +1,9 @@
 i32 main()
 {
-    i32 *i;
+    i32 *i = nullptr;
     i32 y = 24;
     i = &y;
+	i8 z;
+	z = nullptr;
     return *i;
 }

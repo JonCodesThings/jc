@@ -2,6 +2,8 @@
 
 #include <include/AST/Expression/ASTUnaryOperator.hpp>
 
+#include <include/AST/Constant/ASTConstantNullptr.hpp>
+
 extern const char *yycurrentfilename;
 
 ASTVariableAssignment::ASTVariableAssignment(ASTNode &assign_to, ASTNode &val) : assign_to(&assign_to), val(&val), ASTExpression(VARIABLE_ASSIGNMENT) {}
@@ -41,6 +43,13 @@ llvm::Value *ASTVariableAssignment::EmitIR(IREmitter::EmitterState &state)
 	//get the assigning and assigned value symbols
     const Symbol *assign_symbol = assign_to->GetSymbol(state);
     const Symbol *val_symbol = val->GetSymbol(state);
+
+	if (val->GetNodeType() == NULLPTR)
+	{
+		ASTConstantNullptr *np = (ASTConstantNullptr*)val.get();
+		np->nulltype = (llvm::PointerType*)state.typeRegistry.GetType(*assign_to->GetType(state));
+		np->nulltype_str = state.typeRegistry.GetLifetimeTypeString(*assign_to->GetType(state));
+	}
 
 	//if the assigned symbol exists
     if (assign_symbol)

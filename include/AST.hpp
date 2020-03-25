@@ -9,6 +9,7 @@
 
 #include <include/AST/Constant/ASTConstantFloat.hpp>
 #include <include/AST/Constant/ASTConstantInt.hpp>
+#include <include/AST/Constant/ASTConstantNullptr.hpp>
 #include <include/AST/Constant/ASTConstantString.hpp>
 
 #include <include/AST/Expression/ASTBinaryOperator.hpp>

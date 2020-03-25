@@ -26,6 +26,7 @@ set(SOURCE_FILES src/main.cpp
 
     src/AST/Constant/ASTConstantFloat.cpp
     src/AST/Constant/ASTConstantInt.cpp
+	src/AST/Constant/ASTConstantNullptr.cpp
     src/AST/Constant/ASTConstantString.cpp
 
     src/AST/Expression/ASTBinaryOperator.cpp
@@ -83,6 +84,7 @@ set(HEADER_FILES  include/AST.hpp
 
     include/AST/Constant/ASTConstantFloat.hpp
     include/AST/Constant/ASTConstantInt.hpp
+	include/AST/Constant/ASTConstantNullptr.hpp
     include/AST/Constant/ASTConstantString.hpp
 
     include/AST/Expression/ASTBinaryOperator.hpp
@@ -122,7 +124,14 @@ set(HEADER_FILES  include/AST.hpp
     include/Tokenizers/Tokenizer.hpp
 	include/Tokenizers/BuildTokenizer.hpp
     include/Tokenizers/ModuleTokenizer.hpp
-    include/Tokenizers/TypeTokenizer.hpp)
+    include/Tokenizers/TypeTokenizer.hpp
+	
+	include/IREmitter.hpp
+    include/Module.hpp
+    include/ModuleRegistry.hpp
+    include/SymbolTable.hpp
+    include/SymbolTableStack.hpp
+    include/TypeRegistry.hpp)
 
 add_executable(jc ${SOURCE_FILES} ${HEADER_FILES} ${BISON_jc_parser_OUTPUTS} ${FLEX_jc_scanner_OUTPUTS})
 include_directories(.)

@@ -6,6 +6,8 @@
 
 #include <include/AST/Expression/ASTMemberOperator.hpp>
 
+#include <include/AST/Constant/ASTConstantNullptr.hpp>
+
 ASTVariableDeclaration::ASTVariableDeclaration(ASTIdentifier &type, ASTIdentifier &id) : 
     type(&type), id(&id), node(), array_size(), ASTStatement(VARIABLE_DECLARATION) {}
 
@@ -85,6 +87,12 @@ llvm::Value * ASTVariableDeclaration::EmitIR(IREmitter::EmitterState &state)
     if (node)
     {
 		//create an assignment operation and release ownership of certain objects while emitting IR
+		if (node->GetNodeType() == NULLPTR)
+		{
+			ASTConstantNullptr *np = (ASTConstantNullptr*)node.get();
+			np->nulltype = (llvm::PointerType*)state.typeRegistry.GetType(symbol.type);
+			np->nulltype_str = state.typeRegistry.GetLifetimeTypeString(symbol.type);
+		}
         auto assignment = ASTVariableAssignment(*id, *node);
         id.release();
         node.release();

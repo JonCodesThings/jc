@@ -1,0 +1,11 @@
+i8 *malloc(i32)
+
+export alloc(i32 bytes)
+{
+	return malloc(bytes);
+}
+
+export void free(i8 *chunk)
+{
+	free(chunk);
+}
