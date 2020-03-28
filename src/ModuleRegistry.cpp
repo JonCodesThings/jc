@@ -19,7 +19,7 @@ Module *ModuleRegistry::GetModule(const std::string &module_name)
 		if (m.first == module_name)
 			return m.second.get();
 	}
-	return NULL;
+	return nullptr;
 }
 
 bool ModuleRegistry::EmitIRAll(llvm::LLVMContext &context, TypeRegistry &t_registry)

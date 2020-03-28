@@ -31,6 +31,17 @@ void TypeRegistry::AddAlias(const std::string &id, const std::string &type_to_be
     alias_registry.push_back(std::make_pair(id, t->type_string));
 }
 
+void TypeRegistry::AddBlankEnumType(const std::string &id)
+{
+	JCType type;
+	type.type_string = id;
+	type.classification = JCType::TYPE_CLASSIFICATION::ENUM;
+
+	type.llvm_type = GetType("i32");
+
+	registry.push_back(type);
+}
+
 void TypeRegistry::AddBlankStructType(const std::string &id)
 {
     JCType type;
@@ -38,6 +49,15 @@ void TypeRegistry::AddBlankStructType(const std::string &id)
     type.classification = JCType::TYPE_CLASSIFICATION::STRUCT;
 
     registry.push_back(type);
+}
+
+void TypeRegistry::AddBlankUnionType(const std::string &id)
+{
+	JCType type;
+	type.type_string = id;
+	type.classification = JCType::TYPE_CLASSIFICATION::UNION;
+
+	registry.push_back(type);
 }
 
 
@@ -79,7 +99,7 @@ llvm::Type *TypeRegistry::GetAliasedType(const std::string &id)
         if (pair.first == id)
             return GetType(pair.second);
     }
-    return NULL;
+    return nullptr;
 }
 
 llvm::Type *TypeRegistry::GetArrayType(const std::string &id, unsigned int array_size)
@@ -104,10 +124,11 @@ llvm::Type *TypeRegistry::GetType(const std::string &id)
 	{
 		llvm::Type * ptr_type = UnwindPointerType(id);
 		AddType(id, *ptr_type, JCType::TYPE_CLASSIFICATION::POINTER);
+		return ptr_type;
 	}
     
 
-    return NULL;
+    return nullptr;
 }
 
 llvm::Type *TypeRegistry::UnwindPointerType(const std::string &id)
@@ -121,7 +142,7 @@ llvm::Type *TypeRegistry::UnwindPointerType(const std::string &id)
             return llvm::PointerType::get(t, 0);
         else
         {
-            return NULL;
+            return nullptr;
         }
     }
     
@@ -138,7 +159,7 @@ const JCType *TypeRegistry::GetTypeInfo(const std::string &id)
         if (registry[i].type_string == search)
             return &registry[i];
     }
-    return NULL;
+    return nullptr;
 }
 
 const std::string *TypeRegistry::GetLifetimeTypeString(const std::string &id)
@@ -153,7 +174,7 @@ const std::string *TypeRegistry::GetLifetimeTypeString(const std::string &id)
         if (registry[i].type_string == search)
             return &registry[i].type_string;
     }
-    return NULL;
+    return nullptr;
 }
 
 const std::string *TypeRegistry::GetLifetimeTypeString(llvm::FunctionType &type)
@@ -168,6 +189,33 @@ const std::string *TypeRegistry::GetLifetimeTypeString(llvm::FunctionType &type)
 		}
 	}
 	return GetLifetimeTypeString(concrete);
+}
+
+const int *TypeRegistry::GetEnumValue(const std::string &enum_id, const std::string &part_id)
+{
+	const JCType *t = GetTypeInfo(enum_id);
+
+	if (!t)
+		return nullptr;
+
+	for (auto &val : t->ENUM_VALUES)
+	{
+		if (val.first == part_id)
+			return &val.second;
+	}
+	return nullptr;
+}
+
+void TypeRegistry::SetEnumValues(const std::string &id,const std::vector<std::pair<std::string, int>> &enum_values)
+{
+	for (int i = 0; i < registry.size(); i++)
+	{
+		if (registry[i].type_string == id)
+		{
+			registry[i].ENUM_VALUES = enum_values;
+			return;
+		}
+	}
 }
 
 void TypeRegistry::SetStructType(const std::string &id, const std::vector<llvm::Type *> &members, const std::vector<std::string> &member_names, const std::vector<std::string> &member_typenames, const std::vector<llvm::Value*> &member_defaults)
@@ -186,6 +234,24 @@ void TypeRegistry::SetStructType(const std::string &id, const std::vector<llvm::
     }
 }
 
+void TypeRegistry::SetUnionType(const std::string & id, const std::vector<std::string>& member_names, const std::vector<std::string>& member_typenames, const std::string & largest_type)
+{
+	for (int i = 0; i < registry.size(); i++)
+	{
+		if (registry[i].type_string == id)
+		{
+			std::vector<llvm::Type*> t;
+			t.push_back(GetType(largest_type));
+			auto StructType = llvm::StructType::create(t, id);
+			registry[i].llvm_type = StructType;
+			registry[i].MEMBER_NAMES = member_names;
+			registry[i].MEMBER_TYPENAMES = member_typenames;
+			return;
+		}
+	}
+}
+
+
 /*bool TypeRegistry::IsTypeNumeric(const JCType &type)
 {
     return (type.classification == JCType::TYPE_CLASSIFICATION::INT || type.classification == JCType::TYPE_CLASSIFICATION::FLOAT || type.classification == JCType::TYPE_CLASSIFICATION::CHAR);
@@ -197,7 +263,7 @@ bool TypeRegistry::IsTypeNumeric(const std::string &id)
     std::string alias = GetTypeStringFromAlias(id);
     if (alias != "")
         search = alias;
-    JCType *t = NULL;
+    JCType *t = nullptr;
     for (int i = 0; i < registry.size(); i++)
     {
         if (registry[i].type_string == search)
@@ -235,7 +301,7 @@ llvm::Type *TypeRegistry::GetNarrowingConversion(const std::string &current, con
             return t->llvm_type;
     }
 
-    return NULL;
+    return nullptr;
 }
 
 llvm::Type *TypeRegistry::GetWideningConversion(const std::string &current, const std::string &to)
@@ -263,7 +329,7 @@ llvm::Type *TypeRegistry::GetWideningConversion(const std::string &current, cons
             return t->llvm_type;
     }
 
-    return NULL;
+    return nullptr;
 }
 
 llvm::Type *TypeRegistry::GetImplicitCast(const std::string &current, const std::string &to)

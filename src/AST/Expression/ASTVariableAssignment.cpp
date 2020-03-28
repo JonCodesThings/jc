@@ -16,14 +16,13 @@ llvm::Value *ASTVariableAssignment::EmitIR(IREmitter::EmitterState &state)
         std::unique_ptr<ASTUnaryOperator> cast;
 
         if (!state.typeRegistry.IsTypeNumeric(*node->GetType(state)))
-            return NULL;
+            return nullptr;
 
         if (!state.typeRegistry.IsTypeNumeric(symbol->type))
-            return NULL;
+            return nullptr;
         
         if (symbol)
             cast = std::make_unique<ASTUnaryOperator>(*node, new ASTIdentifier(symbol->type), ASTUnaryOperator::OP::CAST);
-            
         else
             cast = std::make_unique<ASTUnaryOperator>(*node, new ASTIdentifier(*val->GetType(state)), ASTUnaryOperator::OP::CAST);
         node.release();
@@ -32,12 +31,12 @@ llvm::Value *ASTVariableAssignment::EmitIR(IREmitter::EmitterState &state)
         {
                 printf("%s:%d:%d Error: types do not match for assignment (type %s expected, type %s given)\n",
                 yycurrentfilename, line_number, start_char, (*assign_to->GetType(state)).c_str(), (*node->GetType(state)).c_str());
-                return NULL;
+                return nullptr;
         }
         if (symbol)
             return state.builder.CreateStore(emitted_ir, symbol->alloc_inst);
         else
-            return NULL;
+            return nullptr;
     };
 
 	//get the assigning and assigned value symbols
@@ -47,8 +46,8 @@ llvm::Value *ASTVariableAssignment::EmitIR(IREmitter::EmitterState &state)
 	if (val->GetNodeType() == NULLPTR)
 	{
 		ASTConstantNullptr *np = (ASTConstantNullptr*)val.get();
-		np->nulltype = (llvm::PointerType*)state.typeRegistry.GetType(*assign_to->GetType(state));
-		np->nulltype_str = state.typeRegistry.GetLifetimeTypeString(*assign_to->GetType(state));
+		np->nullptr_type = (llvm::PointerType*)state.typeRegistry.GetType(*assign_to->GetType(state));
+		np->nullptrtype_str = state.typeRegistry.GetLifetimeTypeString(*assign_to->GetType(state));
 	}
 
 	//if the assigned symbol exists
@@ -108,5 +107,5 @@ llvm::Value *ASTVariableAssignment::EmitIR(IREmitter::EmitterState &state)
         else
             return state.builder.CreateStore(val->EmitIR(state), gep_assign);
     }
-    return NULL;
+    return nullptr;
 }

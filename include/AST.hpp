@@ -7,6 +7,7 @@
 #include <include/AST/ASTExpression.hpp>
 #include <include/AST/ASTStatement.hpp>
 
+#include <include/AST/Constant/ASTConstantEnumValue.hpp>
 #include <include/AST/Constant/ASTConstantFloat.hpp>
 #include <include/AST/Constant/ASTConstantInt.hpp>
 #include <include/AST/Constant/ASTConstantNullptr.hpp>
@@ -21,6 +22,8 @@
 
 #include <include/AST/Statement/ASTBlock.hpp>
 #include <include/AST/Statement/ASTDeferredStatement.hpp>
+#include <include/AST/Statement/ASTEnumDefinition.hpp>
+#include <include/AST/Statement/ASTEnumParts.hpp>
 #include <include/AST/Statement/ASTForStatement.hpp>
 #include <include/AST/Statement/ASTFunctionArgs.hpp>
 #include <include/AST/Statement/ASTFunctionDeclaration.hpp>
@@ -33,6 +36,7 @@
 #include <include/AST/Statement/ASTStructDefinition.hpp>
 #include <include/AST/Statement/ASTStructMemberDeclarations.hpp>
 #include <include/AST/Statement/ASTTypeSystemModStatement.hpp>
+#include <include/AST/Statement/ASTUnionDefinition.hpp>
 #include <include/AST/Statement/ASTVariableDeclaration.hpp>
 #include <include/AST/Statement/ASTWhileStatement.hpp>
 

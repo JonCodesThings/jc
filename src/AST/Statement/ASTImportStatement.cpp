@@ -4,5 +4,5 @@ ASTImportStatement::ASTImportStatement() : ASTStatement(IMPORT_STATEMENT) {}
 
 llvm::Value *ASTImportStatement::EmitIR(IREmitter::EmitterState &state)
 {
-	return NULL;
+	return nullptr;
 }

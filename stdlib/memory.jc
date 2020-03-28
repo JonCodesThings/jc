@@ -9,5 +9,5 @@ export i8 *alloc(i32 bytes)
 export i8 *dealloc(i8 *chunk)
 {
 	free(chunk);
-	return nullptr;
+	return nullptrptr;
 }

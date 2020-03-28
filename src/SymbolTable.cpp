@@ -24,7 +24,7 @@ Symbol *SymbolTable::GetSymbolByIdentifier(const std::string &identifier)
         if (symbol.identifier == identifier)
             return &symbol;
     }        
-    return NULL;
+    return nullptr;
 }
 
 std::vector<Symbol> SymbolTable::GetExportedSymbols() const

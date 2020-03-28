@@ -1,0 +1,15 @@
+enum MyCoolEnum
+{
+	First,
+	Second,
+	Third,
+	Bigtest,
+	MyCoolEn
+}
+
+main()
+{
+	MyCoolEnum e;
+	e = MyCoolEnum::First;
+	return 0;
+}

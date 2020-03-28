@@ -4,10 +4,10 @@ ASTConstantNullptr::ASTConstantNullptr() { node_type = NULLPTR; }
 
 llvm::Value * ASTConstantNullptr::EmitIR(IREmitter::EmitterState & state)
 {
-	return llvm::ConstantPointerNull::get(nulltype);
+	return llvm::ConstantPointerNull::get(nullptr_type);
 }
 
 const std::string * ASTConstantNullptr::GetType(IREmitter::EmitterState & state)
 {
-	return nulltype_str;
+	return nullptrtype_str;
 }

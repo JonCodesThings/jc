@@ -21,7 +21,7 @@ llvm::Value *ASTForStatement::EmitIR(IREmitter::EmitterState &state)
     llvm::Value *loop_internals = loop->EmitIR(state);
 
     if (!loop_internals)
-        return NULL;
+        return nullptr;
 
 	//cast the loop internals to a basic block
     llvm::BasicBlock *lvb = (llvm::BasicBlock *)loop_internals;

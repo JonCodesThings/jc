@@ -4,5 +4,5 @@ ASTTypeSystemModStatement::ASTTypeSystemModStatement(const TYPE_MOD_OP &op) : op
 
 llvm::Value *ASTTypeSystemModStatement::EmitIR(IREmitter::EmitterState &state)
 {
-    return NULL;
+    return nullptr;
 }

@@ -27,7 +27,7 @@ std::vector<Token> ModuleTokenizer::Tokenize(const std::string &in)
 		{
 			Token t;
 			t.token_type = IMPORT_T;
-			t.string = NULL;
+			t.string = nullptr;
 			tokens.push_back(t);
 			importing = true;
 			accum.clear();

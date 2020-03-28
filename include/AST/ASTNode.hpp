@@ -65,12 +65,15 @@ public:
         TYPE_MOD,
 
         STRUCT_DEFINITION,
+		UNION_DEFINITION,
 
 		FUNCTION_PTR_DEFINITION,
 
         BLOCK,
 
 		NULLPTR,
+
+		ENUM_DEFINITION,
 
         NODE_TYPE_COUNT
     } node_type;

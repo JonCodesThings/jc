@@ -16,7 +16,7 @@ void SymbolTableStack::Clear()
 
 Symbol *SymbolTableStack::GetSymbolByIdentifier(const std::string &identifier)
 {
-    Symbol *symbol = NULL;
+    Symbol *symbol = nullptr;
     for (auto it = stack.rbegin(); it != stack.rend(); it++)
     {
         symbol = it->GetSymbolByIdentifier(identifier);

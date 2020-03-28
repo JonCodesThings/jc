@@ -16,7 +16,7 @@ llvm::Value *ASTUnaryOperator::EmitIR(IREmitter::EmitterState &state)
     switch (op)
     {
         default:
-            return NULL;
+            return nullptr;
         case ADDRESS_OF:
         {
 			if (s->classification == Symbol::Classification::FUNCTION)
@@ -65,7 +65,7 @@ llvm::Value *ASTUnaryOperator::EmitIR(IREmitter::EmitterState &state)
                     conver = state.typeRegistry.GetWideningConversion(*type, *cast_to);
 
                 if (!conver)
-                    return NULL;
+                    return nullptr;
 
                 llvm::Value *v = operatee->EmitIR(state);
 
@@ -83,9 +83,9 @@ llvm::Value *ASTUnaryOperator::EmitIR(IREmitter::EmitterState &state)
                     return state.builder.CreateFPToSI(v, conver);
                 if (f == JCType::TYPE_CLASSIFICATION::INT && t == JCType::TYPE_CLASSIFICATION::FLOAT)
                     return state.builder.CreateSIToFP(v, conver);
-                return NULL;
+                return nullptr;
             }
-            return NULL;
+            return nullptr;
         }
 		//increment
 		//TODO: allow this to support other types
@@ -106,7 +106,7 @@ llvm::Value *ASTUnaryOperator::EmitIR(IREmitter::EmitterState &state)
 			return state.builder.CreateLoad(s->alloc_inst, "temp");
         }
     }
-    return NULL;
+    return nullptr;
 }
 
 const std::string *ASTUnaryOperator::GetType(IREmitter::EmitterState &state)
@@ -115,7 +115,7 @@ const std::string *ASTUnaryOperator::GetType(IREmitter::EmitterState &state)
     //get the type stuff working for more types of unary operators
     const Symbol *s = operatee->GetSymbol(state);
 
-	if (s == NULL)
+	if (s == nullptr)
 	{
 		operatee->SyntheticEval(state);
 		s = operatee->GetSymbol(state);
@@ -124,7 +124,7 @@ const std::string *ASTUnaryOperator::GetType(IREmitter::EmitterState &state)
     switch (op)
     {
         default:
-            return NULL;
+            return nullptr;
         case INCREMENT:
         case DECREMENT:
             return state.typeRegistry.GetLifetimeTypeString(s->type);

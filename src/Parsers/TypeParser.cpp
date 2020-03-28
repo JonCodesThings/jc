@@ -43,6 +43,22 @@ const bool TypeParser::Parse(const std::vector<Token> &in)
 			}
 			break;
 		}
+		case TypeTokenizer::UNION_T:
+		{
+			if (i + 1 < in.size())
+			{
+				registry.AddBlankUnionType(*in.at(i + 1).string);
+			}
+			break;
+		}
+		case TypeTokenizer::ENUM_T:
+		{
+			if (i + 1 < in.size())
+			{
+				registry.AddBlankEnumType(*in.at(i + 1).string);
+			}
+			break;
+		}
 		case TypeTokenizer::IDENTIFIER_T:
 		{
 			delete in.at(i).string;
@@ -77,19 +93,5 @@ const bool TypeParser::Parse(const std::vector<Token> &in)
 		}
 		}
 	}
-	/*if (current_keyword == "typedef")
-	{
-		const JCType *t = registry.GetTypeInfo(first);
-		registry.AddType(accum, *t->llvm_type, t->classification);
-	}
-	else if (current_keyword == "alias")
-	{
-		const JCType *t = registry.GetTypeInfo(first);
-		registry.AddAlias(second, first);
-	}
-	else if (current_keyword == "struct")
-	{
-		registry.AddBlankStructType(first);
-	}*/
 	return false;
 }

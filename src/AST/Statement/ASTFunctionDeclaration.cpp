@@ -33,7 +33,7 @@ llvm::Value *ASTFunctionDeclaration::EmitIR(IREmitter::EmitterState &state)
 
 		//failing that give up
         if (!t)
-            return NULL;
+            return nullptr;
 
 		//add it to the vector
         argTypeVector.push_back(t);

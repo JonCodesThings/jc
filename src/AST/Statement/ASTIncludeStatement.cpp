@@ -4,5 +4,5 @@ ASTIncludeStatement::ASTIncludeStatement(const std::string &s) : path(s), ASTSta
 
 llvm::Value *ASTIncludeStatement::EmitIR(IREmitter::EmitterState &state)
 {
-	return NULL;
+	return nullptr;
 }

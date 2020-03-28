@@ -27,7 +27,7 @@ std::vector<Token> TypeTokenizer::Tokenize(const std::string &in)
 		accum.push_back(ch);
 		//printf("%s\n", accum.c_str());
 
-		if (accum == "typedef" || accum == "struct" || accum == "alias" || accum == "func_ptr")
+		if (accum == "typedef" || accum == "struct" || accum == "alias" || accum == "func_ptr" || accum == "enum" || accum == "union")
 		{
 			current_keyword = accum;
 			Token t;
@@ -37,6 +37,10 @@ std::vector<Token> TypeTokenizer::Tokenize(const std::string &in)
 				t.token_type = STRUCT_T;
 			else if (accum == "func_ptr")
 				t.token_type = FUNC_PTR_T;
+			else if (accum == "enum")
+				t.token_type = ENUM_T;
+			else if (accum == "union")
+				t.token_type = UNION_T;
 			else
 				t.token_type = ALIAS_T;
 			accum.clear();
@@ -56,14 +60,14 @@ std::vector<Token> TypeTokenizer::Tokenize(const std::string &in)
 					Token t1, t2;
 					t2.token_type = t1.token_type = IDENTIFIER_T;
 					t1.string = new std::string(first);
-					t2.string = NULL;
+					t2.string = nullptr;
 
 					if (current_keyword == "typedef" || current_keyword == "alias")
 						t2.string = new std::string(second);
 
 					tokens.push_back(t1);
 
-					if (t2.string != NULL)
+					if (t2.string != nullptr)
 						tokens.push_back(t2);
 					current_keyword.clear();
 				}

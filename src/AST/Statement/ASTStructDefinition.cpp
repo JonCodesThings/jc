@@ -23,7 +23,7 @@ llvm::Value *ASTStructDefinition::EmitIR(IREmitter::EmitterState &state)
 
 		//or just give up
         if (!t)
-            return NULL;
+            return nullptr;
 
 		//push back the relevant data into the right vectors
         members.push_back(t);
@@ -36,7 +36,7 @@ llvm::Value *ASTStructDefinition::EmitIR(IREmitter::EmitterState &state)
 
 	for (int i = 0; i < member_default_vals.size(); i++)
 	{
-		member_default_vals[i] = NULL;
+		member_default_vals[i] = nullptr;
 		for (int j = 0; j < contains->args.size(); j++)
 		{
 			if (member_names[i] == contains->args[j]->name->identifier)

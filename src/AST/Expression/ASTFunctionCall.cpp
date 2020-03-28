@@ -11,7 +11,7 @@ llvm::Value *ASTFunctionCall::EmitIR(IREmitter::EmitterState &state)
 
 	//if we can't find the function on the symbol table stack return nothing
 	if (!s)
-		return NULL;
+		return nullptr;
 
 	//vector to store the argument values
 	std::vector<llvm::Value*> argvals;
@@ -48,7 +48,7 @@ llvm::Value *ASTFunctionCall::EmitIR(IREmitter::EmitterState &state)
 		return state.builder.CreateCall(v, argvals, identifier->identifier + "_call");
 
 	}
-	return NULL;
+	return nullptr;
 }
 
 const std::string *ASTFunctionCall::GetType(IREmitter::EmitterState &state)

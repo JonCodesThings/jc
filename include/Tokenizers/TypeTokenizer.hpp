@@ -14,6 +14,8 @@ public:
 		STRUCT_T,
 		IDENTIFIER_T,
 		FUNC_PTR_T,
+		ENUM_T,
+		UNION_T,
 		TYPE_TOKEN_COUNT
 	};
 

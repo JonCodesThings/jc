@@ -26,7 +26,7 @@ llvm::Value *ASTFunctionDefinition::EmitIR(IREmitter::EmitterState &state)
 
 		const std::string *typestring = block->GetType(state);
 		if (!typestring)
-			return NULL;
+			return nullptr;
 		state.syntheticStack.Clear();
 		declaration = std::make_unique<ASTFunctionDeclaration>(*new ASTIdentifier(*typestring), *id.release(), *args.release());
 	}
@@ -49,14 +49,14 @@ llvm::Value *ASTFunctionDefinition::EmitIR(IREmitter::EmitterState &state)
         s.identifier = arg->name->identifier;
         s.type = arg->type->identifier;
         s.classification = Symbol::Classification::VARIABLE;
-        s.alloc_inst = NULL;
+        s.alloc_inst = nullptr;
 		s.exported = declaration->exporting;
         state.symbolStack.AddSymbol(s);
     }
 
 	//emit the function body's IR
     if (!block->EmitIR(state, *declaration->arguments))
-        return NULL;
+        return nullptr;
 
 	//pop the symbol table
     state.symbolStack.Pop();

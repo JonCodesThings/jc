@@ -24,6 +24,7 @@ set(SOURCE_FILES src/main.cpp
     src/AST/ASTNode.cpp
     src/AST/ASTStatement.cpp
 
+	src/AST/Constant/ASTConstantEnumValue.cpp
     src/AST/Constant/ASTConstantFloat.cpp
     src/AST/Constant/ASTConstantInt.cpp
 	src/AST/Constant/ASTConstantNullptr.cpp
@@ -39,6 +40,8 @@ set(SOURCE_FILES src/main.cpp
 
     src/AST/Statement/ASTBlock.cpp
     src/AST/Statement/ASTDeferredStatement.cpp
+	src/AST/Statement/ASTEnumDefinition.cpp
+	src/AST/Statement/ASTEnumParts.cpp
     src/AST/Statement/ASTForStatement.cpp
     src/AST/Statement/ASTFunctionArgs.cpp
     src/AST/Statement/ASTFunctionDeclaration.cpp
@@ -52,6 +55,7 @@ set(SOURCE_FILES src/main.cpp
 	src/AST/Statement/ASTStructMemberDeclarations.cpp
     src/AST/Statement/ASTTypeSystemModStatement.cpp
     src/AST/Statement/ASTVariableDeclaration.cpp
+	src/AST/Statement/ASTUnionDefinition.cpp
     src/AST/Statement/ASTWhileStatement.cpp
 
     src/Build/BuildConfig.cpp
@@ -82,6 +86,7 @@ set(HEADER_FILES  include/AST.hpp
     include/AST/ASTNode.hpp
     include/AST/ASTStatement.hpp
 
+	include/AST/Constant/ASTConstantEnumValue.hpp
     include/AST/Constant/ASTConstantFloat.hpp
     include/AST/Constant/ASTConstantInt.hpp
 	include/AST/Constant/ASTConstantNullptr.hpp
@@ -97,6 +102,8 @@ set(HEADER_FILES  include/AST.hpp
 
     include/AST/Statement/ASTBlock.hpp
     include/AST/Statement/ASTDeferredStatement.hpp
+	include/AST/Statement/ASTEnumDefinition.hpp
+	include/AST/Statement/ASTEnumParts.hpp
     include/AST/Statement/ASTForStatement.hpp
     include/AST/Statement/ASTFunctionArgs.hpp
     include/AST/Statement/ASTFunctionDeclaration.hpp
@@ -109,6 +116,7 @@ set(HEADER_FILES  include/AST.hpp
     include/AST/Statement/ASTStructDefinition.hpp
 	include/AST/Statement/ASTStructMemberDeclarations.hpp
     include/AST/Statement/ASTTypeSystemModStatement.hpp
+	include/AST/Statement/ASTUnionDefinition.hpp
     include/AST/Statement/ASTVariableDeclaration.hpp
     include/AST/Statement/ASTWhileStatement.hpp
 

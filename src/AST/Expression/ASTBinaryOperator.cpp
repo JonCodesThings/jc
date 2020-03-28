@@ -57,7 +57,7 @@ llvm::Value *ASTBinaryOperator::EmitIR(IREmitter::EmitterState &state)
             switch (state.typeRegistry.GetTypeInfo(*ltype)->classification)
             {
                 default:
-                    return NULL;
+                    return nullptr;
                 case JCType::TYPE_CLASSIFICATION::INT:
                     return state.builder.CreateICmpEQ(templ, tempr);
                 case JCType::TYPE_CLASSIFICATION::FLOAT:
@@ -69,7 +69,7 @@ llvm::Value *ASTBinaryOperator::EmitIR(IREmitter::EmitterState &state)
             switch (state.typeRegistry.GetTypeInfo(*ltype)->classification)
             {
                 default:
-                    return NULL;
+                    return nullptr;
                 case JCType::TYPE_CLASSIFICATION::INT:
                     return state.builder.CreateICmpNE(templ, tempr);
                 case JCType::TYPE_CLASSIFICATION::FLOAT:
@@ -81,7 +81,7 @@ llvm::Value *ASTBinaryOperator::EmitIR(IREmitter::EmitterState &state)
             switch (state.typeRegistry.GetTypeInfo(*ltype)->classification)
             {
                 default:
-                    return NULL;
+                    return nullptr;
                 case JCType::TYPE_CLASSIFICATION::INT:
                     return state.builder.CreateICmpSLT(templ, tempr);
                 case JCType::TYPE_CLASSIFICATION::FLOAT:
@@ -93,7 +93,7 @@ llvm::Value *ASTBinaryOperator::EmitIR(IREmitter::EmitterState &state)
             switch (state.typeRegistry.GetTypeInfo(*ltype)->classification)
             {
                 default:
-                    return NULL;
+                    return nullptr;
                 case JCType::TYPE_CLASSIFICATION::INT:
                     return state.builder.CreateICmpSGT(templ, tempr);
                 case JCType::TYPE_CLASSIFICATION::FLOAT:
@@ -105,7 +105,7 @@ llvm::Value *ASTBinaryOperator::EmitIR(IREmitter::EmitterState &state)
             switch (state.typeRegistry.GetTypeInfo(*ltype)->classification)
             {
                 default:
-                    return NULL;
+                    return nullptr;
                 case JCType::TYPE_CLASSIFICATION::INT:
                     return state.builder.CreateICmpSLE(templ, tempr);
                 case JCType::TYPE_CLASSIFICATION::FLOAT:
@@ -117,7 +117,7 @@ llvm::Value *ASTBinaryOperator::EmitIR(IREmitter::EmitterState &state)
             switch (state.typeRegistry.GetTypeInfo(*ltype)->classification)
             {
                 default:
-                    return NULL;
+                    return nullptr;
                 case JCType::TYPE_CLASSIFICATION::INT:
                     return state.builder.CreateICmpSGE(templ, tempr);
                 case JCType::TYPE_CLASSIFICATION::FLOAT:
@@ -125,7 +125,7 @@ llvm::Value *ASTBinaryOperator::EmitIR(IREmitter::EmitterState &state)
             }
         }
     }
-    return NULL;
+    return nullptr;
 }
 
 const std::string *ASTBinaryOperator::GetType(IREmitter::EmitterState &state)

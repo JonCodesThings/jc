@@ -11,6 +11,7 @@ extern int yyparse();
 extern int yylineno;
 extern unsigned int yycurrentlinechar;
 extern const char *yycurrentfilename;
+extern TypeRegistry *registry;
 
 void yyerror (char *error)
 {
@@ -58,6 +59,11 @@ ASTVariableDeclaration *variable_declaration;
 ASTMemberOperator *member_operator;
 ASTIfStatement *if_statement;
 ASTForStatement *for_loop;
+ASTEnumDefinition *enum_def;
+ASTUnionDefinition *union_def;
+ASTEnumPart *enum_part;
+ASTEnumParts *enum_parts;
+ASTConstantEnumValue *enum_val;
 ASTWhileStatement *while_loop;
 ASTTypeSystemModStatement *type_mod;
 ASTUnaryOperator *unary_operator;
@@ -100,7 +106,7 @@ int token;
 
 %token FOR WHILE
 
-%token TYPEDEF ALIAS AUTO
+%token TYPEDEF ALIAS AUTO ENUM UNION
 
 %token EXTERN IMPORT EXPORT INCLUDE LINK FUNC_PTR NULLPTR
 
@@ -135,6 +141,12 @@ int token;
 %type<struct_decl> struct_pair
 %type<node_list> init_list
 %type<node> id_or_constant
+%type<enum_part> enum_part
+%type<enum_parts> enum_parts
+%type<enum_def> enum_def
+%type<union_def> union_def
+%type<enum_val> constant_enum_value
+
 
 %start module
 
@@ -154,13 +166,15 @@ semicoloned_statement: statement SEMICOLON { SetNodeInfo(*$1); }; | assignable_s
     | defer_statement SEMICOLON { SetNodeInfo(*$1); }
     | function_def { SetNodeInfo(*$1); } ;
 
-statement: return_statement | function_def | function_decl | variable_decl | assign_op | flow_control | alias_statement | typedef_statement | struct_def | import | include_or_link | func_ptr
+statement: return_statement | function_def | function_decl | variable_decl | assign_op | flow_control | alias_statement | typedef_statement | struct_def | import | include_or_link | func_ptr | enum_def | union_def
 
 alias_statement: ALIAS TYPE TYPE { $$ = new ASTTypeSystemModStatement(ASTTypeSystemModStatement::TYPE_MOD_OP::ALIAS); };
 
 typedef_statement: TYPEDEF TYPE TYPE { $$ = new ASTTypeSystemModStatement(ASTTypeSystemModStatement::TYPE_MOD_OP::TYPEDEF); };
 
 struct_def: STRUCT type LEFT_BRACE struct_list RIGHT_BRACE { $$ = new ASTStructDefinition(*$2, *$4); };
+
+union_def: UNION type LEFT_BRACE struct_list RIGHT_BRACE { $$ = new ASTUnionDefinition(*$2, *$4); };
 
 defer_statement: DEFER assignable_statement { $$ = new ASTDeferredStatement(*$2); }
 
@@ -296,13 +310,22 @@ func_ptr: FUNC_PTR type type LEFT_BRACKET type_list RIGHT_BRACKET{ $$ = new ASTF
 
 arg_pair: type id { $$ = new ASTFunctionArg(*$1, *$2); } | FSTOP FSTOP FSTOP { $$ = new ASTFunctionArg(); };
 
+enum_def: ENUM type LEFT_BRACE enum_parts RIGHT_BRACE { printf("big cool\n"); $$ = new ASTEnumDefinition(*$2, *$4); }
+
+enum_parts: enum_part { $$ = new ASTEnumParts();  printf("%s\n", $1->id->identifier.c_str()); auto s = std::unique_ptr<ASTEnumPart>($1); $$->parts.push_back(std::move(s)); }
+	| enum_parts COMMA enum_part { auto s = std::unique_ptr<ASTEnumPart>($3); $1->parts.push_back(std::move(s)); }
+
+enum_part: id { printf("cool\n"); $$ = new ASTEnumPart(*$1, nullptr); } | id EQUAL constant_int { printf("more cool\n"); $$ = new ASTEnumPart(*$1, $3); }
+
 id_or_constant: id | constant;
 
 include_or_link: INCLUDE STRING  { $$ = new ASTIncludeStatement(yylval.string); } | LINK STRING { $$ = new ASTIncludeStatement(yylval.string); };
 
-constant: constant_int | FLOAT { $$ = new ASTConstantFloat(yylval.fl); } | STRING { $$ = new ASTConstantString(yylval.string); } | NULLPTR { $$ = new ASTConstantNullptr(); };
+constant: constant_int | constant_enum_value | FLOAT { $$ = new ASTConstantFloat(yylval.fl); } | STRING { $$ = new ASTConstantString(yylval.string); } | NULLPTR { $$ = new ASTConstantNullptr(); };
 
 constant_int: INTEGER { $$ = new ASTConstantInt(yylval.integer); };
+
+constant_enum_value: type COLON COLON id { $$ = new ASTConstantEnumValue(*$1, *$4); };
 
 id: IDENTIFIER { $$ = new ASTIdentifier($1); };
 

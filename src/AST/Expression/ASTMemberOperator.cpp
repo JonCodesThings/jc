@@ -5,29 +5,38 @@ ASTMemberOperator::ASTMemberOperator(ASTIdentifier &id, ASTIdentifier &member, O
 llvm::Value *ASTMemberOperator::EmitIR(IREmitter::EmitterState &state)
 {
 	//get the struct's symbol and type
-    const Symbol *struct_symbol = state.symbolStack.GetSymbolByIdentifier(id->identifier);
-    const JCType *struct_type = state.typeRegistry.GetTypeInfo(struct_symbol->type);
+    const Symbol *symbol = state.symbolStack.GetSymbolByIdentifier(id->identifier);
+    const JCType *type = state.typeRegistry.GetTypeInfo(symbol->type);
 
 	//based on the operator do different things
 	//TODO: add the arrow operator for pointers
     switch (op)
     {
         default:
-            return NULL;
+            return nullptr;
         case DOT:
         {
 			//get the element using GEP if possible
-            for (int i = 0; i < struct_type->MEMBER_NAMES.size(); i++)
+            for (int i = 0; i < type->MEMBER_NAMES.size(); i++)
             {
-                if (struct_type->MEMBER_NAMES[i] == member_id->identifier)
+                if (type->MEMBER_NAMES[i] == member_id->identifier)
                 {
-                    llvm::Value *get_element = state.builder.CreateGEP(struct_symbol->alloc_inst, { llvm::ConstantInt::get(llvm::Type::getInt32Ty(state.context), 0),  llvm::ConstantInt::get(llvm::Type::getInt32Ty(state.context), i) });
-                    return get_element;
+					if (type->classification == JCType::TYPE_CLASSIFICATION::STRUCT)
+					{
+						llvm::Value *get_element = state.builder.CreateGEP(symbol->alloc_inst, { llvm::ConstantInt::get(llvm::Type::getInt32Ty(state.context), 0),  llvm::ConstantInt::get(llvm::Type::getInt32Ty(state.context), i) });
+						return get_element;
+					}
+					else if (type->classification == JCType::TYPE_CLASSIFICATION::UNION)
+					{
+						llvm::Value *get_element = state.builder.CreateGEP(symbol->alloc_inst, { llvm::ConstantInt::get(llvm::Type::getInt32Ty(state.context), 0),  llvm::ConstantInt::get(llvm::Type::getInt32Ty(state.context), 0) });
+						llvm::Value *get_union_element = state.builder.CreateBitCast(get_element, state.typeRegistry.GetType(type->MEMBER_TYPENAMES[i] + "*"));
+						return get_union_element;
+					}
                 }
             }
         }
     }
-    return NULL;
+    return nullptr;
 }
 
 const std::string *ASTMemberOperator::GetType(IREmitter::EmitterState &state)
@@ -36,11 +45,11 @@ const std::string *ASTMemberOperator::GetType(IREmitter::EmitterState &state)
     const Symbol *struct_symbol = state.symbolStack.GetSymbolByIdentifier(id->identifier);
     const JCType *struct_type = state.typeRegistry.GetTypeInfo(struct_symbol->type);
 
-	//get the type of the member if possible, otherwise return NULL
+	//get the type of the member if possible, otherwise return nullptr
     for (unsigned int i = 0; i < struct_type->MEMBER_NAMES.size(); i++)
     {
         if (struct_type->MEMBER_NAMES[i] == member_id->identifier)
             return state.typeRegistry.GetLifetimeTypeString(struct_type->MEMBER_TYPENAMES[i]);
     }
-    return NULL;
+    return nullptr;
 }

@@ -73,7 +73,9 @@ TypeRegistry *registry;
 "auto" { return AUTO; yycurrentlinechar += yyleng; }
 "func_ptr" { return FUNC_PTR; yycurrentlinechar += yyleng; }
 "nullptr" { return NULLPTR; yycurrentlinechar += yyleng; }
-[_a-zA-Z0-9]+ { yylval.string = yytext; if (!registry->GetType(yylval.string)) return IDENTIFIER; else return TYPE; yycurrentlinechar += yyleng; }
+"union" { return UNION; yycurrentlinechar += yyleng; }
+"enum" { return ENUM; yycurrentlinechar += yyleng; }
+[_a-zA-Z0-9]+ { yylval.string = yytext; if (!registry->GetTypeInfo(yylval.string)) return IDENTIFIER; else return TYPE; yycurrentlinechar += yyleng; }
 
 . { return UNKNOWN; }
 <<EOF>> { return 0; }

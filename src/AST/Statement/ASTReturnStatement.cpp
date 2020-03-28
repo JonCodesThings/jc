@@ -28,7 +28,7 @@ llvm::Value *ASTReturnStatement::EmitIR(IREmitter::EmitterState &state)
 		if (expr->GetNodeType() == NULLPTR)
 		{
 			ASTConstantNullptr *np = (ASTConstantNullptr*)expr.get();
-			np->nulltype = (llvm::PointerType*)current_function->getReturnType();
+			np->nullptr_type = (llvm::PointerType*)current_function->getReturnType();
 		}
         retval = expr->EmitIR(state);
         switch (expr->GetNodeType())

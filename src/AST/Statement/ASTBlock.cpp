@@ -8,9 +8,9 @@
 
 #include <unordered_set>
 
-ASTBlock::ASTBlock() : block(std::make_unique<std::vector<std::unique_ptr<ASTStatement>>>()), b(NULL), ASTStatement(BLOCK) {}
+ASTBlock::ASTBlock() : block(std::make_unique<std::vector<std::unique_ptr<ASTStatement>>>()), b(nullptr), ASTStatement(BLOCK) {}
 
-ASTBlock::ASTBlock(std::vector<std::unique_ptr<ASTStatement>> &block) : block(&block), b(NULL), ASTStatement(BLOCK) {}
+ASTBlock::ASTBlock(std::vector<std::unique_ptr<ASTStatement>> &block) : block(&block), b(nullptr), ASTStatement(BLOCK) {}
 
 bool ASTBlock::ContainsReturnStatement()
 {
@@ -29,7 +29,7 @@ bool ASTBlock::ContainsReturnStatement()
 const std::string * ASTBlock::GetType(IREmitter::EmitterState & state)
 {
 	if (!ContainsReturnStatement())
-		return NULL;
+		return nullptr;
 
 	std::unordered_set<const std::string *>ret_types;
 
@@ -40,9 +40,9 @@ const std::string * ASTBlock::GetType(IREmitter::EmitterState & state)
 	}
 
 	if (ret_types.size() != 1)
-		return NULL;
+		return nullptr;
 	
-	if (*ret_types.begin() == NULL)
+	if (*ret_types.begin() == nullptr)
 	{
 		SyntheticEval(state);
 
@@ -55,7 +55,7 @@ const std::string * ASTBlock::GetType(IREmitter::EmitterState & state)
 		}
 
 		if (ret_types.size() != 1)
-			return NULL;
+			return nullptr;
 	}
 
 	return *ret_types.begin();
@@ -122,7 +122,7 @@ llvm::Value *ASTBlock::EmitIR(IREmitter::EmitterState &state)
     {
         if (statement)
         {
-			if (statement->GetNodeType() == ASTNode::NODE_TYPE::FUNCTION_DEFINITION && current_function != NULL)
+			if (statement->GetNodeType() == ASTNode::NODE_TYPE::FUNCTION_DEFINITION && current_function != nullptr)
 			{
 				ASTFunctionDefinition *def = (ASTFunctionDefinition*)statement.get();
 				def->declaration->identifier->identifier = std::string(current_function->getName()) + "__" + def->declaration->identifier->identifier;
@@ -136,7 +136,7 @@ llvm::Value *ASTBlock::EmitIR(IREmitter::EmitterState &state)
 				continue;
 			}
             if (!statement->EmitIR(state))
-                return NULL;
+                return nullptr;
             if (statement->GetNodeType() == ASTNode::NODE_TYPE::RETURN_STATEMENT)
             {
                 returned = true;
@@ -158,7 +158,7 @@ llvm::Value *ASTBlock::EmitIR(IREmitter::EmitterState &state, ASTFunctionArgs &a
     for (auto &arg : current_function->args())
     {
         Symbol *s = state.symbolStack.GetSymbolByIdentifier(arg.getName());
-        s->alloc_inst = state.builder.CreateAlloca(state.typeRegistry.GetType(s->type), NULL, arg.getName());
+        s->alloc_inst = state.builder.CreateAlloca(state.typeRegistry.GetType(s->type), nullptr, arg.getName());
         state.builder.CreateStore(&arg, s->alloc_inst);
     }
 

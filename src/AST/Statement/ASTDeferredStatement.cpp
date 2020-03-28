@@ -5,5 +5,5 @@ ASTDeferredStatement::ASTDeferredStatement(ASTStatement &defer) : defer(&defer),
 
 llvm::Value *ASTDeferredStatement::EmitIR(IREmitter::EmitterState &state)
 {
-    return NULL;
+    return nullptr;
 }

@@ -34,7 +34,7 @@ llvm::Value *ASTIdentifier::EmitIR(IREmitter::EmitterState &state)
     const Symbol * s = state.symbolStack.GetSymbolByIdentifier(identifier);
     if (s)
         return s->alloc_inst;
-    return NULL;
+    return nullptr;
 }
 
 const bool ASTIdentifier::SyntheticEval(IREmitter::EmitterState & state)

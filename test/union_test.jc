@@ -1,0 +1,12 @@
+union MyCoolUnion
+{
+	i16 y;
+	i32 x;
+}
+
+i32 main()
+{
+	MyCoolUnion u;
+	u.x = 32;
+	return u.x;
+}

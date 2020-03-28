@@ -63,9 +63,9 @@ llvm::Value * ASTVariableDeclaration::EmitIR(IREmitter::EmitterState &state)
 
 
 	//if there is no parent function set up a global variable
-	if (state.builder.GetInsertBlock()->getParent() == NULL)
+	if (state.builder.GetInsertBlock()->getParent() == nullptr)
 	{
-		//symbol.alloc_inst = new llvm::GlobalVariable(t, false, llvm::GlobalValue::ExternalLinkage, nullptr, symbol.identifier);
+		//symbol.alloc_inst = new llvm::GlobalVariable(t, false, llvm::GlobalValue::ExternalLinkage, nullptrptr, symbol.identifier);
 		state.module->getOrInsertGlobal(id->identifier, t);
 		symbol.alloc_inst = state.module->getNamedGlobal(id->identifier);
 		state.module->getNamedGlobal(id->identifier)->setLinkage(llvm::GlobalValue::ExternalLinkage);
@@ -73,7 +73,7 @@ llvm::Value * ASTVariableDeclaration::EmitIR(IREmitter::EmitterState &state)
 	}
 	//otherwise create an allocinst
 	else
-		symbol.alloc_inst = state.builder.CreateAlloca(t, NULL, id->identifier);
+		symbol.alloc_inst = state.builder.CreateAlloca(t, nullptr, id->identifier);
 
 	//set the export flag to the appropriate value
 	symbol.exported = exporting;
@@ -90,8 +90,8 @@ llvm::Value * ASTVariableDeclaration::EmitIR(IREmitter::EmitterState &state)
 		if (node->GetNodeType() == NULLPTR)
 		{
 			ASTConstantNullptr *np = (ASTConstantNullptr*)node.get();
-			np->nulltype = (llvm::PointerType*)state.typeRegistry.GetType(symbol.type);
-			np->nulltype_str = state.typeRegistry.GetLifetimeTypeString(symbol.type);
+			np->nullptr_type = (llvm::PointerType*)state.typeRegistry.GetType(symbol.type);
+			np->nullptrtype_str = state.typeRegistry.GetLifetimeTypeString(symbol.type);
 		}
         auto assignment = ASTVariableAssignment(*id, *node);
         id.release();
@@ -113,7 +113,7 @@ llvm::Value * ASTVariableDeclaration::EmitIR(IREmitter::EmitterState &state)
 	{
 		for (int i = 0; i < typeinfo->MEMBER_NAMES.size(); i++)
 		{
-			if (typeinfo->MEMBER_DEFAULTS[i] != NULL)
+			if (typeinfo->MEMBER_DEFAULTS[i] != nullptr)
 			{
 				ASTMemberOperator member(*new ASTIdentifier(*id), *new ASTIdentifier(typeinfo->MEMBER_NAMES[i]), ASTMemberOperator::DOT);
 				state.builder.CreateStore(typeinfo->MEMBER_DEFAULTS[i], member.EmitIR(state));

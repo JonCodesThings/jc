@@ -19,8 +19,8 @@ llvm::Value *ASTIfStatement::EmitIR(IREmitter::EmitterState &state)
 	//create the phi node in that final merge block
     llvm::PHINode *phi = state.builder.CreatePHI(llvm::Type::getInt8Ty(state.context), 0);
 
-	//set the otherwise basic block to NULL for now
-    llvm::BasicBlock *ot = NULL;
+	//set the otherwise basic block to nullptr for now
+    llvm::BasicBlock *ot = nullptr;
 
 	//set the insert point to final merge again
     state.builder.SetInsertPoint(final_merge);
