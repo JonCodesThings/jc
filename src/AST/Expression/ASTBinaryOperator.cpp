@@ -124,6 +124,14 @@ llvm::Value *ASTBinaryOperator::EmitIR(IREmitter::EmitterState &state)
                     return state.builder.CreateFCmpOGE(templ, tempr);
             }
         }
+		case BITWISE_AND:
+			return state.builder.CreateAnd(templ, tempr);
+		case BITWISE_OR:
+			return state.builder.CreateOr(templ, tempr);
+		case BITWISE_LEFT_SHIFT:
+			return state.builder.CreateShl(templ, tempr);
+		case BITWISE_RIGHT_SHIFT:
+			return state.builder.CreateAShr(templ, tempr);
     }
     return nullptr;
 }

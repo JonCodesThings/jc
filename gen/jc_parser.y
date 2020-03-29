@@ -100,6 +100,8 @@ int token;
 
 %token OR OR_OR
 
+%token LEFT_SHIFT RIGHT_SHIFT
+
 %token RETURN DEFER
 
 %token IF ELSE
@@ -128,7 +130,7 @@ int token;
 %type<string> IDENTIFIER TYPE
 %type<statement> return_statement flow_control
 %type<scope_block> statements scope semicoloned_statements
-%type<statement> add subtract multiply divide equality inequality lesser  greater  lesser_or_equal  greater_or_equal
+%type<statement> add subtract multiply divide equality inequality lesser greater lesser_or_equal greater_or_equal bitwise_and bitwise_or bitwise_left_shift bitwise_right_shift
 %type<statement_list> statement_list
 %type<defer_statement> defer_statement
 %type<type_mod> alias_statement typedef_statement
@@ -190,7 +192,7 @@ import: IMPORT id { $$ = new ASTImportStatement(); };
 
 unary_op: cast | increment | decrement | address_of | dereference | array_index;
 
-binary_op: add | subtract | multiply | divide | equality | inequality | lesser | greater | lesser_or_equal | greater_or_equal;
+binary_op: add | subtract | multiply | divide | equality | inequality | lesser | greater | lesser_or_equal | greater_or_equal | bitwise_and | bitwise_or | bitwise_left_shift | bitwise_right_shift;
 
 assign_op: variable_assign;
 
@@ -242,6 +244,18 @@ lesser_or_equal: id_or_constant LESSER_EQUAL id_or_constant { $$ = new ASTBinary
 
 greater_or_equal: id_or_constant GREATER_EQUAL id_or_constant { $$ = new ASTBinaryOperator(*$1, *$3, ASTBinaryOperator::GREATER_OR_EQUAL);  }
     | id_or_constant GREATER_EQUAL unary_op {$$ = new ASTBinaryOperator(*$1, *$3, ASTBinaryOperator::GREATER_OR_EQUAL); };
+
+bitwise_and: id_or_constant AND id_or_constant { $$ = new ASTBinaryOperator(*$1, *$3, ASTBinaryOperator::BITWISE_AND);  }
+    | id_or_constant AND unary_op {$$ = new ASTBinaryOperator(*$1, *$3, ASTBinaryOperator::BITWISE_AND); };
+
+bitwise_or: id_or_constant OR id_or_constant { $$ = new ASTBinaryOperator(*$1, *$3, ASTBinaryOperator::BITWISE_OR);  }
+    | id_or_constant OR unary_op {$$ = new ASTBinaryOperator(*$1, *$3, ASTBinaryOperator::BITWISE_OR); };
+
+bitwise_left_shift: id_or_constant LEFT_SHIFT id_or_constant { $$ = new ASTBinaryOperator(*$1, *$3, ASTBinaryOperator::BITWISE_LEFT_SHIFT);  }
+    | id_or_constant LEFT_SHIFT unary_op {$$ = new ASTBinaryOperator(*$1, *$3, ASTBinaryOperator::BITWISE_LEFT_SHIFT); };
+
+bitwise_right_shift: id_or_constant RIGHT_SHIFT id_or_constant { $$ = new ASTBinaryOperator(*$1, *$3, ASTBinaryOperator::BITWISE_RIGHT_SHIFT);  }
+    | id_or_constant RIGHT_SHIFT unary_op {$$ = new ASTBinaryOperator(*$1, *$3, ASTBinaryOperator::BITWISE_RIGHT_SHIFT); };
 
 function_def: type id LEFT_BRACKET arg_list RIGHT_BRACKET scope {  $$ = new ASTFunctionDefinition(*$1, *$2, *$4, *$6);  }
     | type id LEFT_BRACKET RIGHT_BRACKET scope {  $$ = new ASTFunctionDefinition(*$1, *$2, *new ASTFunctionArgs(), *$5);  };

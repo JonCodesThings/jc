@@ -56,6 +56,9 @@ TypeRegistry *registry;
 "|" { return OR; yycurrentlinechar += yyleng; }
 "||" { return OR_OR; yycurrentlinechar += yyleng; }
 
+"<<" { return LEFT_SHIFT; yycurrentlinechar += yyleng; }
+">>" { return RIGHT_SHIFT; yycurrentlinechar += yyleng; }
+
 "import" { return IMPORT; yycurrentlinechar += yyleng; }
 "return" { return RETURN; yycurrentlinechar += yyleng; }
 "extern" { return EXTERN; yycurrentlinechar += yyleng; }

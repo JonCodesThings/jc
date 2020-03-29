@@ -24,7 +24,11 @@ public:
         LESSER,
         GREATER,
         LESSER_OR_EQUAL,
-        GREATER_OR_EQUAL
+        GREATER_OR_EQUAL,
+		BITWISE_AND,
+		BITWISE_OR,
+		BITWISE_LEFT_SHIFT,
+		BITWISE_RIGHT_SHIFT
     } op;
 
     ASTBinaryOperator(ASTNode &left, ASTNode &right, OP op);
