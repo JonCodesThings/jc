@@ -43,6 +43,13 @@ const std::string *ASTMemberOperator::GetType(IREmitter::EmitterState &state)
 {
 	//get the struct's symbol and type
     const Symbol *struct_symbol = state.symbolStack.GetSymbolByIdentifier(id->identifier);
+
+	if (!struct_symbol)
+		struct_symbol = state.syntheticStack.GetSymbolByIdentifier(id->identifier);
+
+	if (!struct_symbol)
+		return nullptr;
+
     const JCType *struct_type = state.typeRegistry.GetTypeInfo(struct_symbol->type);
 
 	//get the type of the member if possible, otherwise return nullptr
@@ -52,4 +59,9 @@ const std::string *ASTMemberOperator::GetType(IREmitter::EmitterState &state)
             return state.typeRegistry.GetLifetimeTypeString(struct_type->MEMBER_TYPENAMES[i]);
     }
     return nullptr;
+}
+
+const bool ASTMemberOperator::SyntheticEval(IREmitter::EmitterState & state)
+{
+	return true;
 }

@@ -64,6 +64,8 @@ CALL :run_test test\allocation_test.jc 0
 CALL :run_test test\enum_test.jc 0
 
 CALL :run_test test\union_test.jc 0
+
+CALL :run_test test\bitwise_ops_test.jc 0
 pause
 cmd /k
 
@@ -74,5 +76,5 @@ RelWithDebInfo\jc.exe %~1
 set retval=%ERRORLEVEL%
 %~1.exe
 set return_code=%ERRORLEVEL%
-if not return_code == %~2 (echo "Test successful!")
-if return_code == %~2 (echo "Test failed!")
+if not return_code == %~2 (echo Test successful!)
+if return_code == %~2 (echo Test failed!)

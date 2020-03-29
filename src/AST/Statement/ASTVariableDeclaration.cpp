@@ -100,7 +100,6 @@ llvm::Value * ASTVariableDeclaration::EmitIR(IREmitter::EmitterState &state)
     }
 	else if (init_list)
 	{
-		printf("%d\n", init_list->size());
 		int index = 0;
 		for (auto &node : *init_list.get())
 		{

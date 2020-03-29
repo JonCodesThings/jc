@@ -4,7 +4,7 @@ struct MyCoolStruct
     f32 f;
 }
 
-i32 main()
+main()
 {
     MyCoolStruct s;
     s.x = 5;
