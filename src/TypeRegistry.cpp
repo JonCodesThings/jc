@@ -18,6 +18,8 @@ void TypeRegistry::SetupBuiltinJCTypes()
 
     AddType("f16", *llvm::Type::getHalfTy(context), JCType::TYPE_CLASSIFICATION::FLOAT);
     AddType("f32", *llvm::Type::getFloatTy(context), JCType::TYPE_CLASSIFICATION::FLOAT);
+
+	AddType("bool", *llvm::Type::getInt8Ty(context), JCType::TYPE_CLASSIFICATION::INT);
 }
 
 void TypeRegistry::AddAlias(const std::string &id, const std::string &type_to_be_aliased)
@@ -38,6 +40,15 @@ void TypeRegistry::AddBlankEnumType(const std::string &id)
 	type.classification = JCType::TYPE_CLASSIFICATION::ENUM;
 
 	type.llvm_type = GetType("i32");
+
+	registry.push_back(type);
+}
+
+void TypeRegistry::AddBlankFunctionPointerType(const std::string & id)
+{
+	JCType type;
+	type.type_string = id;
+	type.classification = JCType::TYPE_CLASSIFICATION::POINTER;
 
 	registry.push_back(type);
 }
@@ -213,6 +224,20 @@ void TypeRegistry::SetEnumValues(const std::string &id,const std::vector<std::pa
 		if (registry[i].type_string == id)
 		{
 			registry[i].ENUM_VALUES = enum_values;
+			return;
+		}
+	}
+}
+
+void TypeRegistry::SetFunctionPointerType(const std::string & id, const std::vector<llvm::Type*>& types, const std::string &ret_type)
+{
+	for (int i = 0; i < registry.size(); i++)
+	{
+		if (registry[i].type_string == id)
+		{
+			auto func_type = llvm::FunctionType::get(GetType(ret_type), types, false);
+			auto ptr_type = llvm::PointerType::get(func_type, 0);
+			registry[i].llvm_type = ptr_type;
 			return;
 		}
 	}

@@ -1,0 +1,7 @@
+//return type inference is pretty dope
+main()
+{
+	bool yes = true;
+	bool no = false;
+	return 0;
+}

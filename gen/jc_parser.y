@@ -74,6 +74,7 @@ ASTIdentifier *id;
 const char *string;
 std::vector<std::unique_ptr<ASTConditionalBlock>> *cond_block;
 std::vector<std::unique_ptr<ASTStatement>> *statement_list;
+std::vector<std::unique_ptr<ASTIdentifier>> *type_list;
 std::vector<std::unique_ptr<ASTNode>> *node_list;
 int integer;
 float fl;
@@ -110,13 +111,13 @@ int token;
 
 %token TYPEDEF ALIAS AUTO ENUM UNION
 
-%token EXTERN IMPORT EXPORT INCLUDE LINK FUNC_PTR NULLPTR
+%token EXTERN IMPORT EXPORT INCLUDE LINK FUNC_PTR NULLPTR TRUE FALSE
 
 %token STRUCT ARROW
 
 %token UNKNOWN
 
-%type<statement> node_setup semicoloned_statement statement assign_op variable_assign unary_op binary_op member_op struct_def include_or_link  func_ptr
+%type<statement> semicoloned_statement statement assign_op variable_assign unary_op binary_op member_op struct_def include_or_link  func_ptr
 %type<variable_declaration> variable_decl
 %type<function_definition> function_def
 %type<function_declaration> function_decl
@@ -138,7 +139,7 @@ int token;
 %type<while_loop> while_loop
 %type<for_loop> for_loop
 %type<constant> constant
-%type<constant_int> constant_int
+%type<constant_int> constant_int constant_bool
 %type<function_arg> arg_pair
 %type<struct_decl> struct_pair
 %type<node_list> init_list
@@ -147,6 +148,7 @@ int token;
 %type<enum_parts> enum_parts
 %type<enum_def> enum_def
 %type<union_def> union_def
+%type<type_list> type_list
 %type<enum_val> constant_enum_value
 
 
@@ -154,21 +156,20 @@ int token;
 
 %%
 
-module: statements { base = std::make_unique<ASTBlock>(); std::unique_ptr<ASTBlock> b = std::unique_ptr<ASTBlock>($1); base->block->push_back(std::move(b)); };
+module: statements { printf("based\n"); base = std::make_unique<ASTBlock>(); std::unique_ptr<ASTBlock> b = std::unique_ptr<ASTBlock>($1); base->block->push_back(std::move(b)); };
 
-statements: node_setup { $$ = new ASTBlock(); auto s = std::unique_ptr<ASTStatement>($1); $$->block->push_back(std::move(s)); };
-    | statements node_setup { auto s = std::unique_ptr<ASTStatement>($2); $1->block->push_back(std::move(s)); };
+statements: statement { printf("statements\n"); $$ = new ASTBlock(); auto s = std::unique_ptr<ASTStatement>($1); $$->block->push_back(std::move(s)); };
+    | statements statement { auto s = std::unique_ptr<ASTStatement>($2); $1->block->push_back(std::move(s)); }
+	| statements semicoloned_statement { auto s = std::unique_ptr<ASTStatement>($2); $1->block->push_back(std::move(s)); };
 
-node_setup: statement { SetNodeInfo(*$$); } | statement SEMICOLON { SetNodeInfo(*$$); };
-
-semicoloned_statements: semicoloned_statement { $$ = new ASTBlock(); auto statement = std::unique_ptr<ASTStatement>($1); $$->block->push_back(std::move(statement)); SetNodeInfo(*$$); }
+semicoloned_statements: semicoloned_statement { printf("semicoloned statements\n"); $$ = new ASTBlock(); auto statement = std::unique_ptr<ASTStatement>($1); $$->block->push_back(std::move(statement)); SetNodeInfo(*$$); }
     | semicoloned_statements semicoloned_statement { auto statement = std::unique_ptr<ASTStatement>($2); $1->block->push_back(std::move(statement)); };
 
 semicoloned_statement: statement SEMICOLON { SetNodeInfo(*$1); }; | assignable_statement SEMICOLON { SetNodeInfo(*$1); } | flow_control { SetNodeInfo(*$1); }
     | defer_statement SEMICOLON { SetNodeInfo(*$1); }
     | function_def { SetNodeInfo(*$1); } ;
 
-statement: return_statement | function_def | function_decl | variable_decl | assign_op | flow_control | alias_statement | typedef_statement | struct_def | import | include_or_link | func_ptr | enum_def | union_def
+statement: return_statement | function_decl | variable_decl | assign_op | alias_statement | typedef_statement | struct_def | import | include_or_link | func_ptr | enum_def | union_def
 
 alias_statement: ALIAS TYPE TYPE { $$ = new ASTTypeSystemModStatement(ASTTypeSystemModStatement::TYPE_MOD_OP::ALIAS); };
 
@@ -317,32 +318,34 @@ arg_list: arg_list COMMA arg_pair { auto s = std::unique_ptr<ASTFunctionArg>($3)
 statement_list: statement_list COMMA assignable_statement { auto s = std::unique_ptr<ASTStatement>($3); $1->push_back(std::move(s)); }
     | assignable_statement { $$ = new std::vector<std::unique_ptr<ASTStatement>>(); auto s = std::unique_ptr<ASTStatement>($1); $$->push_back(std::move(s)); };
 
-type_list: type_list COMMA type { }
-	| type { };
-
-func_ptr: FUNC_PTR type type LEFT_BRACKET type_list RIGHT_BRACKET{ $$ = new ASTFunctionPointerDefinition(); };
+func_ptr: FUNC_PTR type type LEFT_BRACKET type_list RIGHT_BRACKET{ $$ = new ASTFunctionPointerDefinition(*$2, *$3, *$5); };
 
 arg_pair: type id { $$ = new ASTFunctionArg(*$1, *$2); } | FSTOP FSTOP FSTOP { $$ = new ASTFunctionArg(); };
 
 enum_def: ENUM type LEFT_BRACE enum_parts RIGHT_BRACE { printf("big cool\n"); $$ = new ASTEnumDefinition(*$2, *$4); }
 
-enum_parts: enum_part { $$ = new ASTEnumParts();  printf("%s\n", $1->id->identifier.c_str()); auto s = std::unique_ptr<ASTEnumPart>($1); $$->parts.push_back(std::move(s)); }
-	| enum_parts COMMA enum_part { auto s = std::unique_ptr<ASTEnumPart>($3); $1->parts.push_back(std::move(s)); }
+enum_parts: enum_part { printf("enum part\n"); $$ = new ASTEnumParts(); auto s = std::unique_ptr<ASTEnumPart>($1); $$->parts.push_back(std::move(s)); }
+	| enum_parts COMMA enum_part {  printf("enum part boogaloo\n"); auto s = std::unique_ptr<ASTEnumPart>($3); $1->parts.push_back(std::move(s)); }
 
-enum_part: id { printf("cool\n"); $$ = new ASTEnumPart(*$1, nullptr); } | id EQUAL constant_int { printf("more cool\n"); $$ = new ASTEnumPart(*$1, $3); }
+enum_part: id { $$ = new ASTEnumPart(*$1, nullptr); } | id EQUAL constant_int { $$ = new ASTEnumPart(*$1, $3); }
 
 id_or_constant: id | constant;
 
 include_or_link: INCLUDE STRING  { $$ = new ASTIncludeStatement(yylval.string); } | LINK STRING { $$ = new ASTIncludeStatement(yylval.string); };
 
-constant: constant_int | constant_enum_value | FLOAT { $$ = new ASTConstantFloat(yylval.fl); } | STRING { $$ = new ASTConstantString(yylval.string); } | NULLPTR { $$ = new ASTConstantNullptr(); };
+constant: constant_int | constant_enum_value | constant_bool | FLOAT { $$ = new ASTConstantFloat(yylval.fl); } | STRING { $$ = new ASTConstantString(yylval.string); } | NULLPTR { $$ = new ASTConstantNullptr(); };
 
 constant_int: INTEGER { $$ = new ASTConstantInt(yylval.integer); };
+
+constant_bool: TRUE { $$ = new ASTConstantInt(1); } | FALSE { $$ = new ASTConstantInt(0); };
 
 constant_enum_value: type COLON COLON id { $$ = new ASTConstantEnumValue(*$1, *$4); };
 
 id: IDENTIFIER { $$ = new ASTIdentifier($1); };
 
 type: TYPE { $$ = new ASTIdentifier($1); } | type ASTERISK { $1->identifier.append("*");  };
+
+type_list: type { $$ = new std::vector<std::unique_ptr<ASTIdentifier>>(); auto s = std::unique_ptr<ASTIdentifier>($1);  $$->push_back(std::move(s)); }
+	| type_list COMMA type { auto s = std::unique_ptr<ASTIdentifier>($3);  $1->push_back(std::move(s)); };
 
 %%

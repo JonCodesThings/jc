@@ -65,12 +65,12 @@ int main(int argc, const char **args)
 
 	do
 	{
-		auto include = config.GetIncludeDirs();
-
 		for (int i = 0; i < modules_to_build.size(); i++)
 		{
 			if (modules_to_build[i].second)
 				continue;
+
+			auto include = config.GetIncludeDirs();
 
 			std::ifstream m_in(modules_to_build[i].first);
 

@@ -74,22 +74,7 @@ const bool TypeParser::Parse(const std::vector<Token> &in)
 
 			i += 2;
 
-			std::vector<llvm::Type*> types;
-
-			do
-			{
-				if (in.at(i + 1).token_type != TypeTokenizer::IDENTIFIER_T)
-					break;
-				types.push_back(registry.GetType(*in.at(i + 1).string));
-				delete in.at(i + 1).string;
-				i++;
-			} while (i + 1 < in.size());
-
-			auto func_type = llvm::FunctionType::get(registry.GetType(ret_type), types, false);
-
-			auto ptr_type = llvm::PointerType::get(func_type, 0);
-
-			registry.AddType(type_n, *ptr_type, JCType::TYPE_CLASSIFICATION::POINTER);
+			registry.AddBlankFunctionPointerType(type_n);
 		}
 		}
 	}

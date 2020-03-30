@@ -15,6 +15,7 @@ TypeRegistry *registry;
 %%
 "\n" { yylineno++; /*printf("%d\n", yylineno);*/ yycurrentlinechar = 0; }
 [  \t] { /*printf("skipping whitespace\n");*/ yycurrentlinechar += yyleng; }
+"//".* { printf("skipping whitespace\n"); yycurrentlinechar += yyleng; }
 \"[^"]*\" { yylval.string = yytext; return STRING; yycurrentlinechar += yyleng; }
 [0-9]+ { yylval.integer = atoi(yytext); return INTEGER; yycurrentlinechar += yyleng; }
 [+-]?([0-9]*[.])?[0-9]+"f" { yylval.fl = atof(yytext); return FLOAT; yycurrentlinechar += yyleng; }
@@ -78,6 +79,8 @@ TypeRegistry *registry;
 "nullptr" { return NULLPTR; yycurrentlinechar += yyleng; }
 "union" { return UNION; yycurrentlinechar += yyleng; }
 "enum" { return ENUM; yycurrentlinechar += yyleng; }
+"true" { return TRUE; yycurrentlinechar += yyleng; }
+"false" { return FALSE; yycurrentlinechar += yyleng; }
 [_a-zA-Z0-9]+ { yylval.string = yytext; if (!registry->GetTypeInfo(yylval.string)) return IDENTIFIER; else return TYPE; yycurrentlinechar += yyleng; }
 
 . { return UNKNOWN; }

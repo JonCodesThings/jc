@@ -48,6 +48,7 @@ public:
     void SetupBuiltinJCTypes();
     void AddAlias(const std::string &id, const std::string &type_to_be_aliased);
 	void AddBlankEnumType(const std::string &id);
+	void AddBlankFunctionPointerType(const std::string &id);
     void AddBlankStructType(const std::string &id);
 	void AddBlankUnionType(const std::string &id);
     void AddType(const std::string &id, llvm::Type &type, const JCType::TYPE_CLASSIFICATION &classification);
@@ -66,6 +67,7 @@ public:
     llvm::Type *GetNarrowingConversion(const std::string &current, const std::string &to);
     llvm::Type *GetImplicitCast(const std::string &current, const std::string &to);
 	void SetEnumValues(const std::string &id, const std::vector<std::pair<std::string, int>> &enum_values);
+	void SetFunctionPointerType(const std::string &id, const std::vector<llvm::Type*> &types, const std::string &ret_type);
     void SetStructType(const std::string &id, const std::vector<llvm::Type *> &members, const std::vector<std::string> &member_names, 
 	const std::vector<std::string> &member_typenames, const std::vector<llvm::Value*> &member_defaults);
 	void SetUnionType(const std::string &id, const std::vector<std::string> &member_names,

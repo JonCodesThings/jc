@@ -1,0 +1,3 @@
+[submodule "lib/gresslib"]
+	path = lib/gresslib
+	url = https://github.com/JonCodesThings/gresslib

@@ -4,8 +4,6 @@
 #include <include/AST/Statement/ASTFunctionDefinition.hpp>
 #include <include/AST/Statement/ASTReturnStatement.hpp>
 
-#include <algorithm>
-
 #include <unordered_set>
 
 ASTBlock::ASTBlock() : block(std::make_unique<std::vector<std::unique_ptr<ASTStatement>>>()), b(nullptr), ASTStatement(BLOCK) {}
@@ -84,7 +82,7 @@ llvm::Value *ASTBlock::EmitIR(IREmitter::EmitterState &state)
 	//preprocess the block, removing redundant statements and adding them to the vectors as required
     for (auto &statement : *block)
     {
-        if (statement->GetNodeType() == ASTNode::NODE_TYPE::TYPE_MOD || statement->GetNodeType() == ASTNode::NODE_TYPE::IMPORT_STATEMENT || statement->GetNodeType() == ASTNode::NODE_TYPE::INCLUDE_STATEMENT || statement->GetNodeType() == ASTNode::NODE_TYPE::FUNCTION_PTR_DEFINITION)
+        if (statement->GetNodeType() == ASTNode::NODE_TYPE::TYPE_MOD || statement->GetNodeType() == ASTNode::NODE_TYPE::IMPORT_STATEMENT || statement->GetNodeType() == ASTNode::NODE_TYPE::INCLUDE_STATEMENT)
         {
             delete statement.release();
             continue;

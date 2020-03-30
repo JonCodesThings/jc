@@ -1,0 +1,8 @@
+include "lib";
+
+import gresslib;
+
+main()
+{
+	return 0;
+}
