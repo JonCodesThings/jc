@@ -100,6 +100,7 @@ int main(int argc, const char **args)
 
 			std::vector<Token> module_tokens = module_tokenizer.Tokenize(m_string);
 
+			yycurrentfilename = modules_to_build[i].first.c_str();
 			YY_BUFFER_STATE s = yy_scan_string(m_string.c_str());
 
 			int p = yyparse();

@@ -1,6 +1,5 @@
-include "lib";
-
-import gresslib;
+include "lib"
+import gresslib
 
 main()
 {

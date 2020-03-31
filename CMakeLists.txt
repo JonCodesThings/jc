@@ -12,7 +12,7 @@ AllTargetsDescs AllTargetsInfos Analysis
 AsmPrinter CodeGen MC MIRParser Remarks ScalarOpts SelectionDAG
 Target TransformUtils Vectorize)
 
-BISON_TARGET(jc_parser gen/jc_parser.y gen/jc_parser.cpp)
+BISON_TARGET(jc_parser gen/jc_parser.y gen/jc_parser.cpp VERBOSE gen/jc_parser.output)
 FLEX_TARGET(jc_scanner gen/jc_lex.l gen/jc_lex.cpp)
 
 ADD_FLEX_BISON_DEPENDENCY(jc_scanner jc_parser)

@@ -1,7 +1,7 @@
 import io;
 include "stdlib";
 link "libcmt.lib";
-func_ptr i32 op(i32,i32);
+func_ptr i32 op(i32, i32);
 
 void greet()
 {
