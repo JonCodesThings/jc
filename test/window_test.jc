@@ -1,7 +1,204 @@
-include "lib"
-import gresslib
+include "lib";
 
-main()
+link "lib/gresslib/RelWithDebInfo/gresslib.lib";
+link "OpenGL32.lib";
+link "kernel32.lib";
+link "user32.lib";
+link "gdi32.lib";
+link "winspool.lib";
+link "shell32.lib";
+link "ole32.lib";
+link "oleaut32.lib"
+link ";uuid.lib";
+link "comdlg32.lib";
+link "advapi32.lib";
+
+enum window_style
 {
+	WINDOW_BORDERED = 0,
+	WINDOW_BORDERLESS = 1,
+	WINDOW_FULLSCREEN = 2,
+	WINDOW_RESIZEABLE = 4,
+	WINDOW_CLOSEABLE = 8
+}
+
+enum input_events
+{
+	EVENT_NONE = 0,
+	KEY_PRESS = 1,
+	KEY_RELEASE = 2,
+	MOUSE_MOVE = 3,
+	MOUSEBUTTON_PRESS = 4,
+	MOUSEBUTTON_RELEASE = 5,
+	MOUSEWHEEL_MOVE = 6
+}
+
+enum keyboard_keycodes
+{
+	NUM_ZERO = 0,
+	NUM_ONE = 1,
+	NUM_TWO = 2,
+	NUM_THREE = 3,
+	NUM_FOUR = 4,
+	NUM_FIVE = 5,
+	NUM_SIX = 6,
+	NUM_SEVEN = 7,
+	NUM_EIGHT = 8,
+	NUM_NINE = 9,
+	Q = 10,
+	W = 11,
+	E = 12,
+	R = 13,
+	T = 14,
+	Y = 15,
+	U = 16,
+	I = 17,
+	O = 18,
+	P = 19,
+	A = 20,
+	S = 21,
+	D = 22,
+	F = 23,
+	G = 24,
+	H = 25,
+	J = 26,
+	K = 27,
+	L = 28,
+	Z = 29,
+	X = 30,
+	C = 31,
+	V = 32,
+	B = 33,
+	N = 34,
+	M = 35,
+	GRAVE = 36,
+	HYPHEN = 37,
+	EQUAL = 38,
+	BACKSPACE = 39,
+	TAB = 40,
+	LEFT_SQUARE_BRACKET = 41,
+	RIGHT_SQUARE_BRACKET = 42,
+	ENTER = 43,
+	CAPS_LOCK = 44,
+	SEMICOLON = 45,
+	SINGLE_QUOTE = 46,
+	HASH = 47,
+	LEFT_SHIFT = 48,
+	COMMA = 49,
+	FULLSTOP = 50,
+	FORWARD_SLASH = 51,
+	RIGHT_SHIFT = 52,
+	LEFT_CONTROL = 53,
+	LEFT_ALT = 54,
+	SPACEBAR = 55,
+	RIGHT_ALT = 56,
+	RIGHT_CONTROL = 57,
+	ESCAPE = 58,
+	F1 = 59,
+	F2 = 60,
+	F3 = 61,
+	F4 = 62,
+	F5 = 63,
+	F6 = 64,
+	F7 = 65,
+	F8 = 66,
+	F9 = 67,
+	F10 = 68,
+	F11 = 69,
+	F12 = 70
+}
+
+struct mouse_pair
+{
+	i32 mouse_x;
+	i32 mouse_y;
+}
+
+union input_event_union
+{
+		keyboard_keycodes keycode;
+		i32 mouse_button;
+		i32 mouse_wheel_delta;
+		mouse_pair mouse_data;
+}
+
+struct input_event
+{
+	input_events event_type;
+	input_event_union event_data;
+}
+
+struct window_descriptor
+{
+	i8* title;
+	u32 width;
+	u32 height;
+	u32 style;
+}
+
+func_ptr void input_callback(input_event*);
+
+struct window
+{
+	window_descriptor descriptor;
+	i8* native_handle;
+	input_callback on_key_press;
+	input_callback on_key_release;
+	input_callback on_mouse_move;
+	input_callback on_mouse_button_press;
+	input_callback on_mouse_button_release;
+	input_callback on_mouse_wheel_move;
+}
+
+struct glcontext_descriptor
+{
+	u32 red_size;
+	u32 blue_size;
+	u32 green_size;
+	u32 alpha_size;
+	u32 depth_size;
+	u32 stencil_size;
+}
+
+export window* create_window(window_descriptor* window_desc);
+
+export bool destroy_window(window* wnd);
+
+export bool process_os_events(window* wnd);
+
+export bool bootstrap_gl(window* wnd, glcontext_descriptor* context_desc);
+
+export void swap_gl_buffers(window* wnd);
+
+export void set_input_event_callback(window* wnd, input_events event, input_callback callback);
+
+export void show_cursor(window* wnd);
+
+export void hide_cursor(window* wnd);
+
+export void warp_cursor(window* wnd, i32 x, i32 y);
+
+
+i32 main()
+{
+	window_descriptor wnd_desc;
+	wnd_desc.title = "hello jc";
+	wnd_desc.width = 640;
+	wnd_desc.height = 480;
+	wnd_desc.style = window_style::WINDOW_BORDERED;
+
+	window *wnd = create_window(&wnd_desc);
+
+	cont := process_os_events(wnd);
+
+	while (cont == (i8)true)
+	{
+		cont = process_os_events(wnd);
+	}
+
+
+
+	destroy_window(wnd);
+
 	return 0;
 }

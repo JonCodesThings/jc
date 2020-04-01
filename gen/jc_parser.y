@@ -15,7 +15,7 @@ extern TypeRegistry *registry;
 
 void yyerror (char *error)
 {
-printf("%s in filename %s\n", error, yycurrentfilename);
+printf("%s in filename %s at line %d\n", error, yycurrentfilename, yylineno);
 }
 
 void SetNodeInfo(ASTNode &node)
@@ -158,10 +158,10 @@ int token;
 
 module: statements { /*printf("module base: %s\n", yycurrentfilename);*/ base = std::make_unique<ASTBlock>(); std::unique_ptr<ASTBlock> b = std::unique_ptr<ASTBlock>($1); base->block->push_back(std::move(b)); };
 
-statements: node_setup { $$ = new ASTBlock(); auto s = std::unique_ptr<ASTStatement>($1); $$->block->push_back(std::move(s)); };
+statements: node_setup { /*printf("node_setup\n");*/ $$ = new ASTBlock(); auto s = std::unique_ptr<ASTStatement>($1); $$->block->push_back(std::move(s)); };
     | statements node_setup { /*printf("appending node_setup\n");*/ auto s = std::unique_ptr<ASTStatement>($2); $1->block->push_back(std::move(s)); };
 
-node_setup: statement { /*printf("no semicolon\n");*/ SetNodeInfo(*$$); }  | semicoloned_statement { /*printf("semicolon\n");*/  SetNodeInfo(*$$); }
+node_setup: statement { /*printf("no semicolon\n");*/ SetNodeInfo(*$$); } | statement SEMICOLON { /*printf("semicolon\n");*/  SetNodeInfo(*$$); }
 
 semicoloned_statements: semicoloned_statement { $$ = new ASTBlock(); auto statement = std::unique_ptr<ASTStatement>($1); $$->block->push_back(std::move(statement)); SetNodeInfo(*$$); }
     | semicoloned_statements semicoloned_statement { auto statement = std::unique_ptr<ASTStatement>($2); $1->block->push_back(std::move(statement)); };
@@ -171,7 +171,7 @@ semicoloned_statement: statement SEMICOLON { /*printf("semicoloned statement\n")
     | defer_statement SEMICOLON { /*printf("semicoloned defer statement\n");*/ SetNodeInfo(*$1); }
     | function_def { /*printf("function_def\n");*/ SetNodeInfo(*$1); } ;
 
-statement: return_statement | function_def | function_decl | variable_decl | assign_op | flow_control | alias_statement | typedef_statement | struct_def | import | include_or_link | func_ptr | enum_def | union_def
+statement: return_statement | function_decl | variable_decl | assign_op | alias_statement | typedef_statement | struct_def | import | include_or_link | func_ptr | enum_def | union_def | flow_control | function_def
 
 alias_statement: ALIAS TYPE TYPE { /*printf("alias");*/ $$ = new ASTTypeSystemModStatement(ASTTypeSystemModStatement::TYPE_MOD_OP::ALIAS); };
 
@@ -266,8 +266,8 @@ function_def: type id LEFT_BRACKET arg_list RIGHT_BRACKET scope {  $$ = new ASTF
 	| id LEFT_BRACKET RIGHT_BRACKET scope {  $$ = new ASTFunctionDefinition(*$1, *new ASTFunctionArgs(), *$4);  }
     | EXPORT function_def { $$ = $2; $$->SetExporting(true); };
 
-function_decl: type id LEFT_BRACKET RIGHT_BRACKET SEMICOLON { $$ = new ASTFunctionDeclaration(*$1, *$2, *new ASTFunctionArgs());  }
-    | type id LEFT_BRACKET arg_list RIGHT_BRACKET SEMICOLON { $$ = new ASTFunctionDeclaration(*$1, *$2, *$4);  }
+function_decl: type id LEFT_BRACKET RIGHT_BRACKET SEMICOLON { /*printf("function_decl\n");*/ $$ = new ASTFunctionDeclaration(*$1, *$2, *new ASTFunctionArgs());  }
+    | type id LEFT_BRACKET arg_list RIGHT_BRACKET SEMICOLON { /*printf("function_decl\n");*/ $$ = new ASTFunctionDeclaration(*$1, *$2, *$4);  }
     | EXPORT function_decl { $$ = $2; $$->SetExporting(true); };
 
 function_call: id LEFT_BRACKET RIGHT_BRACKET { $$ = new ASTFunctionCall(*$1); }
@@ -327,12 +327,12 @@ func_ptr: FUNC_PTR type type LEFT_BRACKET type_list RIGHT_BRACKET { $$ = new AST
 
 arg_pair: type id { $$ = new ASTFunctionArg(*$1, *$2); } | FSTOP FSTOP FSTOP { $$ = new ASTFunctionArg(); };
 
-enum_def: ENUM type LEFT_BRACE enum_parts RIGHT_BRACE { /*printf("enum definition parsed\n");*/ $$ = new ASTEnumDefinition(*$2, *$4); }
+enum_def: ENUM type LEFT_BRACE enum_parts RIGHT_BRACE { /*printf("enum_def\n");*/ $$ = new ASTEnumDefinition(*$2, *$4); }
 
 enum_parts: enum_part { $$ = new ASTEnumParts(); auto s = std::unique_ptr<ASTEnumPart>($1); $$->parts.push_back(std::move(s)); }
 	| enum_parts COMMA enum_part { auto s = std::unique_ptr<ASTEnumPart>($3); $1->parts.push_back(std::move(s)); }
 
-enum_part: id { $$ = new ASTEnumPart(*$1, nullptr); } | id EQUAL constant_int { $$ = new ASTEnumPart(*$1, $3); }
+enum_part: id { $$ = new ASTEnumPart(*$1, nullptr); } | id EQUAL constant_int { /*printf("enum_part\n");*/ $$ = new ASTEnumPart(*$1, $3); }
 
 id_or_constant: id | constant;
 

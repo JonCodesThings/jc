@@ -102,6 +102,7 @@ int main(int argc, const char **args)
 
 			yycurrentfilename = modules_to_build[i].first.c_str();
 			YY_BUFFER_STATE s = yy_scan_string(m_string.c_str());
+			yylineno = 0;
 
 			int p = yyparse();
 			yy_delete_buffer(s);

@@ -7,6 +7,12 @@ enum MyCoolEnum
 	MyCoolEn
 }
 
+enum MySecondCoolEnum
+{
+	Very = 0,
+	Cool = 1
+}
+
 main()
 {
 	MyCoolEnum e;

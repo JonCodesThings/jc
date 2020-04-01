@@ -136,3 +136,31 @@ struct window
 	input_callback on_mouse_button_release;
 	input_callback on_mouse_wheel_move;
 }
+
+struct glcontext_descriptor
+{
+	u32 red_size;
+	u32 blue_size;
+	u32 green_size;
+	u32 alpha_size;
+	u32 depth_size;
+	u32 stencil_size;
+}
+
+export window* create_window(window_descriptor* window_desc);
+
+export bool destroy_window(window* wnd);
+
+export bool process_os_events(window* wnd);
+
+export bool bootstrap_gl(window* wnd, glcontext_descriptor* context_desc);
+
+export void swap_gl_buffers(window* wnd);
+
+export void set_input_event_callback(window* wnd, input_events event, input_callback callback);
+
+export void show_cursor(window* wnd);
+
+export void hide_cursor(window* wnd);
+
+export void warp_cursor(window* wnd, i32 x, i32 y);

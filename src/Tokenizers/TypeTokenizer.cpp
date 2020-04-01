@@ -131,6 +131,8 @@ std::vector<Token> TypeTokenizer::Tokenize(const std::string &in)
 			accum.clear();
 			current_keyword.clear();
 		}
+		if (accum.back() == '}')
+			accum.clear();
 	}
 	return tokens;
 }
