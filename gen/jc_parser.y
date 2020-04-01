@@ -161,7 +161,7 @@ module: statements { /*printf("module base: %s\n", yycurrentfilename);*/ base = 
 statements: node_setup { $$ = new ASTBlock(); auto s = std::unique_ptr<ASTStatement>($1); $$->block->push_back(std::move(s)); };
     | statements node_setup { /*printf("appending node_setup\n");*/ auto s = std::unique_ptr<ASTStatement>($2); $1->block->push_back(std::move(s)); };
 
-node_setup: statement { printf("no semicolon\n"); SetNodeInfo(*$$); }  | semicoloned_statements { SetNodeInfo(*$$); }
+node_setup: statement { /*printf("no semicolon\n");*/ SetNodeInfo(*$$); }  | semicoloned_statement { /*printf("semicolon\n");*/  SetNodeInfo(*$$); }
 
 semicoloned_statements: semicoloned_statement { $$ = new ASTBlock(); auto statement = std::unique_ptr<ASTStatement>($1); $$->block->push_back(std::move(statement)); SetNodeInfo(*$$); }
     | semicoloned_statements semicoloned_statement { auto statement = std::unique_ptr<ASTStatement>($2); $1->block->push_back(std::move(statement)); };
@@ -173,7 +173,7 @@ semicoloned_statement: statement SEMICOLON { /*printf("semicoloned statement\n")
 
 statement: return_statement | function_def | function_decl | variable_decl | assign_op | flow_control | alias_statement | typedef_statement | struct_def | import | include_or_link | func_ptr | enum_def | union_def
 
-alias_statement: ALIAS TYPE TYPE { $$ = new ASTTypeSystemModStatement(ASTTypeSystemModStatement::TYPE_MOD_OP::ALIAS); };
+alias_statement: ALIAS TYPE TYPE { /*printf("alias");*/ $$ = new ASTTypeSystemModStatement(ASTTypeSystemModStatement::TYPE_MOD_OP::ALIAS); };
 
 typedef_statement: TYPEDEF TYPE TYPE { $$ = new ASTTypeSystemModStatement(ASTTypeSystemModStatement::TYPE_MOD_OP::TYPEDEF); };
 
@@ -327,7 +327,7 @@ func_ptr: FUNC_PTR type type LEFT_BRACKET type_list RIGHT_BRACKET { $$ = new AST
 
 arg_pair: type id { $$ = new ASTFunctionArg(*$1, *$2); } | FSTOP FSTOP FSTOP { $$ = new ASTFunctionArg(); };
 
-enum_def: ENUM type LEFT_BRACE enum_parts RIGHT_BRACE { printf("enum definition parsed\n"); $$ = new ASTEnumDefinition(*$2, *$4); }
+enum_def: ENUM type LEFT_BRACE enum_parts RIGHT_BRACE { /*printf("enum definition parsed\n");*/ $$ = new ASTEnumDefinition(*$2, *$4); }
 
 enum_parts: enum_part { $$ = new ASTEnumParts(); auto s = std::unique_ptr<ASTEnumPart>($1); $$->parts.push_back(std::move(s)); }
 	| enum_parts COMMA enum_part { auto s = std::unique_ptr<ASTEnumPart>($3); $1->parts.push_back(std::move(s)); }
