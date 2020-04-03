@@ -64,6 +64,7 @@ public:
 
         TYPE_MOD,
 
+		STRUCT_DECLARATION,
         STRUCT_DEFINITION,
 		UNION_DEFINITION,
 

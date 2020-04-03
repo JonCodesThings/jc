@@ -54,6 +54,7 @@ ASTStructMemberDeclarations *struct_declarations;
 ASTFunctionCall *function_call;
 ASTFunctionDeclaration *function_declaration;
 ASTFunctionDefinition *function_definition;
+ASTStructDeclaration *struct_declaration;
 ASTStructDefinition *struct_definition;
 ASTVariableDeclaration *variable_declaration;
 ASTMemberOperator *member_operator;
@@ -117,7 +118,7 @@ int token;
 
 %token UNKNOWN
 
-%type<statement> node_setup semicoloned_statement statement assign_op variable_assign unary_op binary_op member_op struct_def include_or_link  func_ptr
+%type<statement> node_setup semicoloned_statement statement assign_op variable_assign unary_op binary_op member_op struct_def include_or_link func_ptr
 %type<variable_declaration> variable_decl
 %type<function_definition> function_def
 %type<function_declaration> function_decl
@@ -150,6 +151,7 @@ int token;
 %type<union_def> union_def
 %type<type_list> type_list
 %type<enum_val> constant_enum_value
+%type<struct_declaration> struct_decl
 
 
 %start module
@@ -171,13 +173,15 @@ semicoloned_statement: statement SEMICOLON { /*printf("semicoloned statement\n")
     | defer_statement SEMICOLON { /*printf("semicoloned defer statement\n");*/ SetNodeInfo(*$1); }
     | function_def { /*printf("function_def\n");*/ SetNodeInfo(*$1); } ;
 
-statement: return_statement | function_decl | variable_decl | assign_op | alias_statement | typedef_statement | struct_def | import | include_or_link | func_ptr | enum_def | union_def | flow_control | function_def
+statement: return_statement | function_decl | variable_decl | assign_op | alias_statement | typedef_statement | struct_def | import | include_or_link | func_ptr | enum_def | union_def | flow_control | function_def | struct_decl
 
 alias_statement: ALIAS TYPE TYPE { /*printf("alias");*/ $$ = new ASTTypeSystemModStatement(ASTTypeSystemModStatement::TYPE_MOD_OP::ALIAS); };
 
 typedef_statement: TYPEDEF TYPE TYPE { $$ = new ASTTypeSystemModStatement(ASTTypeSystemModStatement::TYPE_MOD_OP::TYPEDEF); };
 
 struct_def: STRUCT type LEFT_BRACE struct_list RIGHT_BRACE { $$ = new ASTStructDefinition(*$2, *$4); };
+
+struct_decl: STRUCT type { $$ = new ASTStructDeclaration(*$2); };
 
 union_def: UNION type LEFT_BRACE struct_list RIGHT_BRACE { $$ = new ASTUnionDefinition(*$2, *$4); };
 

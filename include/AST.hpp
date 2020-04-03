@@ -33,6 +33,7 @@
 #include <include/AST/Statement/ASTImportStatement.hpp>
 #include <include/AST/Statement/ASTIncludeStatement.hpp>
 #include <include/AST/Statement/ASTReturnStatement.hpp>
+#include <include/AST/Statement/ASTStructDeclaration.hpp>
 #include <include/AST/Statement/ASTStructDefinition.hpp>
 #include <include/AST/Statement/ASTStructMemberDeclarations.hpp>
 #include <include/AST/Statement/ASTTypeSystemModStatement.hpp>

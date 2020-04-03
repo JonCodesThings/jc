@@ -26,6 +26,14 @@ extern const char *yycurrentfilename;
 extern int yyparse();
 extern TypeRegistry *registry;
 
+struct ModuleData
+{
+	std::string name;
+	std::string raw_contents;
+	bool prescanned = false;
+	std::vector<std::string> module_depends;
+};
+
 
 int main(int argc, const char **args)
 {
@@ -51,12 +59,16 @@ int main(int argc, const char **args)
 
     registry->SetupBuiltinJCTypes();
 
-	std::vector<std::pair<std::string, bool>> modules_to_build;
+	std::vector<ModuleData> modules_to_build;
 
 	std::string initial = args[1];
 	initial = initial.substr(initial.find('\\') + 1, initial.find('.'));
 
-	modules_to_build.push_back(std::make_pair(args[1], false));
+	ModuleData d;
+	d.name = args[1];
+	d.prescanned = false;
+
+	modules_to_build.push_back(d);
 
 	bool found_all_modules = false;
 	int prev_module_count = 1;
@@ -67,12 +79,12 @@ int main(int argc, const char **args)
 	{
 		for (int i = 0; i < modules_to_build.size(); i++)
 		{
-			if (modules_to_build[i].second)
+			if (modules_to_build[i].prescanned)
 				continue;
 
 			auto include = config.GetIncludeDirs();
 
-			std::ifstream m_in(modules_to_build[i].first);
+			std::ifstream m_in(modules_to_build[i].name);
 
 			bool open = m_in.is_open();
 
@@ -80,9 +92,8 @@ int main(int argc, const char **args)
 			{
 				for (auto it = include.begin(); it != include.end(); it++)
 				{
-					m_in = std::ifstream((*it) + "/" + modules_to_build[i].first);
+					m_in = std::ifstream((*it) + "/" + modules_to_build[i].name);
 					open = m_in.is_open();
-					yycurrentfilename = std::string((*it) + "/" + modules_to_build[i].first).c_str();
 
 					if (open)
 						break;
@@ -92,6 +103,8 @@ int main(int argc, const char **args)
 			std::string m_string((std::istreambuf_iterator<char>(m_in)), std::istreambuf_iterator<char>());
 			m_in.close();
 
+			modules_to_build[i].raw_contents = m_string;
+
 			std::vector<Token> build_tokens = build_tokenizer.Tokenize(m_string);
 			build_parser.Parse(build_tokens);
 
@@ -100,24 +113,29 @@ int main(int argc, const char **args)
 
 			std::vector<Token> module_tokens = module_tokenizer.Tokenize(m_string);
 
-			yycurrentfilename = modules_to_build[i].first.c_str();
-			YY_BUFFER_STATE s = yy_scan_string(m_string.c_str());
-			yylineno = 0;
-
-			int p = yyparse();
-			yy_delete_buffer(s);
-
 			std::vector<std::string> module_depends;
 
 			for (auto imp : module_tokens)
 			{
 				if (imp.token_type == ModuleTokenizer::IDENTIFIER_T)
 				{
-					auto not_built = std::find(modules_to_build.begin(), modules_to_build.end(), std::make_pair(*imp.string, false));
-					auto built = std::find(modules_to_build.begin(), modules_to_build.end(), std::make_pair(*imp.string, true));
+					bool found = false;
+					for (auto m : modules_to_build)
+					{
+						if (m.name == *imp.string)
+						{
+							found = true;
+							break;
+						}
+					}
 
-					if (not_built == modules_to_build.end() && built == modules_to_build.end())
-						modules_to_build.push_back(std::make_pair(*imp.string, false));
+					if (!found)
+					{
+						ModuleData d;
+						d.name = *imp.string;
+						d.prescanned = false;
+						modules_to_build.push_back(d);
+					}
 
 					module_depends.push_back(*imp.string);
 
@@ -126,9 +144,7 @@ int main(int argc, const char **args)
 			}
 			module_tokens.clear();
 
-			Module *module = new Module(modules_to_build[i].first, *base.release(), module_depends);
-			module_registry.AddModule(modules_to_build[i].first, *module);
-			modules_to_build[i].second = true;
+			modules_to_build[i].module_depends = module_depends;
 		}
 		if (modules_to_build.size() == prev_module_count)
 		{
@@ -138,21 +154,37 @@ int main(int argc, const char **args)
 		prev_module_count = modules_to_build.size();
 	} while (!found_all_modules);
 
+	for (auto m : modules_to_build)
+	{
+
+		yycurrentfilename = m.name.c_str();
+		YY_BUFFER_STATE s = yy_scan_string(m.raw_contents.c_str());
+		yylineno = 0;
+
+		int p = yyparse();
+		yy_delete_buffer(s);
+
+		Module *module = new Module(m.name, *base.release(), m.module_depends);
+		module_registry.AddModule(m.name, *module);
+	}
+
 	if (!module_registry.EmitIRAll(context, *registry))
 	{
 		printf("Compilation failed. Please fix errors!\n");
 		return 0;
 	}
 
+
+
 	for (auto m : modules_to_build)
 	{
-		object_file_emitter.EmitObjectFile(*module_registry.GetModule(m.first)->GetLLVMModule());
+		object_file_emitter.EmitObjectFile(*module_registry.GetModule(m.name)->GetLLVMModule());
 
-		invoke.AddObjectFile(m.first);
+		invoke.AddObjectFile(m.name);
 	}
 
 	printf("Invoking linker...\n");
-	invoke.Invoke(modules_to_build[0].first);
+	invoke.Invoke(modules_to_build[0].name);
 
 	printf("Compilation and linking complete!\n");
 
