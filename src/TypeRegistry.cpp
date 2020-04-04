@@ -144,13 +144,13 @@ llvm::Type *TypeRegistry::GetType(const std::string &id)
     return nullptr;
 }
 
-llvm::Type * TypeRegistry::GetType(const std::string & id, const std::vector<std::string>& module_depends)
+llvm::Type * TypeRegistry::GetType(const std::string & id, const std::vector<std::string>& module_depends, const std::string &current_module)
 {
 	auto t = GetTypeInfo(id);
 
 	if (t != nullptr)
 	{
-		if (t->CONTAINED_IN_MODULE == "")
+		if (t->CONTAINED_IN_MODULE == "" || current_module == t->CONTAINED_IN_MODULE)
 			return t->llvm_type;
 		for (auto m : module_depends)
 		{

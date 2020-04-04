@@ -58,7 +58,7 @@ public:
     llvm::Type *GetAliasedType(const std::string &id);
     llvm::Type *GetArrayType(const std::string &id, unsigned int array_size);
 	llvm::Type *GetType(const std::string &id);
-    llvm::Type *GetType(const std::string &id, const std::vector<std::string> &module_depends);
+    llvm::Type *GetType(const std::string &id, const std::vector<std::string> &module_depends, const std::string &current_module);
     llvm::Type *UnwindPointerType(const std::string &id);
     const JCType *GetTypeInfo(const std::string &id);
     const std::string *GetLifetimeTypeString(const std::string &id);

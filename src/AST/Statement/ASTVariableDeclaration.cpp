@@ -41,7 +41,7 @@ llvm::Value * ASTVariableDeclaration::EmitIR(IREmitter::EmitterState &state)
 		typestring = type->identifier;
 
 	//get the llvm type
-	t = state.typeRegistry.GetType(typestring, state.imported_modules);
+	t = state.typeRegistry.GetType(typestring, state.imported_modules, state.module_name);
 
 	//otherwise unwind the pointer type and store it in the registry
 	if (!t && typestring.find('*') != std::string::npos)
