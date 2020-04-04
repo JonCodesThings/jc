@@ -89,7 +89,7 @@ bool Module::EmitIR(llvm::LLVMContext &context, TypeRegistry &registry)
 	}
 
 	//set the ir flag and copy the global symbol table for the module
-	ir_flag = emit.EmitIR(module_block.get());
+	ir_flag = emit.EmitIR(module_block.get(), module_namespace, module_depends);
 	module_symbol_table = emit.GetEmitterState().symbolStack.Top();
 
 	if (!ir_flag)

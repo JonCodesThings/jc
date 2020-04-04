@@ -25,7 +25,9 @@ std::vector<Token> TypeTokenizer::Tokenize(const std::string &in)
 		}
 
 		accum.push_back(ch);
-		//printf("%s\n", accum.c_str());
+
+		if (accum == "export")
+			accum.clear();
 
 		if (accum == "typedef" || accum == "struct" || accum == "alias" || accum == "func_ptr" || accum == "enum" || accum == "union")
 		{

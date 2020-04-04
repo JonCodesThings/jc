@@ -13,6 +13,7 @@ public:
 	std::unique_ptr<ASTIdentifier> identifier;
 	std::unique_ptr<ASTEnumParts> parts;
 
+	bool exporting = false;
 
 	ASTEnumDefinition(ASTIdentifier &identifier, ASTEnumParts &parts);
 

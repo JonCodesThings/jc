@@ -51,6 +51,7 @@ set(SOURCE_FILES src/main.cpp
     src/AST/Statement/ASTImportStatement.cpp
 	src/AST/Statement/ASTIncludeStatement.cpp
     src/AST/Statement/ASTReturnStatement.cpp
+	src/AST/Statement/ASTStructDeclaration.cpp
     src/AST/Statement/ASTStructDefinition.cpp
 	src/AST/Statement/ASTStructMemberDeclarations.cpp
     src/AST/Statement/ASTTypeSystemModStatement.cpp
@@ -113,6 +114,7 @@ set(HEADER_FILES  include/AST.hpp
     include/AST/Statement/ASTImportStatement.hpp
 	include/AST/Statement/ASTIncludeStatement.hpp
     include/AST/Statement/ASTReturnStatement.hpp
+	include/AST/Statement/ASTStructDeclaration.hpp
     include/AST/Statement/ASTStructDefinition.hpp
 	include/AST/Statement/ASTStructMemberDeclarations.hpp
     include/AST/Statement/ASTTypeSystemModStatement.hpp

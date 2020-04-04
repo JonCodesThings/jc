@@ -37,10 +37,13 @@ public:
         TypeRegistry &typeRegistry;
 
 		SymbolTableStack syntheticStack;
+
+		std::string module_name;
+		std::vector<std::string> imported_modules;
     };
 
     IREmitter(llvm::Module &module, llvm::LLVMContext &context, TypeRegistry &r) : state(module, context, r) {}
-    bool EmitIR(ASTBlock *root);
+    bool EmitIR(ASTBlock *root, const std::string &module_name, const std::vector<std::string> &module_imports);
 	EmitterState &GetEmitterState();
 	void SetModule(llvm::Module &module);
 private:

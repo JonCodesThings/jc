@@ -6,10 +6,13 @@ IREmitter::EmitterState &IREmitter::GetEmitterState()
 	return state;
 }
 
-bool IREmitter::EmitIR(ASTBlock *root)
+bool IREmitter::EmitIR(ASTBlock *root, const std::string &module_name, const std::vector<std::string> &module_imports)
 {
 	//set up the built in types
     state.typeRegistry.SetupBuiltinJCTypes();
+
+	state.imported_modules = module_imports;
+	state.module_name = module_name;
 
     if (!root)
         return false;
@@ -22,7 +25,7 @@ bool IREmitter::EmitIR(ASTBlock *root)
             return false;
     }
 
-    state.module->print(llvm::errs(), nullptr);
+    //state.module->print(llvm::errs(), nullptr);
 
     return true;
 }

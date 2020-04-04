@@ -72,12 +72,13 @@ void TypeRegistry::AddBlankUnionType(const std::string &id)
 }
 
 
-void TypeRegistry::AddType(const std::string &id, llvm::Type &t, const JCType::TYPE_CLASSIFICATION &classification)
+void TypeRegistry::AddType(const std::string &id, llvm::Type &t, const JCType::TYPE_CLASSIFICATION &classification, const std::string &defined_in_module)
 {
     JCType type;
     type.type_string = id;
     type.llvm_type = &t;
     type.classification = classification;
+	type.CONTAINED_IN_MODULE = defined_in_module;
 
     registry.push_back(type);
 }
@@ -89,6 +90,7 @@ void TypeRegistry::AddType(const std::string &id, llvm::Type &t, const JCType::T
     type.llvm_type = &t;
     type.classification = classification;
     type.INT_UPPER_LIMIT = integer_upper_limit;
+	type.CONTAINED_IN_MODULE = "";
 
     registry.push_back(type);
 }
@@ -140,6 +142,23 @@ llvm::Type *TypeRegistry::GetType(const std::string &id)
     
 
     return nullptr;
+}
+
+llvm::Type * TypeRegistry::GetType(const std::string & id, const std::vector<std::string>& module_depends)
+{
+	auto t = GetTypeInfo(id);
+
+	if (t != nullptr)
+	{
+		if (t->CONTAINED_IN_MODULE == "")
+			return t->llvm_type;
+		for (auto m : module_depends)
+		{
+			if (t->CONTAINED_IN_MODULE == m && t->EXPORTED)
+				return t->llvm_type;
+		}
+	}
+	return nullptr;
 }
 
 llvm::Type *TypeRegistry::UnwindPointerType(const std::string &id)
@@ -217,19 +236,21 @@ const int *TypeRegistry::GetEnumValue(const std::string &enum_id, const std::str
 	return nullptr;
 }
 
-void TypeRegistry::SetEnumValues(const std::string &id,const std::vector<std::pair<std::string, int>> &enum_values)
+void TypeRegistry::SetEnumValues(const std::string &id,const std::vector<std::pair<std::string, int>> &enum_values, const std::string &define_in_module, bool exported)
 {
 	for (int i = 0; i < registry.size(); i++)
 	{
 		if (registry[i].type_string == id)
 		{
 			registry[i].ENUM_VALUES = enum_values;
+			registry[i].CONTAINED_IN_MODULE = define_in_module;
+			registry[i].EXPORTED = exported;
 			return;
 		}
 	}
 }
 
-void TypeRegistry::SetFunctionPointerType(const std::string & id, const std::vector<llvm::Type*>& types, const std::string &ret_type)
+void TypeRegistry::SetFunctionPointerType(const std::string & id, const std::vector<llvm::Type*>& types, const std::string &ret_type, const std::string &define_in_module, bool exported)
 {
 	for (int i = 0; i < registry.size(); i++)
 	{
@@ -238,12 +259,14 @@ void TypeRegistry::SetFunctionPointerType(const std::string & id, const std::vec
 			auto func_type = llvm::FunctionType::get(GetType(ret_type), types, false);
 			auto ptr_type = llvm::PointerType::get(func_type, 0);
 			registry[i].llvm_type = ptr_type;
+			registry[i].CONTAINED_IN_MODULE = define_in_module;
+			registry[i].EXPORTED = exported;
 			return;
 		}
 	}
 }
 
-void TypeRegistry::SetStructType(const std::string &id, const std::vector<llvm::Type *> &members, const std::vector<std::string> &member_names, const std::vector<std::string> &member_typenames, const std::vector<llvm::Value*> &member_defaults)
+void TypeRegistry::SetStructType(const std::string &id, const std::vector<llvm::Type *> &members, const std::vector<std::string> &member_names, const std::vector<std::string> &member_typenames, const std::vector<llvm::Value*> &member_defaults, const std::string &define_in_module, bool exported)
 {
     for (int i = 0; i < registry.size(); i++)
     {
@@ -254,12 +277,14 @@ void TypeRegistry::SetStructType(const std::string &id, const std::vector<llvm::
             registry[i].MEMBER_NAMES = member_names;
             registry[i].MEMBER_TYPENAMES = member_typenames;
 			registry[i].MEMBER_DEFAULTS = member_defaults;
+			registry[i].CONTAINED_IN_MODULE = define_in_module;
+			registry[i].EXPORTED = exported;
             return;
         }
     }
 }
 
-void TypeRegistry::SetUnionType(const std::string & id, const std::vector<std::string>& member_names, const std::vector<std::string>& member_typenames, const std::string & largest_type)
+void TypeRegistry::SetUnionType(const std::string & id, const std::vector<std::string>& member_names, const std::vector<std::string>& member_typenames, const std::string & largest_type, const std::string &define_in_module, bool exported)
 {
 	for (int i = 0; i < registry.size(); i++)
 	{
@@ -271,6 +296,8 @@ void TypeRegistry::SetUnionType(const std::string & id, const std::vector<std::s
 			registry[i].llvm_type = StructType;
 			registry[i].MEMBER_NAMES = member_names;
 			registry[i].MEMBER_TYPENAMES = member_typenames;
+			registry[i].CONTAINED_IN_MODULE = define_in_module;
+			registry[i].EXPORTED = exported;
 			return;
 		}
 	}

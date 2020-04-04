@@ -9,7 +9,7 @@ llvm::Value *ASTFunctionPointerDefinition::EmitIR(IREmitter::EmitterState &state
 	for (auto &arg_t : *arg_types)
 		types.push_back(state.typeRegistry.GetType(arg_t->identifier));
 
-	state.typeRegistry.SetFunctionPointerType(id->identifier, types, return_type->identifier);
+	state.typeRegistry.SetFunctionPointerType(id->identifier, types, return_type->identifier, state.module_name, exporting);
 
 	return (llvm::Value*)state.typeRegistry.GetType(id->identifier);
 }

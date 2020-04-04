@@ -22,7 +22,7 @@ llvm::Value * ASTEnumDefinition::EmitIR(IREmitter::EmitterState & state)
 			vals.push_back(std::make_pair(part->id->identifier, v));
 	}
 
-	state.typeRegistry.SetEnumValues(identifier->identifier, vals);
+	state.typeRegistry.SetEnumValues(identifier->identifier, vals, state.module_name, exporting);
 
 	return (llvm::Value*)state.typeRegistry.GetType(identifier->identifier);
 }

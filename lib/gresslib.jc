@@ -1,6 +1,17 @@
 link "lib/gresslib/RelWithDebInfo/gresslib.lib";
+link "OpenGL32.lib";
+link "kernel32.lib";
+link "user32.lib";
+link "gdi32.lib";
+link "winspool.lib";
+link "shell32.lib";
+link "ole32.lib";
+link "oleaut32.lib"
+link "uuid.lib";
+link "comdlg32.lib";
+link "advapi32.lib";
 
-enum window_style
+export enum window_style
 {
 	WINDOW_BORDERED = 0,
 	WINDOW_BORDERLESS = 1,
@@ -9,7 +20,7 @@ enum window_style
 	WINDOW_CLOSEABLE = 8
 }
 
-enum input_events
+export enum input_events
 {
 	EVENT_NONE = 0,
 	KEY_PRESS = 1,
@@ -20,7 +31,7 @@ enum input_events
 	MOUSEWHEEL_MOVE = 6
 }
 
-enum keyboard_keycodes
+export enum keyboard_keycodes
 {
 	NUM_ZERO = 0,
 	NUM_ONE = 1,
@@ -95,13 +106,13 @@ enum keyboard_keycodes
 	F12 = 70
 }
 
-struct mouse_pair
+export struct mouse_pair
 {
 	i32 mouse_x;
 	i32 mouse_y;
 }
 
-union input_event_union
+export union input_event_union
 {
 		keyboard_keycodes keycode;
 		i32 mouse_button;
@@ -109,13 +120,13 @@ union input_event_union
 		mouse_pair mouse_data;
 }
 
-struct input_event
+export struct input_event
 {
 	input_events event_type;
 	input_event_union event_data;
 }
 
-struct window_descriptor
+export struct window_descriptor
 {
 	i8* title;
 	u32 width;
@@ -123,9 +134,9 @@ struct window_descriptor
 	u32 style;
 }
 
-func_ptr void input_callback(input_event*);
+export func_ptr void input_callback(input_event*);
 
-struct window
+export struct window
 {
 	window_descriptor descriptor;
 	i8* native_handle;
@@ -137,7 +148,7 @@ struct window
 	input_callback on_mouse_wheel_move;
 }
 
-struct glcontext_descriptor
+export struct glcontext_descriptor
 {
 	u32 red_size;
 	u32 blue_size;

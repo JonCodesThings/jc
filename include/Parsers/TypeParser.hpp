@@ -12,7 +12,6 @@ public:
 	~TypeParser();
 
 	const bool Parse(const std::vector<Token> &in);
-
 private:
 	TypeRegistry &registry;
 };

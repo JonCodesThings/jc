@@ -12,6 +12,8 @@ public:
 	std::unique_ptr<ASTIdentifier> return_type;
 	std::unique_ptr<ASTIdentifier> id;
 
+	bool exporting = false;
+
 	ASTFunctionPointerDefinition(ASTIdentifier &return_type, ASTIdentifier &id, std::vector<std::unique_ptr<ASTIdentifier>> &arg_types);
 	llvm::Value *EmitIR(IREmitter::EmitterState &state);
 };

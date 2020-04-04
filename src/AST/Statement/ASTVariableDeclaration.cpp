@@ -41,10 +41,10 @@ llvm::Value * ASTVariableDeclaration::EmitIR(IREmitter::EmitterState &state)
 		typestring = type->identifier;
 
 	//get the llvm type
-	t = state.typeRegistry.GetType(typestring);
+	t = state.typeRegistry.GetType(typestring, state.imported_modules);
 
 	//otherwise unwind the pointer type and store it in the registry
-	if (!t)
+	if (!t && typestring.find('*') != std::string::npos)
 	{
 		t = state.typeRegistry.UnwindPointerType(typestring);
 		state.typeRegistry.AddType(typestring, *t, JCType::TYPE_CLASSIFICATION::POINTER);
@@ -57,10 +57,14 @@ llvm::Value * ASTVariableDeclaration::EmitIR(IREmitter::EmitterState &state)
 	if (array_size)
 		t = state.typeRegistry.GetArrayType(typestring, temp->constant);
 
+	if (!t)
+	{
+		printf("Error in module %s: Type not found. Module containing type definition not imported or no imported module exports a type definition for type <%s>. \n", state.module_name.c_str(), typestring.c_str());
+		return nullptr;
+	}
+
 	//set the type string
 	symbol.type = typestring;
-
-
 
 	//if there is no parent function set up a global variable
 	if (state.builder.GetInsertBlock()->getParent() == nullptr)

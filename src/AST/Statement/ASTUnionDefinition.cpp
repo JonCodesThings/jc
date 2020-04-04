@@ -49,7 +49,7 @@ llvm::Value * ASTUnionDefinition::EmitIR(IREmitter::EmitterState & state)
 		member_typenames.push_back(member->type->identifier);
 	}
 
-	state.typeRegistry.SetUnionType(id->identifier, member_names, member_typenames, largest_typename);
+	state.typeRegistry.SetUnionType(id->identifier, member_names, member_typenames, largest_typename, state.module_name, exporting);
 
 	//return the type
 	return (llvm::Value*)state.typeRegistry.GetType(id->identifier);

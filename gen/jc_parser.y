@@ -49,6 +49,7 @@ ASTDeferredStatement *defer_statement;
 ASTExpression *expression;
 ASTFunctionArg *function_arg;
 ASTFunctionArgs *function_args;
+ASTFunctionPointerDefinition *func_ptr;
 ASTStructMemberDeclaration *struct_decl;
 ASTStructMemberDeclarations *struct_declarations;
 ASTFunctionCall *function_call;
@@ -118,7 +119,8 @@ int token;
 
 %token UNKNOWN
 
-%type<statement> node_setup semicoloned_statement statement assign_op variable_assign unary_op binary_op member_op struct_def include_or_link func_ptr
+%type<statement> node_setup semicoloned_statement statement assign_op variable_assign unary_op binary_op member_op include_or_link
+%type<func_ptr> func_ptr
 %type<variable_declaration> variable_decl
 %type<function_definition> function_def
 %type<function_declaration> function_decl
@@ -133,6 +135,7 @@ int token;
 %type<statement> return_statement flow_control
 %type<scope_block> statements scope semicoloned_statements
 %type<statement> add subtract multiply divide equality inequality lesser greater lesser_or_equal greater_or_equal bitwise_and bitwise_or bitwise_left_shift bitwise_right_shift
+%type<struct_definition> struct_def
 %type<statement_list> statement_list
 %type<defer_statement> defer_statement
 %type<type_mod> alias_statement typedef_statement
@@ -180,10 +183,12 @@ alias_statement: ALIAS TYPE TYPE { /*printf("alias");*/ $$ = new ASTTypeSystemMo
 typedef_statement: TYPEDEF TYPE TYPE { $$ = new ASTTypeSystemModStatement(ASTTypeSystemModStatement::TYPE_MOD_OP::TYPEDEF); };
 
 struct_def: STRUCT type LEFT_BRACE struct_list RIGHT_BRACE { $$ = new ASTStructDefinition(*$2, *$4); };
+	| EXPORT struct_def { $$ = $2; $$->exporting = true; }
 
 struct_decl: STRUCT type { $$ = new ASTStructDeclaration(*$2); };
 
-union_def: UNION type LEFT_BRACE struct_list RIGHT_BRACE { $$ = new ASTUnionDefinition(*$2, *$4); };
+union_def: UNION type LEFT_BRACE struct_list RIGHT_BRACE { $$ = new ASTUnionDefinition(*$2, *$4); }
+	| EXPORT union_def { $$ = $2; $$->exporting = true; };
 
 defer_statement: DEFER assignable_statement { $$ = new ASTDeferredStatement(*$2); }
 
@@ -327,11 +332,13 @@ statement_list: statement_list COMMA assignable_statement { auto s = std::unique
 type_list: type { $$ = new std::vector<std::unique_ptr<ASTIdentifier>>(); auto s = std::unique_ptr<ASTIdentifier>($1);  $$->push_back(std::move(s)); }
 	| type_list COMMA type { auto s = std::unique_ptr<ASTIdentifier>($3);  $1->push_back(std::move(s)); };
 
-func_ptr: FUNC_PTR type type LEFT_BRACKET type_list RIGHT_BRACKET { $$ = new ASTFunctionPointerDefinition(*$2, *$3, *$5); };
+func_ptr: FUNC_PTR type type LEFT_BRACKET type_list RIGHT_BRACKET { $$ = new ASTFunctionPointerDefinition(*$2, *$3, *$5); }
+	| EXPORT func_ptr { $$ = $2; $$->exporting = true; };
 
 arg_pair: type id { $$ = new ASTFunctionArg(*$1, *$2); } | FSTOP FSTOP FSTOP { $$ = new ASTFunctionArg(); };
 
 enum_def: ENUM type LEFT_BRACE enum_parts RIGHT_BRACE { /*printf("enum_def\n");*/ $$ = new ASTEnumDefinition(*$2, *$4); }
+	| EXPORT enum_def { $$ = $2; $$->exporting = true; };
 
 enum_parts: enum_part { $$ = new ASTEnumParts(); auto s = std::unique_ptr<ASTEnumPart>($1); $$->parts.push_back(std::move(s)); }
 	| enum_parts COMMA enum_part { auto s = std::unique_ptr<ASTEnumPart>($3); $1->parts.push_back(std::move(s)); }

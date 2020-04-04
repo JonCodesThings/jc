@@ -37,6 +37,8 @@ struct JCType
     std::vector<std::string> MEMBER_TYPENAMES;
 	std::vector<llvm::Value*> MEMBER_DEFAULTS;
 	std::vector<std::pair<std::string, int>> ENUM_VALUES;
+	std::string CONTAINED_IN_MODULE;
+	bool EXPORTED;
 };
 
 class TypeRegistry
@@ -51,11 +53,12 @@ public:
 	void AddBlankFunctionPointerType(const std::string &id);
     void AddBlankStructType(const std::string &id);
 	void AddBlankUnionType(const std::string &id);
-    void AddType(const std::string &id, llvm::Type &type, const JCType::TYPE_CLASSIFICATION &classification);
+    void AddType(const std::string &id, llvm::Type &type, const JCType::TYPE_CLASSIFICATION &classification, const std::string &defined_in_module ="");
     const std::string GetTypeStringFromAlias(const std::string &id);
     llvm::Type *GetAliasedType(const std::string &id);
     llvm::Type *GetArrayType(const std::string &id, unsigned int array_size);
-    llvm::Type *GetType(const std::string &id);
+	llvm::Type *GetType(const std::string &id);
+    llvm::Type *GetType(const std::string &id, const std::vector<std::string> &module_depends);
     llvm::Type *UnwindPointerType(const std::string &id);
     const JCType *GetTypeInfo(const std::string &id);
     const std::string *GetLifetimeTypeString(const std::string &id);
@@ -66,12 +69,12 @@ public:
     llvm::Type *GetWideningConversion(const std::string &current, const std::string &to);
     llvm::Type *GetNarrowingConversion(const std::string &current, const std::string &to);
     llvm::Type *GetImplicitCast(const std::string &current, const std::string &to);
-	void SetEnumValues(const std::string &id, const std::vector<std::pair<std::string, int>> &enum_values);
-	void SetFunctionPointerType(const std::string &id, const std::vector<llvm::Type*> &types, const std::string &ret_type);
+	void SetEnumValues(const std::string &id, const std::vector<std::pair<std::string, int>> &enum_values, const std::string &define_in_module ="", bool exported = false);
+	void SetFunctionPointerType(const std::string &id, const std::vector<llvm::Type*> &types, const std::string &ret_type, const std::string &define_in_module = "", bool exported = false);
     void SetStructType(const std::string &id, const std::vector<llvm::Type *> &members, const std::vector<std::string> &member_names, 
-	const std::vector<std::string> &member_typenames, const std::vector<llvm::Value*> &member_defaults);
+	const std::vector<std::string> &member_typenames, const std::vector<llvm::Value*> &member_defaults, const std::string &define_in_module = "", bool exported=false);
 	void SetUnionType(const std::string &id, const std::vector<std::string> &member_names,
-		const std::vector<std::string> &member_typenames, const std::string &largest_type);
+		const std::vector<std::string> &member_typenames, const std::string &largest_type, const std::string &define_in_module = "", bool exported = false);
 private:
     void AddType(const std::string &id, llvm::Type &type, const JCType::TYPE_CLASSIFICATION &classification, unsigned int integer_limit);
 

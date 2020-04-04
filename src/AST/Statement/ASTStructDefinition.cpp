@@ -49,7 +49,7 @@ llvm::Value *ASTStructDefinition::EmitIR(IREmitter::EmitterState &state)
 	}
 
 	//set the struct type
-    state.typeRegistry.SetStructType(id->identifier, members, member_names, member_typenames, member_default_vals);
+    state.typeRegistry.SetStructType(id->identifier, members, member_names, member_typenames, member_default_vals, state.module_name, exporting);
 
 	//return the type
     return (llvm::Value*)state.typeRegistry.GetType(id->identifier);

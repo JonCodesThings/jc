@@ -14,7 +14,7 @@ class ASTStructDefinition : public ASTStatement
 public:
     std::unique_ptr<ASTStructMemberDeclarations> contains;
     std::unique_ptr<ASTIdentifier> id;
-
+	bool exporting = false;
 
     ASTStructDefinition(ASTIdentifier &id, ASTStructMemberDeclarations &contains);
 
