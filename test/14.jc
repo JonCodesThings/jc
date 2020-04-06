@@ -1,6 +1,6 @@
 i32 main()
 {
-    i32 i;
+    mut i32 i;
     i = 12;
     i32 j;
     j = 2;

@@ -5,6 +5,8 @@ ASTForStatement::ASTForStatement(ASTStatement &first, ASTStatement &second, ASTS
 
 llvm::Value *ASTForStatement::EmitIR(IREmitter::EmitterState &state)
 {
+	first->line_number = second->line_number = third->line_number = line_number;
+
 	//get the current insert block
     llvm::BasicBlock *current_insert = state.builder.GetInsertBlock();
 

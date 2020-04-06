@@ -32,14 +32,19 @@ llvm::Value * ASTVariableDeclaration::EmitIR(IREmitter::EmitterState &state)
     symbol.classification = Symbol::VARIABLE;
     symbol.identifier = id->identifier;
 
+	bool inferred = false;
+
 	if (!type)
 	{
 		const std::string *s = node->GetType(state);
 		typestring = *s;
+		inferred = true;
 	}
 	else
 		typestring = StripTypename(type->identifier);
 
+	std::string raw_type;
+	type ? raw_type = type->identifier : raw_type = "";
 	symbol.type = typestring;
 
 	//get the llvm type
@@ -66,7 +71,7 @@ llvm::Value * ASTVariableDeclaration::EmitIR(IREmitter::EmitterState &state)
 	}
 
 	//set the type string
-	symbol.full_type = type->identifier;
+	symbol.full_type = raw_type;
 
 	//if there is no parent function set up a global variable
 	if (state.builder.GetInsertBlock()->getParent() == nullptr)
@@ -83,8 +88,18 @@ llvm::Value * ASTVariableDeclaration::EmitIR(IREmitter::EmitterState &state)
 
 	//set the export flag to the appropriate value
 	symbol.exported = exporting;
-	symbol.mut = TypenameMutable(type->identifier);
-	symbol.ptr_mut = TypenamePtrMutable(type->identifier);
+
+	if (!inferred)
+	{
+		symbol.mut = TypenameMutable(raw_type);
+		symbol.ptr_mut = TypenamePtrMutable(raw_type);
+	}
+	else
+	{
+		symbol.mut = true;
+		symbol.ptr_mut = true;
+	}
+
 
 	//add the symbol to the stack
     state.symbolStack.AddSymbol(symbol);
