@@ -33,6 +33,8 @@ public:
     ASTUnaryOperator(ASTNode &operatee, ASTConstantInt &index, OP op);
 
     const std::string *GetType(IREmitter::EmitterState &state);
+
+	const Symbol *GetSymbol(IREmitter::EmitterState &state);
     
     llvm::Value *EmitIR(IREmitter::EmitterState &state);
 

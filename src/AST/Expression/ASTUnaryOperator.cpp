@@ -164,6 +164,11 @@ const std::string *ASTUnaryOperator::GetType(IREmitter::EmitterState &state)
     }
 }
 
+const Symbol * ASTUnaryOperator::GetSymbol(IREmitter::EmitterState & state)
+{
+	return operatee->GetSymbol(state);
+}
+
 const bool ASTUnaryOperator::SyntheticEval(IREmitter::EmitterState &state)
 {
 	return operatee->SyntheticEval(state);

@@ -3,7 +3,6 @@ i32 main()
     mut i32 mut *i = nullptr;
     i32 y = 24;
 	i = &y;
-	i8 *z;
-	z = nullptr;
+
     return *i;
 }

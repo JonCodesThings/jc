@@ -52,74 +52,85 @@ llvm::Value *ASTVariableAssignment::EmitIR(IREmitter::EmitterState &state)
 	//if the assigned symbol exists
     if (assign_symbol)
     {
-		auto is_assigned_symbol = const_cast<Symbol*>(assign_symbol);
-		bool mut_flag;
-
-		if (assign_symbol->full_type.find('*') != std::string::npos)
-			mut_flag = assign_symbol->ptr_mut;
-		else
-			mut_flag = assign_symbol->mut;
-
-		if (!mut_flag && assign_symbol->assigned)
+		if (assign_symbol->array_size == 1)
 		{
-			printf("Error in module %s line %d: cannot assign new value to non-mutable variable %s.\n", state.module_name.c_str(), line_number, assign_symbol->identifier);
-			return nullptr;
-		}
-		//if the value symbol exists
-        if (val_symbol)
-        {
-			is_assigned_symbol->assigned = true;
-			//perform an implicit cast as required or just emit store operation
-            if (assign_symbol->type != val_symbol->type)
-                return implicit_cast(val, assign_symbol);
-            else
-                return state.builder.CreateStore(state.builder.CreateLoad(val->EmitIR(state), "load_val_var_assign"), assign_symbol->alloc_inst);
-        }
-		//otherwise
-        else
-        {
-			is_assigned_symbol->assigned = true;
-			//perform an implicit cast if required
-            if (assign_to->GetType(state) != val->GetType(state))
-                return implicit_cast(val, assign_symbol);
-            else
-            {
-				//otherwise do a whole load of hacks to ensure the correct value is loaded
-                llvm::Value *store = val->EmitIR(state);
-                if (val->GetNodeType() == UNARY_OP)
-                {
-                    ASTUnaryOperator *cast_down = (ASTUnaryOperator*)val.get();
-					switch (cast_down->op)
-					{
-					default:
-						break;
-					case ASTUnaryOperator::OP::ARRAY_INDEX:
-						store = state.builder.CreateLoad(store, "load_val_to_store");
-						break;
-					}   
-                }
-                else if (val->GetNodeType() == MEMBER_OP)
-                    store = state.builder.CreateLoad(store, "load_val_to_store");
+			auto is_assigned_symbol = const_cast<Symbol*>(assign_symbol);
+			bool mut_flag;
 
-				//return a store operation
-				return state.builder.CreateStore(store, assign_symbol->alloc_inst);
-            }
-        }
-    }
-	//otherwise
-    else
-    {
-		//emit the IR for gep assignment
-        llvm::Value *gep_assign = assign_to->EmitIR(state);
-		//if there is a value symbol load it and then store it
-        if (val_symbol)
-        {
-            llvm::Value *val_load = state.builder.CreateLoad(val->EmitIR(state), "load_val_var_assign_val");
-            return state.builder.CreateStore(val_load, gep_assign);
-        }
-		//otherwise just do a straight store
-        else
-            return state.builder.CreateStore(val->EmitIR(state), gep_assign);
+			if (assign_symbol->full_type.find('*') != std::string::npos)
+				mut_flag = assign_symbol->ptr_mut;
+			else
+				mut_flag = assign_symbol->mut;
+
+			if (!mut_flag && assign_symbol->assigned)
+			{
+				printf("Error in module %s line %d: cannot assign new value to non-mutable variable %s.\n", state.module_name.c_str(), line_number, assign_symbol->identifier);
+				return nullptr;
+			}
+			//if the value symbol exists
+			if (val_symbol)
+			{
+				is_assigned_symbol->assigned = true;
+				//perform an implicit cast as required or just emit store operation
+				if (assign_symbol->type != val_symbol->type)
+					return implicit_cast(val, assign_symbol);
+				else
+					return state.builder.CreateStore(state.builder.CreateLoad(val->EmitIR(state), "load_val_var_assign"), assign_symbol->alloc_inst);
+			}
+			//otherwise
+			else
+			{
+				is_assigned_symbol->assigned = true;
+				//perform an implicit cast if required
+				if (assign_to->GetType(state) != val->GetType(state))
+					return implicit_cast(val, assign_symbol);
+				else
+				{
+					//otherwise do a whole load of hacks to ensure the correct value is loaded
+					llvm::Value *store = val->EmitIR(state);
+					if (val->GetNodeType() == UNARY_OP)
+					{
+						ASTUnaryOperator *cast_down = (ASTUnaryOperator*)val.get();
+						switch (cast_down->op)
+						{
+						default:
+							break;
+						case ASTUnaryOperator::OP::ARRAY_INDEX:
+						{
+							store = state.builder.CreateLoad(store, "load_val_to_store");
+							break;
+						}
+
+						}
+					}
+					else if (val->GetNodeType() == MEMBER_OP)
+						store = state.builder.CreateLoad(store, "load_val_to_store");
+
+					//return a store operation
+					return state.builder.CreateStore(store, assign_symbol->alloc_inst);
+				}
+			}
+		}
+		//otherwise
+		else
+		{
+			//emit the IR for gep assignment
+			llvm::Value *gep_assign = assign_to->EmitIR(state);
+			if (!assign_to->GetSymbol(state)->ptr_mut)
+			{
+				printf("Error in module %s line %d: cannot assign new value to non-mutable variable %s.\n", state.module_name.c_str(), line_number, assign_symbol->identifier);
+				return nullptr;
+			}
+			//if there is a value symbol load it and then store it
+			if (val_symbol)
+			{
+				llvm::Value *val_load = state.builder.CreateLoad(val->EmitIR(state), "load_val_var_assign_val");
+				return state.builder.CreateStore(val_load, gep_assign);
+			}
+			//otherwise just do a straight store
+			else
+				return state.builder.CreateStore(val->EmitIR(state), gep_assign);
+		}
     }
     return nullptr;
 }

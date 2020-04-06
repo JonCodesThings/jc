@@ -1,6 +1,6 @@
 i32 main()
 {
-    i32 x[10];
+    i32 x mut[10];
     for (mut i32 i = 0; i < 10; i++)
     {
         x[i] = i;

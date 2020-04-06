@@ -60,6 +60,9 @@ llvm::Value * ASTVariableDeclaration::EmitIR(IREmitter::EmitterState &state)
 	//temp cast to an ASTConstantInt
 	auto temp = static_cast<ASTConstantInt*>(array_size.get());
 
+	if (temp)
+		symbol.array_size = temp->constant;
+
 	//if it is valid get the array type instead
 	if (array_size)
 		t = state.typeRegistry.GetArrayType(typestring, temp->constant);
@@ -93,6 +96,9 @@ llvm::Value * ASTVariableDeclaration::EmitIR(IREmitter::EmitterState &state)
 	{
 		symbol.mut = TypenameMutable(raw_type);
 		symbol.ptr_mut = TypenamePtrMutable(raw_type);
+
+		if (array_size)
+			symbol.ptr_mut = mut;
 	}
 	else
 	{

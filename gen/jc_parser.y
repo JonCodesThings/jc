@@ -120,11 +120,12 @@ int token;
 %token UNKNOWN
 
 %type<statement> node_setup semicoloned_statement statement assign_op variable_assign unary_op binary_op member_op include_or_link
+%type<variable_declaration> array_decl
 %type<func_ptr> func_ptr
 %type<variable_declaration> variable_decl
 %type<function_definition> function_def
 %type<function_declaration> function_decl
-%type<statement> assignable_statement array_decl import
+%type<statement> assignable_statement import
 %type<unary_operator> cast increment decrement address_of dereference array_index
 %type<function_args> arg_list 
 %type<struct_declarations> struct_list
@@ -289,7 +290,9 @@ variable_decl: composited_type id { $$ = new ASTVariableDeclaration(*$1, *$2);  
     | EXPORT variable_decl { $$ = $2; $$->exporting = true; };
 
 array_decl: composited_type id LEFT_SQUARE_BRACKET constant_int RIGHT_SQUARE_BRACKET { $$ = new ASTVariableDeclaration(*$1, *$2, *$4); }
-	| composited_type id LEFT_SQUARE_BRACKET constant_int RIGHT_SQUARE_BRACKET EQUAL LEFT_BRACE init_list RIGHT_BRACE {$$ = new ASTVariableDeclaration(*$1, *$2, *$4, *$8); } 
+	| composited_type id LEFT_SQUARE_BRACKET constant_int RIGHT_SQUARE_BRACKET EQUAL LEFT_BRACE init_list RIGHT_BRACE {$$ = new ASTVariableDeclaration(*$1, *$2, *$4, *$8); }
+	| composited_type id MUT LEFT_SQUARE_BRACKET constant_int RIGHT_SQUARE_BRACKET { $$ = new ASTVariableDeclaration(*$1, *$2, *$5); $$->mut = true; }
+	| composited_type id MUT LEFT_SQUARE_BRACKET constant_int RIGHT_SQUARE_BRACKET EQUAL LEFT_BRACE init_list RIGHT_BRACE {$$ = new ASTVariableDeclaration(*$1, *$2, *$5, *$9); $$->mut = true; }
 
 init_list: id_or_constant { $$ = new std::vector<std::unique_ptr<ASTNode>>; auto s = std::unique_ptr<ASTNode>($1); $$->push_back(std::move(s)); }
 	| init_list COMMA id_or_constant { auto s = std::unique_ptr<ASTNode>($3);  $1->push_back(std::move(s)); $$ = $1; }
