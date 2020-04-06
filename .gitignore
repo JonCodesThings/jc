@@ -51,6 +51,7 @@ jc
 *.ir
 
 # VSCode
+.vs/
 .vscode/
 *.code-workspace
 
