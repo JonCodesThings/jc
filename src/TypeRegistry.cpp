@@ -4,6 +4,8 @@
 
 #include <stdio.h>
 
+#include <algorithm>
+
 void TypeRegistry::SetupBuiltinJCTypes()
 {
     AddType("void", *llvm::Type::getVoidTy(context), JCType::TYPE_CLASSIFICATION::VOID);
@@ -392,4 +394,55 @@ llvm::Type *TypeRegistry::GetImplicitCast(const std::string &current, const std:
         return GetNarrowingConversion(current, to);
 
     return t;
+}
+
+std::string StripTypename(const std::string & raw_typename)
+{
+	std::string ret = raw_typename;
+	//ret.erase(std::remove(ret.begin(), ret.end(), '*'), ret.end());
+
+	int i = ret.find("mut ");
+
+	if (i == 0)
+		ret.erase(0, 4);
+
+	i = ret.find(" mut ");
+	while (i != std::string::npos)
+	{
+		ret.erase(i, 5);
+		i = ret.find(" mut ");
+	}
+
+	return ret;
+}
+
+const bool TypenamePtrMutable(const std::string &raw_typename)
+{
+	int i = raw_typename.find('*');
+	int last_ptr = raw_typename.find_last_of('*');
+	int second_last_ptr = raw_typename.find_last_of('*', last_ptr);
+
+	if (last_ptr == raw_typename.length())
+		return false;
+
+	if (last_ptr - second_last_ptr > 1)
+		return true;
+
+	if (raw_typename.find(" mut ") != std::string::npos)
+		return true;
+
+	if (i == raw_typename.length())
+		return true;
+
+	return false;
+}
+
+const bool TypenameMutable(const std::string &raw_typename)
+{
+	int mut_tag = raw_typename.find("mut");
+
+	if (mut_tag == 0)
+		return true;
+
+	return false;
 }

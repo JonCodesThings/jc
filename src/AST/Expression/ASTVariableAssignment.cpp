@@ -22,15 +22,14 @@ llvm::Value *ASTVariableAssignment::EmitIR(IREmitter::EmitterState &state)
             return nullptr;
         
         if (symbol)
-            cast = std::make_unique<ASTUnaryOperator>(*node, new ASTIdentifier(symbol->type), ASTUnaryOperator::OP::CAST);
+            cast = std::make_unique<ASTUnaryOperator>(*node.release(), new ASTIdentifier(symbol->type), ASTUnaryOperator::OP::CAST);
         else
-            cast = std::make_unique<ASTUnaryOperator>(*node, new ASTIdentifier(*val->GetType(state)), ASTUnaryOperator::OP::CAST);
-        node.release();
+            cast = std::make_unique<ASTUnaryOperator>(*node.release(), new ASTIdentifier(*val->GetType(state)), ASTUnaryOperator::OP::CAST);
         auto emitted_ir = cast->EmitIR(state);
         if (!emitted_ir)
         {
-                printf("%s:%d:%d Error: types do not match for assignment (type %s expected, type %s given)\n",
-                yycurrentfilename, line_number, start_char, (*assign_to->GetType(state)).c_str(), (*node->GetType(state)).c_str());
+                printf("Error in module %s line %d: types do not match for assignment (type %s expected, type %s given)\n",
+                yycurrentfilename, line_number, (*assign_to->GetType(state)).c_str(), (*node->GetType(state)).c_str());
                 return nullptr;
         }
         if (symbol)
@@ -53,9 +52,23 @@ llvm::Value *ASTVariableAssignment::EmitIR(IREmitter::EmitterState &state)
 	//if the assigned symbol exists
     if (assign_symbol)
     {
+		auto is_assigned_symbol = const_cast<Symbol*>(assign_symbol);
+		bool mut_flag;
+
+		if (assign_symbol->full_type.find('*') != std::string::npos)
+			mut_flag = assign_symbol->ptr_mut;
+		else
+			mut_flag = assign_symbol->mut;
+
+		if (!mut_flag && assign_symbol->assigned)
+		{
+			printf("Error in module %s line %d: cannot assign new value to non-mutable variable %s.\n", state.module_name.c_str(), line_number, assign_symbol->identifier);
+			return nullptr;
+		}
 		//if the value symbol exists
         if (val_symbol)
         {
+			is_assigned_symbol->assigned = true;
 			//perform an implicit cast as required or just emit store operation
             if (assign_symbol->type != val_symbol->type)
                 return implicit_cast(val, assign_symbol);
@@ -65,6 +78,7 @@ llvm::Value *ASTVariableAssignment::EmitIR(IREmitter::EmitterState &state)
 		//otherwise
         else
         {
+			is_assigned_symbol->assigned = true;
 			//perform an implicit cast if required
             if (assign_to->GetType(state) != val->GetType(state))
                 return implicit_cast(val, assign_symbol);

@@ -17,6 +17,9 @@ llvm::Value *ASTForStatement::EmitIR(IREmitter::EmitterState &state)
 	//emit the IR for the first statement of the for conditions
     llvm::Value *var = first->EmitIR(state);
 
+	if (!var)
+		return nullptr;
+
 	//emit the IR for the loop internals
     llvm::Value *loop_internals = loop->EmitIR(state);
 
@@ -28,7 +31,14 @@ llvm::Value *ASTForStatement::EmitIR(IREmitter::EmitterState &state)
 
 	//emit IR for the loop condition and iterate condition
     llvm::Value *loop_condition = second->EmitIR(state);
+
+	if (!loop_condition)
+		return nullptr;
+
     llvm::Value *iterate = third->EmitIR(state);
+
+	if (!iterate)
+		return nullptr;
 
 	//make a branch for the loop condition
     state.builder.CreateCondBr(loop_condition, lvb, pl);

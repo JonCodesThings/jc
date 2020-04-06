@@ -7,7 +7,7 @@ i32 subtract(i32 x, i32 y)
 
 i32 main()
 {
-    i32 x = 10;
+    mut i32 x = 10;
     x = subtract(1, 1);
     printf("Retval: %d\n", 0);
     return x;

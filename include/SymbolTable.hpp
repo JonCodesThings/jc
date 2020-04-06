@@ -16,10 +16,15 @@ struct Symbol
 
     std::string identifier;
     std::string type;
+	std::string full_type;
     llvm::Value *alloc_inst;
 	llvm::Function *function;
     unsigned int array_size = 1;
 	bool exported = false;
+	bool mut = false;
+	bool ptr_mut = false;
+	bool assigned = false;
+	bool init = false;
 };
 
 class SymbolTable

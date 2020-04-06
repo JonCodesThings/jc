@@ -38,7 +38,9 @@ llvm::Value * ASTVariableDeclaration::EmitIR(IREmitter::EmitterState &state)
 		typestring = *s;
 	}
 	else
-		typestring = type->identifier;
+		typestring = StripTypename(type->identifier);
+
+	symbol.type = typestring;
 
 	//get the llvm type
 	t = state.typeRegistry.GetType(typestring, state.imported_modules, state.module_name);
@@ -64,7 +66,7 @@ llvm::Value * ASTVariableDeclaration::EmitIR(IREmitter::EmitterState &state)
 	}
 
 	//set the type string
-	symbol.type = typestring;
+	symbol.full_type = type->identifier;
 
 	//if there is no parent function set up a global variable
 	if (state.builder.GetInsertBlock()->getParent() == nullptr)
@@ -81,6 +83,8 @@ llvm::Value * ASTVariableDeclaration::EmitIR(IREmitter::EmitterState &state)
 
 	//set the export flag to the appropriate value
 	symbol.exported = exporting;
+	symbol.mut = TypenameMutable(type->identifier);
+	symbol.ptr_mut = TypenamePtrMutable(type->identifier);
 
 	//add the symbol to the stack
     state.symbolStack.AddSymbol(symbol);
@@ -100,7 +104,9 @@ llvm::Value * ASTVariableDeclaration::EmitIR(IREmitter::EmitterState &state)
         auto assignment = ASTVariableAssignment(*id, *node);
         id.release();
         node.release();
-        assignment.EmitIR(state);
+        auto emit = assignment.EmitIR(state);
+		if (!emit)
+			return nullptr;
     }
 	else if (init_list)
 	{
@@ -108,8 +114,10 @@ llvm::Value * ASTVariableDeclaration::EmitIR(IREmitter::EmitterState &state)
 		for (auto &node : *init_list.get())
 		{
 			ASTVariableAssignment assign(*new ASTUnaryOperator(*new ASTIdentifier(symbol.identifier), *new ASTConstantInt(index), ASTUnaryOperator::ARRAY_INDEX), *node.release());
-			assign.EmitIR(state);
 			index++;
+			auto emit = assign.EmitIR(state);
+			if (!emit)
+				return nullptr;
 		}
 	}
 	else if (typeinfo->classification == JCType::TYPE_CLASSIFICATION::STRUCT)

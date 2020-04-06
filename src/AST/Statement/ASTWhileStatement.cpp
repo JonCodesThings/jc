@@ -9,6 +9,8 @@ llvm::Value *ASTWhileStatement::EmitIR(IREmitter::EmitterState &state)
 
 	//emit the loop block's IR
     llvm::Value *lv = loop->EmitIR(state);
+	if (!lv)
+		return nullptr;
 
 	//cast that to a proper BasicBlock
     llvm::BasicBlock *lvb = (llvm::BasicBlock*)lv;
@@ -23,6 +25,8 @@ llvm::Value *ASTWhileStatement::EmitIR(IREmitter::EmitterState &state)
 
 	//emit the IR for the loop condition
     llvm::Value *eval_cond = cond_expr->EmitIR(state);
+	if (!eval_cond)
+		return nullptr;
 
 	//create a conditional branch using that loop condition
     state.builder.CreateCondBr(eval_cond, lvb, pl);
@@ -32,6 +36,8 @@ llvm::Value *ASTWhileStatement::EmitIR(IREmitter::EmitterState &state)
 
 	//emit the IR for the loop condition
     eval_cond = cond_expr->EmitIR(state);
+	if (!eval_cond)
+		return nullptr;
 
 	//create another conditional branch
     state.builder.CreateCondBr(eval_cond, lvb, pl);

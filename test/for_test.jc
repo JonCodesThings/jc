@@ -1,7 +1,7 @@
 i32 main()
 {
-    i32 x;
-    for (i32 i = 0; i < 36; i++)
+    mut i32 x;
+    for (mut i32 i = 0; i < 36; i++)
     {
         x = i;
     }

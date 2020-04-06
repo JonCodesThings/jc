@@ -15,6 +15,12 @@
 
 #include <vector>
 
+std::string StripTypename(const std::string &raw_typename);
+
+const bool TypenameMutable(const std::string &raw_typename);
+
+const bool TypenamePtrMutable(const std::string &raw_typename);
+
 struct JCType
 {
     std::string type_string;

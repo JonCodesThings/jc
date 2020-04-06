@@ -5,7 +5,7 @@ link "libcmt.lib";
 
 main()
 {
-	i8 *byte = alloc(1);
+	byte := alloc(1);
 	printf("Allocated memory pointer: %p\n", byte);
 	byte = dealloc(byte);
 	printf("Deallocated memory pointer: %p\n", byte);

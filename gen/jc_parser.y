@@ -111,7 +111,7 @@ int token;
 
 %token FOR WHILE
 
-%token TYPEDEF ALIAS AUTO ENUM UNION TRUE FALSE
+%token TYPEDEF ALIAS AUTO ENUM UNION TRUE FALSE MUT
 
 %token EXTERN IMPORT EXPORT INCLUDE LINK FUNC_PTR NULLPTR
 
@@ -130,7 +130,7 @@ int token;
 %type<struct_declarations> struct_list
 %type<function_call> function_call
 %type<if_statement> if_statement
-%type<id> id type
+%type<id> id type composited_type
 %type<string> IDENTIFIER TYPE
 %type<statement> return_statement flow_control
 %type<scope_block> statements scope semicoloned_statements
@@ -214,7 +214,7 @@ variable_assign: id EQUAL assignable_statement { $$ = new ASTVariableAssignment(
     | array_index EQUAL assignable_statement { $$ = new ASTVariableAssignment(*$1, *$3); }
     | member_op EQUAL assignable_statement { $$ = new ASTVariableAssignment(*$1, *$3); };
 
-cast: LEFT_BRACKET type RIGHT_BRACKET id_or_constant { $$ = new ASTUnaryOperator(*$4, $2, ASTUnaryOperator::CAST); };
+cast: LEFT_BRACKET composited_type RIGHT_BRACKET id_or_constant { $$ = new ASTUnaryOperator(*$4, $2, ASTUnaryOperator::CAST); };
 
 increment: id_or_constant PLUS PLUS { $$ = new ASTUnaryOperator(*$1, ASTUnaryOperator::INCREMENT);  };
 
@@ -269,27 +269,27 @@ bitwise_left_shift: id_or_constant LEFT_SHIFT id_or_constant { $$ = new ASTBinar
 bitwise_right_shift: id_or_constant RIGHT_SHIFT id_or_constant { $$ = new ASTBinaryOperator(*$1, *$3, ASTBinaryOperator::BITWISE_RIGHT_SHIFT);  }
     | id_or_constant RIGHT_SHIFT unary_op {$$ = new ASTBinaryOperator(*$1, *$3, ASTBinaryOperator::BITWISE_RIGHT_SHIFT); };
 
-function_def: type id LEFT_BRACKET arg_list RIGHT_BRACKET scope {  $$ = new ASTFunctionDefinition(*$1, *$2, *$4, *$6);  }
-    | type id LEFT_BRACKET RIGHT_BRACKET scope {  $$ = new ASTFunctionDefinition(*$1, *$2, *new ASTFunctionArgs(), *$5);  };
+function_def: composited_type id LEFT_BRACKET arg_list RIGHT_BRACKET scope {  $$ = new ASTFunctionDefinition(*$1, *$2, *$4, *$6);  }
+    | composited_type id LEFT_BRACKET RIGHT_BRACKET scope {  $$ = new ASTFunctionDefinition(*$1, *$2, *new ASTFunctionArgs(), *$5);  };
 	| id LEFT_BRACKET arg_list RIGHT_BRACKET scope {  $$ = new ASTFunctionDefinition(*$1, *$3, *$5);  }
 	| id LEFT_BRACKET RIGHT_BRACKET scope {  $$ = new ASTFunctionDefinition(*$1, *new ASTFunctionArgs(), *$4);  }
     | EXPORT function_def { $$ = $2; $$->SetExporting(true); };
 
-function_decl: type id LEFT_BRACKET RIGHT_BRACKET SEMICOLON { /*printf("function_decl\n");*/ $$ = new ASTFunctionDeclaration(*$1, *$2, *new ASTFunctionArgs());  }
-    | type id LEFT_BRACKET arg_list RIGHT_BRACKET SEMICOLON { /*printf("function_decl\n");*/ $$ = new ASTFunctionDeclaration(*$1, *$2, *$4);  }
+function_decl: composited_type id LEFT_BRACKET RIGHT_BRACKET SEMICOLON { /*printf("function_decl\n");*/ $$ = new ASTFunctionDeclaration(*$1, *$2, *new ASTFunctionArgs());  }
+    | composited_type id LEFT_BRACKET arg_list RIGHT_BRACKET SEMICOLON { /*printf("function_decl\n");*/ $$ = new ASTFunctionDeclaration(*$1, *$2, *$4);  }
     | EXPORT function_decl { $$ = $2; $$->SetExporting(true); };
 
 function_call: id LEFT_BRACKET RIGHT_BRACKET { $$ = new ASTFunctionCall(*$1); }
     | id LEFT_BRACKET statement_list RIGHT_BRACKET { $$ = new ASTFunctionCall(*$1, *$3); };
 
-variable_decl: type id { $$ = new ASTVariableDeclaration(*$1, *$2);  }
+variable_decl: composited_type id { $$ = new ASTVariableDeclaration(*$1, *$2);  }
 	| id COLON EQUAL assignable_statement { $$ = new ASTVariableDeclaration(*$1, *$4); }
-    | type id EQUAL assignable_statement { $$ = new ASTVariableDeclaration(*$1, *$2, *$4);  }
+    | composited_type id EQUAL assignable_statement { $$ = new ASTVariableDeclaration(*$1, *$2, *$4);  }
     | array_decl;
     | EXPORT variable_decl { $$ = $2; $$->exporting = true; };
 
-array_decl: type id LEFT_SQUARE_BRACKET constant_int RIGHT_SQUARE_BRACKET { $$ = new ASTVariableDeclaration(*$1, *$2, *$4); }
-	| type id LEFT_SQUARE_BRACKET constant_int RIGHT_SQUARE_BRACKET EQUAL LEFT_BRACE init_list RIGHT_BRACE {$$ = new ASTVariableDeclaration(*$1, *$2, *$4, *$8); } 
+array_decl: composited_type id LEFT_SQUARE_BRACKET constant_int RIGHT_SQUARE_BRACKET { $$ = new ASTVariableDeclaration(*$1, *$2, *$4); }
+	| composited_type id LEFT_SQUARE_BRACKET constant_int RIGHT_SQUARE_BRACKET EQUAL LEFT_BRACE init_list RIGHT_BRACE {$$ = new ASTVariableDeclaration(*$1, *$2, *$4, *$8); } 
 
 init_list: id_or_constant { $$ = new std::vector<std::unique_ptr<ASTNode>>; auto s = std::unique_ptr<ASTNode>($1); $$->push_back(std::move(s)); }
 	| init_list COMMA id_or_constant { auto s = std::unique_ptr<ASTNode>($3);  $1->push_back(std::move(s)); $$ = $1; }
@@ -329,13 +329,10 @@ arg_list: arg_list COMMA arg_pair { auto s = std::unique_ptr<ASTFunctionArg>($3)
 statement_list: statement_list COMMA assignable_statement { auto s = std::unique_ptr<ASTStatement>($3); $1->push_back(std::move(s)); }
     | assignable_statement { $$ = new std::vector<std::unique_ptr<ASTStatement>>(); auto s = std::unique_ptr<ASTStatement>($1); $$->push_back(std::move(s)); };
 
-type_list: type { $$ = new std::vector<std::unique_ptr<ASTIdentifier>>(); auto s = std::unique_ptr<ASTIdentifier>($1);  $$->push_back(std::move(s)); }
-	| type_list COMMA type { auto s = std::unique_ptr<ASTIdentifier>($3);  $1->push_back(std::move(s)); };
-
 func_ptr: FUNC_PTR type type LEFT_BRACKET type_list RIGHT_BRACKET { $$ = new ASTFunctionPointerDefinition(*$2, *$3, *$5); }
 	| EXPORT func_ptr { $$ = $2; $$->exporting = true; };
 
-arg_pair: type id { $$ = new ASTFunctionArg(*$1, *$2); } | FSTOP FSTOP FSTOP { $$ = new ASTFunctionArg(); };
+arg_pair: composited_type id { $$ = new ASTFunctionArg(*$1, *$2); } | FSTOP FSTOP FSTOP { $$ = new ASTFunctionArg(); };
 
 enum_def: ENUM type LEFT_BRACE enum_parts RIGHT_BRACE { /*printf("enum_def\n");*/ $$ = new ASTEnumDefinition(*$2, *$4); }
 	| EXPORT enum_def { $$ = $2; $$->exporting = true; };
@@ -359,9 +356,11 @@ constant_enum_value: type COLON COLON id { $$ = new ASTConstantEnumValue(*$1, *$
 
 id: IDENTIFIER { $$ = new ASTIdentifier($1); };
 
-type: TYPE { $$ = new ASTIdentifier($1); } | type ASTERISK { $1->identifier.append("*");  };
+type: TYPE { $$ = new ASTIdentifier($1); };
 
-type_list: type { $$ = new std::vector<std::unique_ptr<ASTIdentifier>>(); auto s = std::unique_ptr<ASTIdentifier>($1);  $$->push_back(std::move(s)); }
-	| type_list COMMA type { auto s = std::unique_ptr<ASTIdentifier>($3);  $1->push_back(std::move(s)); };
+composited_type: type { $$ = $1;} | MUT composited_type { $$ = $2; $$->identifier.insert(0, "mut "); } | composited_type ASTERISK { $1->identifier.append("*"); } | composited_type MUT { $1->identifier.append(" mut "); } ;
+
+type_list: composited_type { $$ = new std::vector<std::unique_ptr<ASTIdentifier>>(); auto s = std::unique_ptr<ASTIdentifier>($1);  $$->push_back(std::move(s)); }
+	| type_list COMMA composited_type { auto s = std::unique_ptr<ASTIdentifier>($3);  $1->push_back(std::move(s)); };
 
 %%

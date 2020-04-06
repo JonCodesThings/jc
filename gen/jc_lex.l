@@ -81,6 +81,7 @@ TypeRegistry *registry;
 "enum" { return ENUM; yycurrentlinechar += yyleng; }
 "true" { return TRUE; yycurrentlinechar += yyleng; }
 "false" { return FALSE; yycurrentlinechar += yyleng; }
+"mut" { return MUT; yycurrentlinechar += yyleng; }
 [_a-zA-Z0-9]+ { yylval.string = yytext; if (!registry->GetTypeInfo(yylval.string)) return IDENTIFIER; else return TYPE; yycurrentlinechar += yyleng; }
 
 . { return UNKNOWN; }

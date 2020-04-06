@@ -159,7 +159,7 @@ int main(int argc, const char **args)
 
 		yycurrentfilename = m.name.c_str();
 		YY_BUFFER_STATE s = yy_scan_string(m.raw_contents.c_str());
-		yylineno = 0;
+		yylineno = 1;
 
 		int p = yyparse();
 		yy_delete_buffer(s);

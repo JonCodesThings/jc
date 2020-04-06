@@ -91,6 +91,11 @@ llvm::Value *ASTUnaryOperator::EmitIR(IREmitter::EmitterState &state)
 		//TODO: allow this to support other types
         case INCREMENT:
         {
+			if (s->assigned && !s->mut)
+			{
+				printf("Error in module %s line %d: cannot assign new value to non-mutable variable %s.\n", state.module_name.c_str(), line_number, s->identifier);
+				return nullptr;
+			}
             llvm::Value *temp = state.builder.CreateLoad(s->alloc_inst, "temp");
             llvm::Value *added = state.builder.CreateAdd(temp, llvm::ConstantInt::get(state.typeRegistry.GetType(*type), 1));
             state.builder.CreateStore(added, s->alloc_inst);
@@ -100,6 +105,11 @@ llvm::Value *ASTUnaryOperator::EmitIR(IREmitter::EmitterState &state)
 		//TODO: allow this to support other types
         case DECREMENT:
         {
+			if (s->assigned && !s->mut)
+			{
+				printf("Error in module %s line %d: cannot assign new value to non-mutable variable %s.\n", state.module_name.c_str(), line_number, s->identifier);
+				return nullptr;
+			}
             llvm::Value *temp = state.builder.CreateLoad(s->alloc_inst, "temp");
             llvm::Value *added = state.builder.CreateSub(temp, llvm::ConstantInt::get(state.typeRegistry.GetType(*type), 1));
             state.builder.CreateStore(added, s->alloc_inst);
