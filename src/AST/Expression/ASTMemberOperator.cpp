@@ -61,6 +61,19 @@ const std::string *ASTMemberOperator::GetType(IREmitter::EmitterState &state)
     return nullptr;
 }
 
+const Symbol * ASTMemberOperator::GetSymbol(IREmitter::EmitterState & state)
+{
+	//get the struct's symbol and type
+	const Symbol *struct_symbol = state.symbolStack.GetSymbolByIdentifier(id->identifier);
+
+	if (!struct_symbol)
+		struct_symbol = state.syntheticStack.GetSymbolByIdentifier(id->identifier);
+
+	if (!struct_symbol)
+		return nullptr;
+	return struct_symbol;
+}
+
 const bool ASTMemberOperator::SyntheticEval(IREmitter::EmitterState & state)
 {
 	return true;

@@ -70,6 +70,31 @@ llvm::Value *ASTVariableAssignment::EmitIR(IREmitter::EmitterState &state)
 			//if the value symbol exists
 			if (val_symbol)
 			{
+				if (val->GetNodeType() == UNARY_OP)
+				{
+					ASTUnaryOperator *downcast = (ASTUnaryOperator*)val.get();
+					switch (downcast->op)
+					{
+					default:
+						break;
+					case ASTUnaryOperator::ADDRESS_OF:
+					{
+						llvm::Value *v = state.builder.CreateStore(val->EmitIR(state), assign_symbol->alloc_inst);
+						return v;
+					}
+					case ASTUnaryOperator::INCREMENT:
+					case ASTUnaryOperator::DECREMENT:
+					{
+						llvm::Value *v = state.builder.CreateStore(val->EmitIR(state), assign_symbol->alloc_inst);
+						return v;
+					}
+					}
+				}
+				else if (val->GetNodeType() == MEMBER_OP)
+				{
+					llvm::Value *store = state.builder.CreateLoad(val->EmitIR(state), "load_val_to_store");
+					return state.builder.CreateStore(store, assign_symbol->alloc_inst);
+				}
 				is_assigned_symbol->assigned = true;
 				//perform an implicit cast as required or just emit store operation
 				if (assign_symbol->type != val_symbol->type)
@@ -106,8 +131,14 @@ llvm::Value *ASTVariableAssignment::EmitIR(IREmitter::EmitterState &state)
 					else if (val->GetNodeType() == MEMBER_OP)
 						store = state.builder.CreateLoad(store, "load_val_to_store");
 
+					llvm::Value *v = assign_symbol->alloc_inst;
+					if (assign_to->GetNodeType() == MEMBER_OP)
+					{
+						v = assign_to->EmitIR(state);
+					}
+
 					//return a store operation
-					return state.builder.CreateStore(store, assign_symbol->alloc_inst);
+					return state.builder.CreateStore(store, v);
 				}
 			}
 		}

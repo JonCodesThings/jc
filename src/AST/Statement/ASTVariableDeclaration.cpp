@@ -173,7 +173,7 @@ const bool ASTVariableDeclaration::SyntheticEval(IREmitter::EmitterState &state)
 		typestring = *s;
 	}
 	else
-		typestring = type->identifier;
+		typestring = StripTypename(type->identifier);
 
 	//get the llvm type
 	t = state.typeRegistry.GetType(typestring);
