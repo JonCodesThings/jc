@@ -323,8 +323,8 @@ for_loop: FOR LEFT_BRACKET statement SEMICOLON assignable_statement SEMICOLON as
 struct_list: struct_list struct_pair { auto s = std::unique_ptr<ASTStructMemberDeclaration>($2); $1->args.push_back(std::move(s)); }
     | struct_pair { $$ = new ASTStructMemberDeclarations(); auto s = std::unique_ptr<ASTStructMemberDeclaration>($1); $$->args.push_back(std::move(s)); };
 
-struct_pair: type id SEMICOLON { $$ = new ASTStructMemberDeclaration(*$1, *$2, NULL); }
-	| type id EQUAL assignable_statement SEMICOLON { $$ = new ASTStructMemberDeclaration(*$1, *$2, $4); }
+struct_pair: composited_type id SEMICOLON { $$ = new ASTStructMemberDeclaration(*$1, *$2, NULL); }
+	| composited_type id EQUAL assignable_statement SEMICOLON { $$ = new ASTStructMemberDeclaration(*$1, *$2, $4); }
 
 arg_list: arg_list COMMA arg_pair { auto s = std::unique_ptr<ASTFunctionArg>($3); $1->args.push_back(std::move(s)); }
     | arg_pair { $$ = new ASTFunctionArgs(); auto s = std::unique_ptr<ASTFunctionArg>($1); $$->args.push_back(std::move(s)); };

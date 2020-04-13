@@ -48,5 +48,5 @@ llvm::Value *ASTConstantString::EmitIR(IREmitter::EmitterState &state)
 
 const std::string *ASTConstantString::GetType(IREmitter::EmitterState &state)
 {
-    return state.typeRegistry.GetLifetimeTypeString("void");
+    return state.typeRegistry.GetLifetimeTypeString("i8*");
 }

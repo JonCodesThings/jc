@@ -20,6 +20,8 @@
 
 #include <fstream>
 
+#include <chrono>
+
 extern std::unique_ptr<ASTBlock> base;
 extern FILE *yyin;
 extern const char *yycurrentfilename;
@@ -37,6 +39,12 @@ struct ModuleData
 
 int main(int argc, const char **args)
 {
+	std::chrono::high_resolution_clock::time_point begin_all, begin_compile, begin_link, end_all, end_compile, end_link;
+
+	begin_all = std::chrono::high_resolution_clock::now();
+	begin_compile = std::chrono::high_resolution_clock::now();
+
+
     llvm::LLVMContext context;
     registry = new TypeRegistry(context);
 
@@ -183,10 +191,24 @@ int main(int argc, const char **args)
 		invoke.AddObjectFile(m.name);
 	}
 
+	begin_link = end_compile = std::chrono::high_resolution_clock::now();
+
 	printf("Invoking linker...\n");
 	invoke.Invoke(modules_to_build[0].name);
 
+	end_link = std::chrono::high_resolution_clock::now();
+
 	printf("Compilation and linking complete!\n");
+
+	end_all = std::chrono::high_resolution_clock::now();
+
+	std::chrono::duration<float> all_time = std::chrono::duration_cast<std::chrono::duration<float>>(end_all - begin_all);
+	std::chrono::duration<float> compile_time = std::chrono::duration_cast<std::chrono::duration<float>>(end_compile - begin_compile);
+	std::chrono::duration<float> link_time = std::chrono::duration_cast<std::chrono::duration<float>>(end_link - begin_link);
+
+	printf("Parsing, emitting IR and compilation to object files took %f seconds.\n", compile_time.count());
+	printf("Linking object files took %f seconds.\n", link_time.count());
+	printf("Total build time %f seconds.\n", all_time.count());
 
     return 0;
 }

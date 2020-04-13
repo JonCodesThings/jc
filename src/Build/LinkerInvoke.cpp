@@ -41,7 +41,11 @@ void LinkerInvoke::Invoke(const std::string &output_name)
 	//set up the MSVC linker with args
 	case MSVC_LINK_EXE:
 	{
-		final_command.append("link.exe");
+		//std::string vcvars = "\"C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\Community\\VC\\Auxiliary\\Build\\vcvars64.bat\"";
+		//printf("%s\n", vcvars.c_str());
+		//std::system(vcvars.c_str());
+
+		final_command.append("link");
 		
 		for (auto o : object_files)
 			final_command.append(" " + o + ".o ");

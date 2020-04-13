@@ -208,8 +208,8 @@ Grammar
   137 struct_list: struct_list struct_pair
   138            | struct_pair
 
-  139 struct_pair: type id SEMICOLON
-  140            | type id EQUAL assignable_statement SEMICOLON
+  139 struct_pair: composited_type id SEMICOLON
+  140            | composited_type id EQUAL assignable_statement SEMICOLON
 
   141 arg_list: arg_list COMMA arg_pair
   142         | arg_pair
@@ -480,10 +480,10 @@ id (129)
     114 115 117 118 119 120 121 124 125 126 127 139 140 147 153 154
     155 168
 type (130)
-    on left: 170, on right: 30 32 33 139 140 145 149 168 171
+    on left: 170, on right: 30 32 33 145 149 168 171
 composited_type (131)
     on left: 171 172 173 174, on right: 74 109 110 114 115 119 121
-    124 125 126 127 147 172 173 174 175 176
+    124 125 126 127 139 140 147 172 173 174 175 176
 type_list (132)
     on left: 175 176, on right: 145 176
 
@@ -2571,10 +2571,12 @@ State 152
    33 union_def: UNION type LEFT_BRACE . struct_list RIGHT_BRACE
 
     TYPE  shift, and go to state 2
+    MUT   shift, and go to state 11
 
-    struct_list  go to state 218
-    struct_pair  go to state 219
-    type         go to state 220
+    struct_list      go to state 218
+    struct_pair      go to state 219
+    type             go to state 47
+    composited_type  go to state 220
 
 
 State 153
@@ -2596,10 +2598,12 @@ State 155
    30 struct_def: STRUCT type LEFT_BRACE . struct_list RIGHT_BRACE
 
     TYPE  shift, and go to state 2
+    MUT   shift, and go to state 11
 
-    struct_list  go to state 222
-    struct_pair  go to state 219
-    type         go to state 220
+    struct_list      go to state 222
+    struct_pair      go to state 219
+    type             go to state 47
+    composited_type  go to state 220
 
 
 State 156
@@ -3387,9 +3391,11 @@ State 218
 
     TYPE         shift, and go to state 2
     RIGHT_BRACE  shift, and go to state 263
+    MUT          shift, and go to state 11
 
-    struct_pair  go to state 264
-    type         go to state 220
+    struct_pair      go to state 264
+    type             go to state 47
+    composited_type  go to state 220
 
 
 State 219
@@ -3401,10 +3407,14 @@ State 219
 
 State 220
 
-  139 struct_pair: type . id SEMICOLON
-  140            | type . id EQUAL assignable_statement SEMICOLON
+  139 struct_pair: composited_type . id SEMICOLON
+  140            | composited_type . id EQUAL assignable_statement SEMICOLON
+  173 composited_type: composited_type . ASTERISK
+  174                | composited_type . MUT
 
     IDENTIFIER  shift, and go to state 1
+    ASTERISK    shift, and go to state 124
+    MUT         shift, and go to state 125
 
     id  go to state 265
 
@@ -3428,9 +3438,11 @@ State 222
 
     TYPE         shift, and go to state 2
     RIGHT_BRACE  shift, and go to state 268
+    MUT          shift, and go to state 11
 
-    struct_pair  go to state 264
-    type         go to state 220
+    struct_pair      go to state 264
+    type             go to state 47
+    composited_type  go to state 220
 
 
 State 223
@@ -3999,8 +4011,8 @@ State 264
 
 State 265
 
-  139 struct_pair: type id . SEMICOLON
-  140            | type id . EQUAL assignable_statement SEMICOLON
+  139 struct_pair: composited_type id . SEMICOLON
+  140            | composited_type id . EQUAL assignable_statement SEMICOLON
 
     SEMICOLON  shift, and go to state 289
     EQUAL      shift, and go to state 290
@@ -4280,14 +4292,14 @@ State 288
 
 State 289
 
-  139 struct_pair: type id SEMICOLON .
+  139 struct_pair: composited_type id SEMICOLON .
 
     $default  reduce using rule 139 (struct_pair)
 
 
 State 290
 
-  140 struct_pair: type id EQUAL . assignable_statement SEMICOLON
+  140 struct_pair: composited_type id EQUAL . assignable_statement SEMICOLON
 
     IDENTIFIER    shift, and go to state 1
     STRING        shift, and go to state 49
@@ -4414,7 +4426,7 @@ State 299
 
 State 300
 
-  140 struct_pair: type id EQUAL assignable_statement . SEMICOLON
+  140 struct_pair: composited_type id EQUAL assignable_statement . SEMICOLON
 
     SEMICOLON  shift, and go to state 306
 
@@ -4479,7 +4491,7 @@ State 305
 
 State 306
 
-  140 struct_pair: type id EQUAL assignable_statement SEMICOLON .
+  140 struct_pair: composited_type id EQUAL assignable_statement SEMICOLON .
 
     $default  reduce using rule 140 (struct_pair)
 

@@ -3,10 +3,10 @@ import gresslib;
 
 i32 main()
 {
-	window_descriptor wnd_desc;
+	mut window_descriptor wnd_desc;
 	wnd_desc.title = "hello jc";
-	wnd_desc.width = 640;
-	wnd_desc.height = 480;
+	wnd_desc.width = (u32)640;
+	wnd_desc.height = (u32)480;
 	wnd_desc.style = window_style::WINDOW_BORDERED;
 
 	window *wnd = create_window(&wnd_desc);
