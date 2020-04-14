@@ -1,3 +1,9 @@
+struct FILE;
+
 export i32 printf(i8 *str, ...);
 
 export i32 getchar();
+
+export FILE *fopen(i8 *filename, i8 *mode);
+
+export i32 fclose(FILE *f);

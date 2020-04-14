@@ -28,7 +28,8 @@ public:
 		BITWISE_AND,
 		BITWISE_OR,
 		BITWISE_LEFT_SHIFT,
-		BITWISE_RIGHT_SHIFT
+		BITWISE_RIGHT_SHIFT,
+		MODULO
     } op;
 
     ASTBinaryOperator(ASTNode &left, ASTNode &right, OP op);

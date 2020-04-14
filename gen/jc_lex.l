@@ -38,6 +38,7 @@ TypeRegistry *registry;
 "-" { return MINUS; yycurrentlinechar += yyleng; }
 "/" { return FORWARD_SLASH; yycurrentlinechar += yyleng; }
 "*" { return ASTERISK; yycurrentlinechar += yyleng; }
+"%" { return PERCENT; yycurrentlinechar += yyleng; }
 
 "=" { return EQUAL; yycurrentlinechar += yyleng; }
 "==" { return EQUAL_EQUAL; yycurrentlinechar += yyleng; }

@@ -89,7 +89,7 @@ int token;
 
 %token COMMA FSTOP SEMICOLON COLON
 
-%token PLUS MINUS ASTERISK FORWARD_SLASH
+%token PLUS MINUS ASTERISK FORWARD_SLASH PERCENT
 
 %token EQUAL EQUAL_EQUAL
 
@@ -135,7 +135,7 @@ int token;
 %type<string> IDENTIFIER TYPE
 %type<statement> return_statement flow_control
 %type<scope_block> statements scope semicoloned_statements
-%type<statement> add subtract multiply divide equality inequality lesser greater lesser_or_equal greater_or_equal bitwise_and bitwise_or bitwise_left_shift bitwise_right_shift
+%type<statement> add subtract multiply divide equality inequality lesser greater lesser_or_equal greater_or_equal bitwise_and bitwise_or bitwise_left_shift bitwise_right_shift modulo
 %type<struct_definition> struct_def
 %type<statement_list> statement_list
 %type<defer_statement> defer_statement
@@ -177,7 +177,7 @@ semicoloned_statement: statement SEMICOLON { /*printf("semicoloned statement\n")
     | defer_statement SEMICOLON { /*printf("semicoloned defer statement\n");*/ SetNodeInfo(*$1); }
     | function_def { /*printf("function_def\n");*/ SetNodeInfo(*$1); } ;
 
-statement: return_statement | function_decl | variable_decl | assign_op | alias_statement | typedef_statement | struct_def | import | include_or_link | func_ptr | enum_def | union_def | flow_control | function_def | struct_decl
+statement: return_statement | function_decl | variable_decl | assign_op | alias_statement | typedef_statement | struct_def | struct_decl | import | include_or_link | func_ptr | enum_def | union_def | flow_control | function_def | struct_decl
 
 alias_statement: ALIAS TYPE TYPE { /*printf("alias");*/ $$ = new ASTTypeSystemModStatement(ASTTypeSystemModStatement::TYPE_MOD_OP::ALIAS); };
 
@@ -269,6 +269,8 @@ bitwise_left_shift: id_or_constant LEFT_SHIFT id_or_constant { $$ = new ASTBinar
 
 bitwise_right_shift: id_or_constant RIGHT_SHIFT id_or_constant { $$ = new ASTBinaryOperator(*$1, *$3, ASTBinaryOperator::BITWISE_RIGHT_SHIFT);  }
     | id_or_constant RIGHT_SHIFT unary_op {$$ = new ASTBinaryOperator(*$1, *$3, ASTBinaryOperator::BITWISE_RIGHT_SHIFT); };
+
+modulo: id_or_constant PERCENT id_or_constant { $$ = new ASTBinaryOperator(*$1, *$3, ASTBinaryOperator::MODULO);  }
 
 function_def: composited_type id LEFT_BRACKET arg_list RIGHT_BRACKET scope {  $$ = new ASTFunctionDefinition(*$1, *$2, *$4, *$6);  }
     | composited_type id LEFT_BRACKET RIGHT_BRACKET scope {  $$ = new ASTFunctionDefinition(*$1, *$2, *new ASTFunctionArgs(), *$5);  };

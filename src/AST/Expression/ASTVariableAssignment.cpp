@@ -107,7 +107,10 @@ llvm::Value *ASTVariableAssignment::EmitIR(IREmitter::EmitterState &state)
 			{
 				is_assigned_symbol->assigned = true;
 				//perform an implicit cast if required
-				if (assign_to->GetType(state) != val->GetType(state))
+				const std::string *assign_to_type = assign_to->GetType(state);
+				const std::string *val_type = val->GetType(state);
+
+				if (assign_to_type != val_type)
 					return implicit_cast(val, assign_symbol);
 				else
 				{

@@ -124,6 +124,18 @@ llvm::Value *ASTBinaryOperator::EmitIR(IREmitter::EmitterState &state)
                     return state.builder.CreateFCmpOGE(templ, tempr);
             }
         }
+		case MODULO:
+		{
+			switch (state.typeRegistry.GetTypeInfo(*ltype)->classification)
+			{
+			default:
+				return nullptr;
+			case JCType::TYPE_CLASSIFICATION::INT:
+				return state.builder.CreateSRem(templ, tempr);
+			case JCType::TYPE_CLASSIFICATION::FLOAT:
+				return state.builder.CreateFRem(templ, tempr);
+			}
+		}
 		case BITWISE_AND:
 			return state.builder.CreateAnd(templ, tempr);
 		case BITWISE_OR:

@@ -82,7 +82,7 @@ llvm::Value *ASTBlock::EmitIR(IREmitter::EmitterState &state)
 	//preprocess the block, removing redundant statements and adding them to the vectors as required
     for (auto &statement : *block)
     {
-        if (statement->GetNodeType() == ASTNode::NODE_TYPE::TYPE_MOD || statement->GetNodeType() == ASTNode::NODE_TYPE::IMPORT_STATEMENT || statement->GetNodeType() == ASTNode::NODE_TYPE::INCLUDE_STATEMENT)
+        if (statement->GetNodeType() == ASTNode::NODE_TYPE::TYPE_MOD || statement->GetNodeType() == ASTNode::NODE_TYPE::IMPORT_STATEMENT || statement->GetNodeType() == ASTNode::NODE_TYPE::INCLUDE_STATEMENT || statement->GetNodeType() == ASTNode::NODE_TYPE::STRUCT_DECLARATION)
         {
             delete statement.release();
             continue;

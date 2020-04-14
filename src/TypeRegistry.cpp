@@ -60,6 +60,7 @@ void TypeRegistry::AddBlankStructType(const std::string &id)
     JCType type;
     type.type_string = id;
     type.classification = JCType::TYPE_CLASSIFICATION::STRUCT;
+	type.llvm_type = llvm::StructType::create(context, type.type_string);
 
     registry.push_back(type);
 }
@@ -173,11 +174,9 @@ llvm::Type *TypeRegistry::UnwindPointerType(const std::string &id)
         if (t)
             return llvm::PointerType::get(t, 0);
         else
-        {
             return nullptr;
-        }
     }
-    
+	return nullptr;
 }
 
 const JCType *TypeRegistry::GetTypeInfo(const std::string &id)

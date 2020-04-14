@@ -117,6 +117,20 @@ std::vector<Token> TypeTokenizer::Tokenize(const std::string &in)
 					}
 					current_keyword.clear();
 				}
+				else if (current_keyword == "struct")
+				{
+					EraseAllInstances(accum, ' ');
+					EraseAllInstances(accum, '\n');
+					EraseAllInstances(accum, '{');
+
+					std::string id = accum;
+					Token t;
+					t.token_type = IDENTIFIER_T;
+					t.string = new std::string(id);
+					tokens.push_back(t);
+					accum.clear();
+					current_keyword.clear();
+				}
 			}
 			accum.clear();
 		}

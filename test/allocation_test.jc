@@ -5,9 +5,14 @@ link "libcmt.lib";
 
 main()
 {
+	file := fopen("yikes.txt", "r");
+	defer fclose(file);
+
 	byte := alloc(1);
 	printf("Allocated memory pointer: %p\n", byte);
 	byte = dealloc(byte);
 	printf("Deallocated memory pointer: %p\n", byte);
+
+
 	return 0;
 }

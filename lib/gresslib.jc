@@ -131,7 +131,7 @@ export struct window_descriptor
 	i8* title;
 	u32 width;
 	u32 height;
-	u32 style;
+	window_style style;
 }
 
 export func_ptr void input_callback(input_event*);
