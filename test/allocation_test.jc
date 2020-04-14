@@ -7,6 +7,7 @@ main()
 {
 	file := fopen("yikes.txt", "r");
 	defer fclose(file);
+	printf("big thunk\n");
 
 	byte := alloc(1);
 	printf("Allocated memory pointer: %p\n", byte);

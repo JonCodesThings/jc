@@ -6,4 +6,8 @@ export i32 getchar();
 
 export FILE *fopen(i8 *filename, i8 *mode);
 
+export FILE *freopen(i8 *filename, i8 *mode, FILE *f);
+
 export i32 fclose(FILE *f);
+
+export FILE *fflush(FILE *f);
