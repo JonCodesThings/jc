@@ -1,5 +1,7 @@
 #include <include/AST/Expression/ASTUnaryOperator.hpp>
 
+#include <include/AST/Constant/ASTConstantFloat.hpp>
+
 ASTUnaryOperator::ASTUnaryOperator(ASTNode &operatee, OP op) : operatee(&operatee), cast(), index(), op(op), ASTExpression(UNARY_OP) {}
 
 ASTUnaryOperator::ASTUnaryOperator(ASTNode &operatee, ASTIdentifier *identifier, OP op) : operatee(&operatee), cast(identifier), index(), op(op), ASTExpression(UNARY_OP) {}
@@ -115,6 +117,57 @@ llvm::Value *ASTUnaryOperator::EmitIR(IREmitter::EmitterState &state)
             state.builder.CreateStore(added, s->alloc_inst);
 			return state.builder.CreateLoad(s->alloc_inst, "temp");
         }
+		case MINUS:
+		case PLUS:
+		{
+			if (type)
+			{
+				if (!state.typeRegistry.IsTypeNumeric(*type))
+				{
+					printf("Error in module %s line %d: cannot use unary plus/minus on non-numeric variable %s.\n", state.module_name.c_str(), line_number, s->identifier);
+					return nullptr;
+				}
+			}
+			if (s)
+			{
+				llvm::Value *v = state.builder.CreateLoad(s->alloc_inst);
+				const JCType *tinfo = state.typeRegistry.GetTypeInfo(s->type);
+
+				if (tinfo->classification == JCType::TYPE_CLASSIFICATION::INT)
+					v = state.builder.CreateSub(llvm::ConstantInt::get(tinfo->llvm_type, 0), v);
+				else if (tinfo->classification == JCType::TYPE_CLASSIFICATION::FLOAT)
+					v = state.builder.CreateSub(llvm::ConstantFP::get(tinfo->llvm_type, 0.0f), v);
+				else
+					v = nullptr;
+
+				return v;
+			}
+			switch (operatee->GetNodeType())
+			{
+			case CONSTANT:
+			{
+				if (*type == "i32")
+				{
+					ASTConstantInt *downcast = (ASTConstantInt*)operatee.get();
+					if (op == PLUS)
+						downcast->constant = +downcast->constant;
+					else
+						downcast->constant = -downcast->constant;
+
+				}
+				else
+				{
+					ASTConstantFloat *downcast = (ASTConstantFloat*)operatee.get();
+					if (op == PLUS)
+						downcast->constant = +downcast->constant;
+					else
+						downcast->constant = -downcast->constant;
+				}
+				return operatee->EmitIR(state);
+
+			}
+			}
+		}
     }
     return nullptr;
 }
@@ -161,6 +214,9 @@ const std::string *ASTUnaryOperator::GetType(IREmitter::EmitterState &state)
         }
         case ARRAY_INDEX:
             return state.typeRegistry.GetLifetimeTypeString(s->type);
+		case MINUS:
+		case PLUS:
+			return operatee->GetType(state);
     }
 }
 

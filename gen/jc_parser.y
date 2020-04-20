@@ -126,7 +126,7 @@ int token;
 %type<function_definition> function_def
 %type<function_declaration> function_decl
 %type<statement> assignable_statement import
-%type<unary_operator> cast increment decrement address_of dereference array_index
+%type<unary_operator> cast increment decrement address_of dereference array_index unary_plus unary_minus
 %type<function_args> arg_list 
 %type<struct_declarations> struct_list
 %type<function_call> function_call
@@ -203,7 +203,11 @@ scope: LEFT_BRACE semicoloned_statements RIGHT_BRACE { $$ = $2; } | LEFT_BRACE R
 
 import: IMPORT id { $$ = new ASTImportStatement(); };
 
-unary_op: cast | increment | decrement | address_of | dereference | array_index;
+unary_op: cast | increment | decrement | address_of | dereference | array_index | unary_minus | unary_plus;
+
+unary_minus: MINUS id_or_constant { $$ = new ASTUnaryOperator(*$2, ASTUnaryOperator::MINUS); }
+
+unary_plus: PLUS id_or_constant { $$ = new ASTUnaryOperator(*$2, ASTUnaryOperator::PLUS); }
 
 binary_op: add | subtract | multiply | divide | equality | inequality | lesser | greater | lesser_or_equal | greater_or_equal | bitwise_and | bitwise_or | bitwise_left_shift | bitwise_right_shift;
 

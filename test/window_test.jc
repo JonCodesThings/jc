@@ -9,7 +9,9 @@ i32 main()
 	wnd_desc.height = (u32)480;
 	wnd_desc.style = window_style::WINDOW_BORDERED;
 
-	window *wnd = create_window(&wnd_desc);
+	wnd := create_window(&wnd_desc);
+
+	x := -10;
 
 	cont := process_os_events(wnd);
 

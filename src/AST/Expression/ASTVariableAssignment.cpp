@@ -128,6 +128,12 @@ llvm::Value *ASTVariableAssignment::EmitIR(IREmitter::EmitterState &state)
 							store = state.builder.CreateLoad(store, "load_val_to_store");
 							break;
 						}
+						case ASTUnaryOperator::OP::MINUS:
+						case ASTUnaryOperator::OP::PLUS:
+						{
+							//store = state.builder.CreateLoad(store, "load_val_to_store");
+							break;
+						}
 
 						}
 					}

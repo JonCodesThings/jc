@@ -23,7 +23,9 @@ public:
         DECREMENT,
         ADDRESS_OF,
         DEREFERENCE,
-        ARRAY_INDEX
+        ARRAY_INDEX,
+		MINUS,
+		PLUS
     } op;
 
     ASTUnaryOperator(ASTNode &operatee, OP op);
