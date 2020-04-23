@@ -1,7 +1,7 @@
 #include <include/AST/Statement/ASTFunctionDefinition.hpp>
 
-ASTFunctionDefinition::ASTFunctionDefinition(ASTIdentifier &id, ASTIdentifier &ret_type, ASTFunctionArgs &args, ASTBlock &block) : 
-    declaration(new ASTFunctionDeclaration(id, ret_type, args)), block(&block), ASTStatement(FUNCTION_DEFINITION) {}
+ASTFunctionDefinition::ASTFunctionDefinition(ASTIdentifier &ret_type, ASTIdentifier &id, ASTFunctionArgs &args, ASTBlock &block) :
+    declaration(), return_type(&ret_type), id(&id), args(&args), block(&block), ASTStatement(FUNCTION_DEFINITION) {}
 
 ASTFunctionDefinition::ASTFunctionDefinition(ASTIdentifier &id, ASTFunctionArgs &args, ASTBlock &block) :
 	declaration(), id(&id), args(&args), block(&block), ASTStatement(FUNCTION_DEFINITION) {}
@@ -10,25 +10,33 @@ llvm::Value *ASTFunctionDefinition::EmitIR(IREmitter::EmitterState &state)
 {
 	if (!declaration)
 	{
-		state.syntheticStack.Clear();
-		state.syntheticStack = state.symbolStack;
-
-		state.syntheticStack.Push(id->identifier);
-
-		for (auto &arg : args->args)
+		const std::string *typestring = nullptr;
+		if (!return_type)
 		{
-			Symbol s;
-			s.identifier = arg->name->identifier;
-			s.type = arg->type->identifier;
-			s.classification = s.VARIABLE;
-			state.syntheticStack.AddSymbol(s);
-		}
+			state.syntheticStack.Clear();
+			state.syntheticStack = state.symbolStack;
 
-		const std::string *typestring = block->GetType(state);
-		if (!typestring)
-			return nullptr;
-		state.syntheticStack.Clear();
+			state.syntheticStack.Push(id->identifier);
+
+			for (auto &arg : args->args)
+			{
+				Symbol s;
+				s.identifier = arg->name->identifier;
+				s.type = arg->type->identifier;
+				s.classification = s.VARIABLE;
+				state.syntheticStack.AddSymbol(s);
+			}
+
+			typestring = block->GetType(state);
+			if (!typestring)
+				return nullptr;
+			state.syntheticStack.Clear();
+		}
+		else
+			typestring = new std::string(return_type.release()->identifier);
+		
 		declaration = std::make_unique<ASTFunctionDeclaration>(*new ASTIdentifier(*typestring), *id.release(), *args.release());
+		declaration->exporting = exporting;
 	}
 
 	//get the function by emitting the declaration's IR
@@ -70,5 +78,5 @@ llvm::Value *ASTFunctionDefinition::EmitIR(IREmitter::EmitterState &state)
 
 void ASTFunctionDefinition::SetExporting(const bool expa)
 {
-	declaration->SetExporting(expa);
+	exporting = expa;
 }

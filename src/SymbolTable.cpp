@@ -39,3 +39,8 @@ std::vector<Symbol> SymbolTable::GetExportedSymbols() const
 
 	return exported;
 }
+
+const std::vector<Symbol> &SymbolTable::GetSymbols() const
+{
+	return symbols;
+}

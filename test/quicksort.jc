@@ -1,0 +1,47 @@
+void sort(i32 *items, i32 size) 
+{
+    void quickSort(i32 first, i32 last) 
+	{
+        void swap(i32 p, i32 q) 
+		{
+            i32 tmp = items[p];
+            items[p] = items[q];
+            items[q] = tmp;
+        }
+        
+        i32 partition() 
+		{
+            i32 pivot = items[first];
+
+			index = first;
+
+            swap(index, last);
+            for (i32 i = first; i < last; i++)
+			{
+				if (pivot > items[i])
+				{
+					index++;
+					swap(index, i);
+				}
+			}
+
+            swap(index, last);
+            return index;
+        }
+
+        if (first < last) 
+		{
+            i32 pivotIndex = partition();
+            quickSort(first, pivotIndex - 1);
+            quickSort(pivotIndex + 1, last);
+        }
+    }
+
+    quickSort(0, size - 1);
+}
+
+main()
+{
+	i32 mut arr mut [5] = { 0, 4, 5, 7, 1 };
+	return 0;
+}

@@ -213,7 +213,9 @@ const std::string *ASTUnaryOperator::GetType(IREmitter::EmitterState &state)
             return state.typeRegistry.GetLifetimeTypeString(pointer_ty);
         }
         case ARRAY_INDEX:
-            return state.typeRegistry.GetLifetimeTypeString(s->type);
+		{
+			return state.typeRegistry.GetLifetimeTypeString(s->type.substr(0, s->type.length() - 1));
+		}
 		case MINUS:
 		case PLUS:
 			return operatee->GetType(state);

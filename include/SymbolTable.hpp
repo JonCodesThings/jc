@@ -35,6 +35,7 @@ public:
     bool AddSymbol(const Symbol &symbol);
     Symbol *GetSymbolByIdentifier(const std::string &identifier);
 	std::vector<Symbol> GetExportedSymbols() const;
+	const std::vector<Symbol> &GetSymbols() const;
 private:
     std::vector<Symbol> symbols;
 

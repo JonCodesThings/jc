@@ -15,10 +15,12 @@ public:
     std::unique_ptr<ASTFunctionDeclaration> declaration;
     std::unique_ptr<ASTBlock> block;
 	std::unique_ptr<ASTIdentifier> id;
+	std::unique_ptr<ASTIdentifier> return_type;
 	std::unique_ptr<ASTFunctionArgs> args;
+	bool exporting = false;
 
 
-    ASTFunctionDefinition(ASTIdentifier &id, ASTIdentifier &ret_type, ASTFunctionArgs &args, ASTBlock &block);
+    ASTFunctionDefinition(ASTIdentifier &ret_type, ASTIdentifier &id, ASTFunctionArgs &args, ASTBlock &block);
 	ASTFunctionDefinition(ASTIdentifier &id, ASTFunctionArgs &args, ASTBlock &block);
 
 

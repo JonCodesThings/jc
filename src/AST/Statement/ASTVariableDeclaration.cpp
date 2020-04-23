@@ -65,7 +65,10 @@ llvm::Value * ASTVariableDeclaration::EmitIR(IREmitter::EmitterState &state)
 
 	//if it is valid get the array type instead
 	if (array_size)
+	{
 		t = state.typeRegistry.GetArrayType(typestring, temp->constant);
+		symbol.type = typestring + "*";
+	}
 
 	if (!t)
 	{
@@ -113,8 +116,8 @@ llvm::Value * ASTVariableDeclaration::EmitIR(IREmitter::EmitterState &state)
 	const JCType *typeinfo = state.typeRegistry.GetTypeInfo(symbol.type);
 
 	//if there is a node to assign the first value
-    if (node)
-    {
+	if (node)
+	{
 		//create an assignment operation and release ownership of certain objects while emitting IR
 		if (node->GetNodeType() == NULLPTR)
 		{
@@ -122,13 +125,13 @@ llvm::Value * ASTVariableDeclaration::EmitIR(IREmitter::EmitterState &state)
 			np->nullptr_type = (llvm::PointerType*)state.typeRegistry.GetType(symbol.type);
 			np->nullptrtype_str = state.typeRegistry.GetLifetimeTypeString(symbol.type);
 		}
-        auto assignment = ASTVariableAssignment(*id, *node);
-        id.release();
-        node.release();
-        auto emit = assignment.EmitIR(state);
+		auto assignment = ASTVariableAssignment(*id, *node);
+		id.release();
+		node.release();
+		auto emit = assignment.EmitIR(state);
 		if (!emit)
 			return nullptr;
-    }
+	}
 	else if (init_list)
 	{
 		int index = 0;
@@ -141,6 +144,8 @@ llvm::Value * ASTVariableDeclaration::EmitIR(IREmitter::EmitterState &state)
 				return nullptr;
 		}
 	}
+	else if (!typeinfo)
+		return symbol.alloc_inst;
 	else if (typeinfo->classification == JCType::TYPE_CLASSIFICATION::STRUCT)
 	{
 		for (int i = 0; i < typeinfo->MEMBER_NAMES.size(); i++)

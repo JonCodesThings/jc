@@ -78,14 +78,16 @@ llvm::Value *ASTVariableAssignment::EmitIR(IREmitter::EmitterState &state)
 					default:
 						break;
 					case ASTUnaryOperator::ADDRESS_OF:
-					{
-						llvm::Value *v = state.builder.CreateStore(val->EmitIR(state), assign_symbol->alloc_inst);
-						return v;
-					}
 					case ASTUnaryOperator::INCREMENT:
 					case ASTUnaryOperator::DECREMENT:
 					{
 						llvm::Value *v = state.builder.CreateStore(val->EmitIR(state), assign_symbol->alloc_inst);
+						return v;
+					}
+					case ASTUnaryOperator::ARRAY_INDEX:
+					{
+						llvm::Value *v = state.builder.CreateLoad(val->EmitIR(state), "get_arr_val");
+						v = state.builder.CreateStore(v, assign_symbol->alloc_inst);
 						return v;
 					}
 					}

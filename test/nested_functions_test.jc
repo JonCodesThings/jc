@@ -4,9 +4,11 @@ link "libcmt.lib";
 
 i32 main()
 {
+	i32 x = 10;
 	void Greet()
 	{
 		printf("Greetings!\n");
+		printf("%d\n", x);
 	}
 	Greet();
 	return 0;

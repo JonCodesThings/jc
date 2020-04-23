@@ -123,7 +123,18 @@ llvm::Value *ASTBlock::EmitIR(IREmitter::EmitterState &state)
 			if (statement->GetNodeType() == ASTNode::NODE_TYPE::FUNCTION_DEFINITION && current_function != nullptr)
 			{
 				ASTFunctionDefinition *def = (ASTFunctionDefinition*)statement.get();
-				def->declaration->identifier->identifier = std::string(current_function->getName()) + "__" + def->declaration->identifier->identifier;
+				def->id->identifier = std::string(current_function->getName()) + "__" + def->id->identifier;
+
+				for (auto symbol : state.symbolStack.Top().GetSymbols())
+				{
+					auto arg = std::make_unique<ASTFunctionArg>();
+					arg->name = std::make_unique<ASTIdentifier>(symbol.identifier);
+					arg->type = std::make_unique<ASTIdentifier>(symbol.type);
+					arg->variadic_arg = false;
+					def->args->args.push_back(std::move(arg));
+
+				}
+
 				auto current_insert = state.builder.GetInsertBlock();
 				auto c = current_function;
 
