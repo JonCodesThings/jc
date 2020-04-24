@@ -25,6 +25,7 @@ struct Symbol
 	bool ptr_mut = false;
 	bool assigned = false;
 	bool init = false;
+	bool nested_func = false;
 };
 
 class SymbolTable
@@ -36,6 +37,7 @@ public:
     Symbol *GetSymbolByIdentifier(const std::string &identifier);
 	std::vector<Symbol> GetExportedSymbols() const;
 	const std::vector<Symbol> &GetSymbols() const;
+	const std::string GetID() const;
 private:
     std::vector<Symbol> symbols;
 

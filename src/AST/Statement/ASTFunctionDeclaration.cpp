@@ -64,6 +64,7 @@ llvm::Value *ASTFunctionDeclaration::EmitIR(IREmitter::EmitterState &state)
     s.classification = Symbol::Classification::FUNCTION;
 	s.function = func;
 	s.exported = exporting;
+	s.nested_func = current_function != nullptr;
 
 	//add it to the symbol stack
     state.symbolStack.AddSymbol(s);

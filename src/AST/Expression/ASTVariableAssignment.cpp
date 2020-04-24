@@ -67,6 +67,9 @@ llvm::Value *ASTVariableAssignment::EmitIR(IREmitter::EmitterState &state)
 				printf("Error in module %s line %d: cannot assign new value to non-mutable variable %s.\n", state.module_name.c_str(), line_number, assign_symbol->identifier);
 				return nullptr;
 			}
+
+
+
 			//if the value symbol exists
 			if (val_symbol)
 			{
@@ -86,6 +89,16 @@ llvm::Value *ASTVariableAssignment::EmitIR(IREmitter::EmitterState &state)
 					}
 					case ASTUnaryOperator::ARRAY_INDEX:
 					{
+						if (assign_to->GetNodeType() == UNARY_OP)
+						{
+							ASTUnaryOperator *downcast = (ASTUnaryOperator*)assign_to.get();
+							if (downcast->op == ASTUnaryOperator::ARRAY_INDEX)
+							{
+								llvm::Value *v = state.builder.CreateLoad(downcast->EmitIR(state));
+								llvm::Value *vs = state.builder.CreateLoad(val->EmitIR(state), "get_arr_val");
+								return state.builder.CreateStore(v, val->EmitIR(state));
+							}
+						}
 						llvm::Value *v = state.builder.CreateLoad(val->EmitIR(state), "get_arr_val");
 						v = state.builder.CreateStore(v, assign_symbol->alloc_inst);
 						return v;
@@ -100,7 +113,18 @@ llvm::Value *ASTVariableAssignment::EmitIR(IREmitter::EmitterState &state)
 				is_assigned_symbol->assigned = true;
 				//perform an implicit cast as required or just emit store operation
 				if (assign_symbol->type != val_symbol->type)
+				{
+					if (assign_to->GetNodeType() == UNARY_OP)
+					{
+						ASTUnaryOperator *downcast = (ASTUnaryOperator*)assign_to.get();
+						if (downcast->op == ASTUnaryOperator::ARRAY_INDEX)
+						{
+							llvm::Value *v = state.builder.CreateLoad(downcast->EmitIR(state));
+							return state.builder.CreateStore(v, val->EmitIR(state));
+						}
+					}
 					return implicit_cast(val, assign_symbol);
+				}
 				else
 					return state.builder.CreateStore(state.builder.CreateLoad(val->EmitIR(state), "load_val_var_assign"), assign_symbol->alloc_inst);
 			}

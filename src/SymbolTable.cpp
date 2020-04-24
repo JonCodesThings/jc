@@ -44,3 +44,8 @@ const std::vector<Symbol> &SymbolTable::GetSymbols() const
 {
 	return symbols;
 }
+
+const std::string SymbolTable::GetID() const
+{
+	return id;
+}

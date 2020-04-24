@@ -14,6 +14,8 @@ public:
 
     llvm::BasicBlock *b; //\brief LLVM Basic Block representation
 
+	std::string block_name = "";
+
     bool returned = false; //\brief Flag to check if the block contains a return statement
 
     ASTBlock();

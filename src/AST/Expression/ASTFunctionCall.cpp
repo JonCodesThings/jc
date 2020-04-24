@@ -1,5 +1,7 @@
 #include <include/AST/Expression/ASTFunctionCall.hpp>
 
+#include <include/AST/Expression/ASTUnaryOperator.hpp>
+
 ASTFunctionCall::ASTFunctionCall(ASTIdentifier &id) : identifier(&id), args(), ASTExpression(FUNCTION_CALL) {}
 
 ASTFunctionCall::ASTFunctionCall(ASTIdentifier &id, std::vector<std::unique_ptr<ASTStatement>> &args) : identifier(&id), args(&args), ASTExpression(FUNCTION_CALL) {}
@@ -22,18 +24,44 @@ llvm::Value *ASTFunctionCall::EmitIR(IREmitter::EmitterState &state)
 		for (auto &arg : *args)
 		{
 			if (arg->GetNodeType() == ASTNode::IDENTIFIER)
-				argvals.push_back(state.builder.CreateLoad(arg->EmitIR(state), "load_var_value"));
+			{
+				const Symbol *s = arg->GetSymbol(state);
+				if (s->array_size > 1)
+				{
+					llvm::Value *v = state.builder.CreateGEP(state.typeRegistry.GetType(s->type), s->alloc_inst, { llvm::ConstantInt::get(state.typeRegistry.GetType("i32"), 0) });
+					argvals.push_back(state.builder.CreateLoad(v, "load_var_value"));
+				}
+				else
+					argvals.push_back(state.builder.CreateLoad(arg->EmitIR(state), "load_var_value"));
+			}
 			else
 				argvals.push_back(arg->EmitIR(state));
 		}
 	}
 
-	if (state.symbolStack.Top().GetSymbolByIdentifier(identifier->identifier) == s && s->classification == Symbol::Classification::FUNCTION)
+	//if (state.symbolStack.Top().GetSymbolByIdentifier(identifier->identifier) == s && s->classification == Symbol::Classification::FUNCTION)
+	//{
+	//	for (auto arg : state.symbolStack.Top().GetSymbols())
+	//	{
+	//		if (arg.classification == Symbol::Classification::VARIABLE)
+	//			argvals.push_back(state.builder.CreateLoad(arg.alloc_inst, "load_var_value"));
+	//	}
+	//}
+	if (s->classification == Symbol::Classification::FUNCTION && s->nested_func)
 	{
-		for (auto arg : state.symbolStack.Top().GetSymbols())
+		//printf("Symbol stack size: %zd\n", state.symbolStack.Size());
+
+		auto it = s->function->args().begin();
+		if (args)
+			it += args->size();
+		for (it; it != s->function->args().end(); it++)
 		{
-			if (arg.classification == Symbol::Classification::VARIABLE)
-				argvals.push_back(state.builder.CreateLoad(arg.alloc_inst, "load_var_value"));
+			std::string symname = (*it).getName();
+			const Symbol *sym = state.symbolStack.GetSymbolByIdentifier(symname);
+			if (!sym)
+				continue;
+			llvm::Value *v = sym->alloc_inst;
+			argvals.push_back(state.builder.CreateLoad(v));
 		}
 	}
 

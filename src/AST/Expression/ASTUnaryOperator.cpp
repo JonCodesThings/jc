@@ -38,18 +38,23 @@ llvm::Value *ASTUnaryOperator::EmitIR(IREmitter::EmitterState &state)
         case ARRAY_INDEX:
         {
 			//if there is nothing in the identifier variable then we use GEP
+			llvm::Value *symval = s->alloc_inst;
+			/*if (s->alloc_inst->getType() != state.typeRegistry.GetArrayType(s->type.substr(0, s->type.length() - 1), s->array_size))
+				symval = state.builder.CreateLoad(s->alloc_inst, "load_ptr_to_arr");*/
+
             if (!cast)
-                return state.builder.CreateGEP(s->alloc_inst, { llvm::ConstantInt::get(llvm::Type::getInt32Ty(state.context), 0), index->EmitIR(state) });
+                return state.builder.CreateGEP(state.typeRegistry.GetType(s->type.substr(0, s->type.length() - 1)), symval, { index->EmitIR(state) });
 
 			//otherwise we get the symbol, load it and then use GEP
 
             Symbol *cs = state.symbolStack.GetSymbolByIdentifier(cast->identifier);
 
+
             llvm::Value *v  = state.builder.CreateLoad(cs->alloc_inst, "temp");
 
 			//TODO: fix this awful hack
             if (v->getType() == llvm::Type::getInt32Ty(state.context))
-                v = state.builder.CreateGEP(s->alloc_inst, { llvm::ConstantInt::get(llvm::Type::getInt32Ty(state.context), 0), v});
+                v = state.builder.CreateGEP(state.typeRegistry.GetType(s->type.substr(0, s->type.length() - 1)), symval, { v });
 
             return v;
         }

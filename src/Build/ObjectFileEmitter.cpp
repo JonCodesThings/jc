@@ -115,7 +115,7 @@ bool ObjectFileEmitter::EmitObjectFile(llvm::Module & module)
 	Options.MCOptions.SplitDwarfFile = std::string();
 
 	//set the optimizer level to default
-	CodeGenOpt::Level OLvl = CodeGenOpt::Default;
+	CodeGenOpt::Level OLvl = CodeGenOpt::None;
 
 	//create a target machine instance
 	std::unique_ptr<TargetMachine> Target(T->createTargetMachine(

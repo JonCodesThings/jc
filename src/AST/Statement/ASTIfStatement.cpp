@@ -52,17 +52,18 @@ llvm::Value *ASTIfStatement::EmitIR(IREmitter::EmitterState &state)
         llvm::Value *cond = (*it)->cond_expr->EmitIR(state);
 
 		//get the block associated with this conditional block by emitting IR
+		(*it)->then->block_name = "conditional_chain_block_";
         llvm::Value *block = (*it)->then->EmitIR(state);
 		
 		//downcast that block to an actual BasicBlock
 		llvm::BasicBlock *br = (llvm::BasicBlock *)block;
 
 		//create a new merge block
-        llvm::BasicBlock *merge = llvm::BasicBlock::Create(state.context, "merge", current_function);
+        llvm::BasicBlock *merge = llvm::BasicBlock::Create(state.context, "chain_merge", current_function);
 
 		//add to the new merge block a branch if the current conditional block has no return statement
         if (!(*it)->then->ContainsReturnStatement())
-            state.builder.CreateBr(final_merge);
+            state.builder.CreateBr(merge);
 
 		//set the current insert point back to what it was at the start of this iteration
         state.builder.SetInsertPoint(current_insert);
@@ -104,5 +105,5 @@ llvm::Value *ASTIfStatement::EmitIR(IREmitter::EmitterState &state)
         phi->removeFromParent();
 
 	//return the current insert block
-    return current_insert;
+    return (llvm::Value*)state.builder.GetInsertBlock();
 }

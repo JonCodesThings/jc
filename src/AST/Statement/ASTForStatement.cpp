@@ -23,6 +23,8 @@ llvm::Value *ASTForStatement::EmitIR(IREmitter::EmitterState &state)
 		return nullptr;
 
 	//emit the IR for the loop internals
+	ASTBlock *loop_i = (ASTBlock*)loop.get();
+	loop_i->block_name = "for_loop_inside";
     llvm::Value *loop_internals = loop->EmitIR(state);
 
     if (!loop_internals)
@@ -30,16 +32,17 @@ llvm::Value *ASTForStatement::EmitIR(IREmitter::EmitterState &state)
 
 	//cast the loop internals to a basic block
     llvm::BasicBlock *lvb = (llvm::BasicBlock *)loop_internals;
+	llvm::BasicBlock *insertB = state.builder.GetInsertBlock();
+
+	llvm::Value *iterate = third->EmitIR(state);
+
+	if (!iterate)
+		return nullptr;
 
 	//emit IR for the loop condition and iterate condition
     llvm::Value *loop_condition = second->EmitIR(state);
 
 	if (!loop_condition)
-		return nullptr;
-
-    llvm::Value *iterate = third->EmitIR(state);
-
-	if (!iterate)
 		return nullptr;
 
 	//make a branch for the loop condition
@@ -57,7 +60,7 @@ llvm::Value *ASTForStatement::EmitIR(IREmitter::EmitterState &state)
 	//generate the required phi nodes
     llvm::PHINode *phi = state.builder.CreatePHI(llvm::Type::getInt8Ty(state.context), 2);
     phi->addIncoming(llvm::ConstantInt::get(llvm::Type::getInt8Ty(state.context), 0), current_insert);
-    phi->addIncoming(llvm::ConstantInt::get(llvm::Type::getInt8Ty(state.context), 1), lvb);
+    phi->addIncoming(llvm::ConstantInt::get(llvm::Type::getInt8Ty(state.context), 1), insertB);
 
 	//return the post loop block
     return pl;

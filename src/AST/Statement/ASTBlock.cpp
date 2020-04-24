@@ -73,7 +73,7 @@ llvm::Value *ASTBlock::EmitIR(IREmitter::EmitterState &state)
 {
 	//if we don't have a block create it
     if (!b)
-        CreateBasicBlock(state, "new_block");
+        CreateBasicBlock(state, block_name);
 
 	//vectors of deferred and return statements
     std::vector<std::unique_ptr<ASTStatement>> deferred;
@@ -127,6 +127,8 @@ llvm::Value *ASTBlock::EmitIR(IREmitter::EmitterState &state)
 
 				for (auto symbol : state.symbolStack.Top().GetSymbols())
 				{
+					if (symbol.classification != Symbol::Classification::VARIABLE)
+						continue;
 					auto arg = std::make_unique<ASTFunctionArg>();
 					arg->name = std::make_unique<ASTIdentifier>(symbol.identifier);
 					arg->type = std::make_unique<ASTIdentifier>(symbol.type);
@@ -138,14 +140,18 @@ llvm::Value *ASTBlock::EmitIR(IREmitter::EmitterState &state)
 				auto current_insert = state.builder.GetInsertBlock();
 				auto c = current_function;
 
-				def->EmitIR(state);
+				if (!def->EmitIR(state))
+					return nullptr;
 				current_function = c;
 				state.builder.SetInsertPoint(current_insert);
 
 				continue;
 			}
-            if (!statement->EmitIR(state))
-                return nullptr;
+			if (!statement->EmitIR(state))
+			{
+				printf("Failed to emit IR for module %s from statement on line %d\n", state.module_name.c_str(), statement->line_number);
+				return nullptr;
+			}
             if (statement->GetNodeType() == ASTNode::NODE_TYPE::RETURN_STATEMENT)
             {
                 returned = true;

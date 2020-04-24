@@ -18,6 +18,7 @@ public:
     Symbol *GetSymbolByIdentifier(const std::string &identifier);
     void Push(const std::string &id);
     void Pop();
+	const unsigned int Size();
 	SymbolTable &Top();
 private:
     std::vector<SymbolTable> stack;

@@ -41,6 +41,11 @@ void SymbolTableStack::Pop()
     stack.pop_back();
 }
 
+const unsigned int SymbolTableStack::Size()
+{
+	return stack.size();
+}
+
 SymbolTable & SymbolTableStack::Top()
 {
 	return stack.back();
