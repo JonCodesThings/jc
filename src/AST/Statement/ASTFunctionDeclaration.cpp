@@ -25,11 +25,11 @@ llvm::Value *ASTFunctionDeclaration::EmitIR(IREmitter::EmitterState &state)
         }
 
 		//get the type from the registry
-        llvm::Type *t = state.typeRegistry.GetType(arg->type->identifier);
+        llvm::Type *t = state.typeRegistry.GetType(StripTypename(arg->type->identifier));
 
 		//failing that unwind the pointer type
         if (!t)
-            t = state.typeRegistry.UnwindPointerType(arg->type->identifier);
+            t = state.typeRegistry.UnwindPointerType(StripTypename(arg->type->identifier));
 
 		//failing that give up
         if (!t)

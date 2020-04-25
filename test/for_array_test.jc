@@ -1,16 +1,10 @@
 i32 main()
 {
     i32 x mut[10];
-    for (mut i32 i = 0; i < 10; i++)
+	for (mut i32 i = 0; i < 10; i++)
     {
         x[i] = i;
-		if (i == 2)
-		{
-			i32 y = 2;
-		}
     }
-
-    i32 z = x[9];
-
-    return z;
+	i32 n = x[9];
+	return n;
 }

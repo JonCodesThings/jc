@@ -1,14 +1,18 @@
 import io;
 
-void sort(i32 *items, i32 size) 
+void sort(mut i32 mut *items, mut i32 size) 
 {
     void quickSort(i32 first, i32 last) 
 	{
 	    void swap(i32 p, i32 q) 
 		{
             i32 tmp = items[p];
-            items[p] = items[q];
-            items[q] = tmp;
+			i32 tmp2 = items[q];
+			items[p] = tmp2;
+			items[q] = tmp;
+			i32 r = items[p];
+			i32 k = items[q];
+			printf("p: %d q: %d tmp: %d tmp2: %d items[p]: %d items[q]: %d\n", p, q, tmp, tmp2, r, k);
         }
 
 		        
@@ -43,15 +47,17 @@ void sort(i32 *items, i32 size)
 
 main()
 {
-	i32 mut arr mut[5] = { 0, 4, 5, 7, 1 };
+	i32 mut arr mut[5] = { 25, 4, 5, 7, 1 };
+
+	sort(arr, 5);
+
 
 	for (mut i32 l = 0; l < 5; l++)
 	{
 		i32 n = arr[l];
-		printf("%d\n", l);
+		printf("%d\n", n);
 	}
 
-	sort(arr, 5);
 
 	return 0;
 }

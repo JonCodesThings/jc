@@ -22,7 +22,8 @@ llvm::Value *ASTFunctionDefinition::EmitIR(IREmitter::EmitterState &state)
 			{
 				Symbol s;
 				s.identifier = arg->name->identifier;
-				s.type = arg->type->identifier;
+				s.type = StripTypename(arg->type->identifier);
+				s.full_type = arg->type->identifier;
 				s.classification = s.VARIABLE;
 				state.syntheticStack.AddSymbol(s);
 			}
@@ -41,6 +42,11 @@ llvm::Value *ASTFunctionDefinition::EmitIR(IREmitter::EmitterState &state)
 
 	//get the function by emitting the declaration's IR
     llvm::Value *func = declaration->EmitIR(state);
+	if (!func)
+	{
+		printf("Failed to generate function definition for function in module %s on line %d.\n", state.module_name.c_str(), line_number);
+		return nullptr;
+	}
 
 	//push a new symbol table onto the stack
     state.symbolStack.Push(declaration->identifier->identifier);
@@ -55,10 +61,13 @@ llvm::Value *ASTFunctionDefinition::EmitIR(IREmitter::EmitterState &state)
     {
         Symbol s;
         s.identifier = arg->name->identifier;
-        s.type = arg->type->identifier;
+		s.type = StripTypename(arg->type->identifier);
+        s.full_type = arg->type->identifier;
         s.classification = Symbol::Classification::VARIABLE;
         s.alloc_inst = nullptr;
 		s.exported = declaration->exporting;
+		s.mut = TypenameMutable(arg->type->identifier);
+		s.ptr_mut = TypenamePtrMutable(arg->type->identifier);
         state.symbolStack.AddSymbol(s);
     }
 

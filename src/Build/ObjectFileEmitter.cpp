@@ -122,6 +122,8 @@ bool ObjectFileEmitter::EmitObjectFile(llvm::Module & module)
 		triple.getTriple(), CPU_str, Feature_str, Options, getRelocModel(),
 		getCodeModel(), OLvl));
 
+	module.setDataLayout(Target->createDataLayout());
+
 	//create a legacy pass manager and hack together a few things
 	llvm::legacy::PassManager pm;
 	LLVMTargetMachine &LLVMTM = static_cast<LLVMTargetMachine &>(*Target);

@@ -38,23 +38,24 @@ llvm::Value *ASTUnaryOperator::EmitIR(IREmitter::EmitterState &state)
         case ARRAY_INDEX:
         {
 			//if there is nothing in the identifier variable then we use GEP
-			llvm::Value *symval = s->alloc_inst;
-			/*if (s->alloc_inst->getType() != state.typeRegistry.GetArrayType(s->type.substr(0, s->type.length() - 1), s->array_size))
-				symval = state.builder.CreateLoad(s->alloc_inst, "load_ptr_to_arr");*/
-
-            if (!cast)
-                return state.builder.CreateGEP(state.typeRegistry.GetType(s->type.substr(0, s->type.length() - 1)), symval, { index->EmitIR(state) });
+			// llvm::ConstantInt::get(llvm::Type::getInt64Ty(state.context), 0), index->EmitIR(state)
+			if (!cast)
+				return state.builder.CreateGEP(state.typeRegistry.GetType(s->type), s->alloc_inst, { llvm::ConstantInt::get(llvm::Type::getInt32Ty(state.context), 2) }, "gep_index_constant");
 
 			//otherwise we get the symbol, load it and then use GEP
+			Symbol *cs = state.symbolStack.GetSymbolByIdentifier(cast->identifier);
 
-            Symbol *cs = state.symbolStack.GetSymbolByIdentifier(cast->identifier);
+			llvm::Value *v = state.builder.CreateLoad(cs->alloc_inst, "temp");
+			llvm::Value *sload = s->alloc_inst;
 
+			if (s->array_size == 1)
+				sload = state.builder.CreateLoad(sload, "loading_to_index");
 
-            llvm::Value *v  = state.builder.CreateLoad(cs->alloc_inst, "temp");
+			//llvm::ConstantInt::get(llvm::Type::getInt32Ty(state.context), 0), llvm::ConstantInt::get(llvm::Type::getInt32Ty(state.context), 0)
 
 			//TODO: fix this awful hack
-            if (v->getType() == llvm::Type::getInt32Ty(state.context))
-                v = state.builder.CreateGEP(state.typeRegistry.GetType(s->type.substr(0, s->type.length() - 1)), symval, { v });
+			if (v->getType() == llvm::Type::getInt32Ty(state.context))
+				v = state.builder.CreateGEP(state.typeRegistry.GetType(s->type), s->alloc_inst, { llvm::ConstantInt::get(llvm::Type::getInt32Ty(state.context), 0) }, "gep_index_expr");
 
             return v;
         }

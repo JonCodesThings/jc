@@ -83,6 +83,7 @@ llvm::Value *ASTVariableAssignment::EmitIR(IREmitter::EmitterState &state)
 					case ASTUnaryOperator::ADDRESS_OF:
 					case ASTUnaryOperator::INCREMENT:
 					case ASTUnaryOperator::DECREMENT:
+					case ASTUnaryOperator::DEREFERENCE:
 					{
 						llvm::Value *v = state.builder.CreateStore(val->EmitIR(state), assign_symbol->alloc_inst);
 						return v;
@@ -95,11 +96,13 @@ llvm::Value *ASTVariableAssignment::EmitIR(IREmitter::EmitterState &state)
 							if (downcast->op == ASTUnaryOperator::ARRAY_INDEX)
 							{
 								llvm::Value *v = state.builder.CreateLoad(downcast->EmitIR(state));
-								llvm::Value *vs = state.builder.CreateLoad(val->EmitIR(state), "get_arr_val");
+								llvm::Value *vs = state.builder.CreateLoad(val->EmitIR(state), "get_assign_to_arr_val");
 								return state.builder.CreateStore(v, val->EmitIR(state));
 							}
 						}
-						llvm::Value *v = state.builder.CreateLoad(val->EmitIR(state), "get_arr_val");
+						llvm::Value *v = val->EmitIR(state);
+						v = state.builder.CreateLoad(v, "get_value_arr_val");
+						v = state.builder.CreateLoad(v, "get_value_arr_val");
 						v = state.builder.CreateStore(v, assign_symbol->alloc_inst);
 						return v;
 					}
@@ -120,7 +123,12 @@ llvm::Value *ASTVariableAssignment::EmitIR(IREmitter::EmitterState &state)
 						if (downcast->op == ASTUnaryOperator::ARRAY_INDEX)
 						{
 							llvm::Value *v = state.builder.CreateLoad(downcast->EmitIR(state));
-							return state.builder.CreateStore(v, val->EmitIR(state));
+							llvm::Value *val_ = val->EmitIR(state);
+
+							if (val->GetNodeType() == IDENTIFIER)
+								val_ = state.builder.CreateLoad(val_);
+
+							return state.builder.CreateStore(val_, v);
 						}
 					}
 					return implicit_cast(val, assign_symbol);
@@ -190,8 +198,10 @@ llvm::Value *ASTVariableAssignment::EmitIR(IREmitter::EmitterState &state)
 			//if there is a value symbol load it and then store it
 			if (val_symbol)
 			{
-				llvm::Value *val_load = state.builder.CreateLoad(val->EmitIR(state), "load_val_var_assign_val");
-				return state.builder.CreateStore(val_load, gep_assign);
+				llvm::Value *val_ir = val->EmitIR(state);
+				llvm::Value *load_val = state.builder.CreateLoad(val_ir, "load_val");
+				llvm::Value *gep_load = state.builder.CreateLoad(gep_assign, "load_gep_val");
+				return state.builder.CreateStore(load_val, gep_load);
 			}
 			//otherwise just do a straight store
 			else

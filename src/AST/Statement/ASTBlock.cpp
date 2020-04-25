@@ -131,7 +131,7 @@ llvm::Value *ASTBlock::EmitIR(IREmitter::EmitterState &state)
 						continue;
 					auto arg = std::make_unique<ASTFunctionArg>();
 					arg->name = std::make_unique<ASTIdentifier>(symbol.identifier);
-					arg->type = std::make_unique<ASTIdentifier>(symbol.type);
+					arg->type = std::make_unique<ASTIdentifier>(symbol.full_type);
 					arg->variadic_arg = false;
 					def->args->args.push_back(std::move(arg));
 
