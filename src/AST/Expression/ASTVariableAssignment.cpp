@@ -55,6 +55,7 @@ llvm::Value *ASTVariableAssignment::EmitIR(IREmitter::EmitterState &state)
 	{
 		//@Jon
 		//TODO: implement this!
+		store_at = assign_to->EmitIR(state);
 		break;
 	}
 	case UNARY_OP:
@@ -101,6 +102,8 @@ llvm::Value *ASTVariableAssignment::EmitIR(IREmitter::EmitterState &state)
 	{
 		//@Jon
 		//TODO: implement this!
+		actual_value = assign_to->EmitIR(state);
+		actual_value = state.builder.CreateLoad(actual_value, "load_val_from_gep_member_op");
 		break;
 	}
 	case UNARY_OP:
@@ -164,7 +167,6 @@ llvm::Value *ASTVariableAssignment::EmitIR(IREmitter::EmitterState &state)
 	{
 		if (val->GetNodeType() == UNARY_OP)
 		{
-
 			return state.builder.CreateStore(actual_value, store_at);
 		}
 		else

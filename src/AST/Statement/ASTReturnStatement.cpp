@@ -24,7 +24,10 @@ llvm::Value *ASTReturnStatement::EmitIR(IREmitter::EmitterState &state)
 		{
 			ASTUnaryOperator *unary_downcast = (ASTUnaryOperator*)expr.get();
 			if (unary_downcast->op == ASTUnaryOperator::ARRAY_INDEX)
+			{
 				retval = state.builder.CreateLoad(retval, "load_gep_array_retaval");
+				retval = state.builder.CreateLoad(retval, "load_gep_array_retaval");
+			}
 			return state.builder.CreateRet(retval);
 		}
 		else
@@ -55,6 +58,7 @@ llvm::Value *ASTReturnStatement::EmitIR(IREmitter::EmitterState &state)
 				if (unary_downcast->op == ASTUnaryOperator::ARRAY_INDEX)
 				{
 					retval = state.builder.CreateLoad(retval, "load_gep_array_retaval");
+
 					break;
 				}
 				break;
