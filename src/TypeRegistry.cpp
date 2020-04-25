@@ -18,7 +18,7 @@ void TypeRegistry::SetupBuiltinJCTypes()
     AddType("u16", *llvm::Type::getInt16Ty(context), JCType::TYPE_CLASSIFICATION::INT, 32767);
     AddType("u32", *llvm::Type::getInt32Ty(context), JCType::TYPE_CLASSIFICATION::INT, 2147483647);
 
-    AddType("f16", *llvm::Type::getHalfTy(context), JCType::TYPE_CLASSIFICATION::FLOAT);
+    //AddType("f16", *llvm::Type::getHalfTy(context), JCType::TYPE_CLASSIFICATION::FLOAT);
     AddType("f32", *llvm::Type::getFloatTy(context), JCType::TYPE_CLASSIFICATION::FLOAT);
 
 	AddType("bool", *llvm::Type::getInt8Ty(context), JCType::TYPE_CLASSIFICATION::INT);

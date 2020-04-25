@@ -11,18 +11,18 @@ ASTVariableAssignment::ASTVariableAssignment(ASTNode &assign_to, ASTNode &val) :
 llvm::Value *ASTVariableAssignment::EmitIR(IREmitter::EmitterState &state)
 {
 	//handy lambda for doing implicit casting
-    auto implicit_cast = [&state, this](std::unique_ptr<ASTNode> &node, const Symbol *symbol) -> llvm::Value*
+    auto implicit_cast = [&state, this](std::unique_ptr<ASTNode> &node, const Symbol *store_at_symbol) -> llvm::Value*
     {
         std::unique_ptr<ASTUnaryOperator> cast;
 
         if (!state.typeRegistry.IsTypeNumeric(*node->GetType(state)))
             return nullptr;
 
-        if (!state.typeRegistry.IsTypeNumeric(symbol->type))
-            return nullptr;
+		if (!state.typeRegistry.IsTypeNumeric(store_at_symbol->type))
+			return nullptr;
         
-        if (symbol)
-            cast = std::make_unique<ASTUnaryOperator>(*node.release(), new ASTIdentifier(symbol->type), ASTUnaryOperator::OP::CAST);
+        if (store_at_symbol)
+            cast = std::make_unique<ASTUnaryOperator>(*node.release(), new ASTIdentifier(store_at_symbol->type), ASTUnaryOperator::OP::CAST);
         else
             cast = std::make_unique<ASTUnaryOperator>(*node.release(), new ASTIdentifier(*val->GetType(state)), ASTUnaryOperator::OP::CAST);
         auto emitted_ir = cast->EmitIR(state);
@@ -32,181 +32,144 @@ llvm::Value *ASTVariableAssignment::EmitIR(IREmitter::EmitterState &state)
                 yycurrentfilename, line_number, (*assign_to->GetType(state)).c_str(), (*node->GetType(state)).c_str());
                 return nullptr;
         }
-        if (symbol)
-            return state.builder.CreateStore(emitted_ir, symbol->alloc_inst);
+        if (store_at_symbol)
+            return state.builder.CreateStore(emitted_ir, store_at_symbol->alloc_inst);
         else
             return nullptr;
     };
+
+	llvm::Value *store_at = nullptr;
+	llvm::Value *actual_value = nullptr;
+
+	switch (assign_to->GetNodeType())
+	{
+	default:
+		printf("Error in module %s on line %d: cannot assign value to this kind of expression.\n", state.module_name.c_str(), line_number);
+		return nullptr;
+	case IDENTIFIER:
+	{
+		store_at = assign_to->EmitIR(state);
+		break;
+	}
+	case MEMBER_OP:
+	{
+		//@Jon
+		//TODO: implement this!
+		break;
+	}
+	case UNARY_OP:
+	{
+		ASTUnaryOperator *downcast = (ASTUnaryOperator*)assign_to.get();
+		switch (downcast->op)
+		{
+		default:
+			printf("Error in module %s on line %d: cannot assign value to this kind of unary operator.\n", state.module_name.c_str(), line_number);
+			return nullptr;
+		case ASTUnaryOperator::OP::DEREFERENCE:
+		{
+			store_at = assign_to->EmitIR(state);
+			break;
+		}
+		case ASTUnaryOperator::OP::ARRAY_INDEX:
+		{
+			store_at = state.builder.CreateLoad(downcast->EmitIR(state), "get_assign_to_arr_val");
+			//store_at = state.builder.CreateLoad(store_at, );
+			break;
+		}
+		}
+		break;
+	}
+	}
+
+	switch (val->GetNodeType())
+	{
+	default:
+		printf("Error in module %s on line %d: cannot assign this value to a variable.\n", state.module_name.c_str(), line_number);
+		return nullptr;
+	case CONSTANT:
+	{
+		actual_value = val->EmitIR(state);
+		break;
+	}
+	case IDENTIFIER:
+	{
+		actual_value = val->EmitIR(state);
+		actual_value = state.builder.CreateLoad(actual_value, "load_val_from_identifier");
+		break;
+	}
+	case MEMBER_OP:
+	{
+		//@Jon
+		//TODO: implement this!
+		break;
+	}
+	case UNARY_OP:
+	{
+		ASTUnaryOperator *downcast = (ASTUnaryOperator*)val.get();
+		switch (downcast->op)
+		{
+		default:
+			printf("Error in module %s on line %d: cannot assign value from this kind of unary operator.\n", state.module_name.c_str(), line_number);
+			return nullptr;
+		case ASTUnaryOperator::CAST:
+		case ASTUnaryOperator::ADDRESS_OF:
+		{
+			actual_value = val->EmitIR(state);
+			break;
+		}
+		case ASTUnaryOperator::INCREMENT:
+		case ASTUnaryOperator::DECREMENT:
+		case ASTUnaryOperator::DEREFERENCE:
+		{
+			actual_value = val->EmitIR(state);
+			actual_value = state.builder.CreateLoad(actual_value, "load_val_from_unary_op");
+			break;
+		}
+		case ASTUnaryOperator::ARRAY_INDEX:
+		{
+			actual_value = val->EmitIR(state);
+			actual_value = state.builder.CreateLoad(actual_value, "load_gep_from_unary_op");
+			actual_value = state.builder.CreateLoad(actual_value, "load_val_from_unary_op_");
+			break;
+		}
+		}
+		break;
+	}
+	case BINARY_OP:
+	{
+		actual_value = val->EmitIR(state);
+		break;
+	}
+	case NULLPTR:
+	{
+		ASTConstantNullptr *np = (ASTConstantNullptr*)val.get();
+		np->nullptr_type = (llvm::PointerType*)state.typeRegistry.GetType(*assign_to->GetType(state));
+		np->nullptrtype_str = state.typeRegistry.GetLifetimeTypeString(*assign_to->GetType(state));
+		actual_value = np->EmitIR(state);
+	}
+	case FUNCTION_CALL:
+	{
+		actual_value = val->EmitIR(state);
+		break;
+	}
+	}
 
 	//get the assigning and assigned value symbols
     const Symbol *assign_symbol = assign_to->GetSymbol(state);
     const Symbol *val_symbol = val->GetSymbol(state);
 
-	if (val->GetNodeType() == NULLPTR)
+	if (assign_to->GetType(state) == val->GetType(state))
+		return state.builder.CreateStore(actual_value, store_at);
+	else
 	{
-		ASTConstantNullptr *np = (ASTConstantNullptr*)val.get();
-		np->nullptr_type = (llvm::PointerType*)state.typeRegistry.GetType(*assign_to->GetType(state));
-		np->nullptrtype_str = state.typeRegistry.GetLifetimeTypeString(*assign_to->GetType(state));
+		if (val->GetNodeType() == UNARY_OP)
+		{
+
+			return state.builder.CreateStore(actual_value, store_at);
+		}
+		else
+			return implicit_cast(val, assign_symbol);
 	}
 
-	//if the assigned symbol exists
-    if (assign_symbol)
-    {
-		if (assign_symbol->array_size == 1)
-		{
-			auto is_assigned_symbol = const_cast<Symbol*>(assign_symbol);
-			bool mut_flag;
-
-			if (assign_symbol->full_type.find('*') != std::string::npos)
-				mut_flag = assign_symbol->ptr_mut;
-			else
-				mut_flag = assign_symbol->mut;
-
-			if (!mut_flag && assign_symbol->assigned)
-			{
-				printf("Error in module %s line %d: cannot assign new value to non-mutable variable %s.\n", state.module_name.c_str(), line_number, assign_symbol->identifier);
-				return nullptr;
-			}
-
-
-
-			//if the value symbol exists
-			if (val_symbol)
-			{
-				if (val->GetNodeType() == UNARY_OP)
-				{
-					ASTUnaryOperator *downcast = (ASTUnaryOperator*)val.get();
-					switch (downcast->op)
-					{
-					default:
-						break;
-					case ASTUnaryOperator::ADDRESS_OF:
-					case ASTUnaryOperator::INCREMENT:
-					case ASTUnaryOperator::DECREMENT:
-					case ASTUnaryOperator::DEREFERENCE:
-					{
-						llvm::Value *v = state.builder.CreateStore(val->EmitIR(state), assign_symbol->alloc_inst);
-						return v;
-					}
-					case ASTUnaryOperator::ARRAY_INDEX:
-					{
-						if (assign_to->GetNodeType() == UNARY_OP)
-						{
-							ASTUnaryOperator *downcast = (ASTUnaryOperator*)assign_to.get();
-							if (downcast->op == ASTUnaryOperator::ARRAY_INDEX)
-							{
-								llvm::Value *v = state.builder.CreateLoad(downcast->EmitIR(state));
-								llvm::Value *vs = state.builder.CreateLoad(val->EmitIR(state), "get_assign_to_arr_val");
-								return state.builder.CreateStore(v, val->EmitIR(state));
-							}
-						}
-						llvm::Value *v = val->EmitIR(state);
-						v = state.builder.CreateLoad(v, "get_value_arr_val");
-						v = state.builder.CreateLoad(v, "get_value_arr_val");
-						v = state.builder.CreateStore(v, assign_symbol->alloc_inst);
-						return v;
-					}
-					}
-				}
-				else if (val->GetNodeType() == MEMBER_OP)
-				{
-					llvm::Value *store = state.builder.CreateLoad(val->EmitIR(state), "load_val_to_store");
-					return state.builder.CreateStore(store, assign_symbol->alloc_inst);
-				}
-				is_assigned_symbol->assigned = true;
-				//perform an implicit cast as required or just emit store operation
-				if (assign_symbol->type != val_symbol->type)
-				{
-					if (assign_to->GetNodeType() == UNARY_OP)
-					{
-						ASTUnaryOperator *downcast = (ASTUnaryOperator*)assign_to.get();
-						if (downcast->op == ASTUnaryOperator::ARRAY_INDEX)
-						{
-							llvm::Value *v = state.builder.CreateLoad(downcast->EmitIR(state));
-							llvm::Value *val_ = val->EmitIR(state);
-
-							if (val->GetNodeType() == IDENTIFIER)
-								val_ = state.builder.CreateLoad(val_);
-
-							return state.builder.CreateStore(val_, v);
-						}
-					}
-					return implicit_cast(val, assign_symbol);
-				}
-				else
-					return state.builder.CreateStore(state.builder.CreateLoad(val->EmitIR(state), "load_val_var_assign"), assign_symbol->alloc_inst);
-			}
-			//otherwise
-			else
-			{
-				is_assigned_symbol->assigned = true;
-				//perform an implicit cast if required
-				const std::string *assign_to_type = assign_to->GetType(state);
-				const std::string *val_type = val->GetType(state);
-
-				if (assign_to_type != val_type)
-					return implicit_cast(val, assign_symbol);
-				else
-				{
-					//otherwise do a whole load of hacks to ensure the correct value is loaded
-					llvm::Value *store = val->EmitIR(state);
-					if (val->GetNodeType() == UNARY_OP)
-					{
-						ASTUnaryOperator *cast_down = (ASTUnaryOperator*)val.get();
-						switch (cast_down->op)
-						{
-						default:
-							break;
-						case ASTUnaryOperator::OP::ARRAY_INDEX:
-						{
-							store = state.builder.CreateLoad(store, "load_val_to_store");
-							break;
-						}
-						case ASTUnaryOperator::OP::MINUS:
-						case ASTUnaryOperator::OP::PLUS:
-						{
-							//store = state.builder.CreateLoad(store, "load_val_to_store");
-							break;
-						}
-
-						}
-					}
-					else if (val->GetNodeType() == MEMBER_OP)
-						store = state.builder.CreateLoad(store, "load_val_to_store");
-
-					llvm::Value *v = assign_symbol->alloc_inst;
-					if (assign_to->GetNodeType() == MEMBER_OP)
-					{
-						v = assign_to->EmitIR(state);
-					}
-
-					//return a store operation
-					return state.builder.CreateStore(store, v);
-				}
-			}
-		}
-		//otherwise
-		else
-		{
-			//emit the IR for gep assignment
-			llvm::Value *gep_assign = assign_to->EmitIR(state);
-			if (!assign_to->GetSymbol(state)->ptr_mut)
-			{
-				printf("Error in module %s line %d: cannot assign new value to non-mutable variable %s.\n", state.module_name.c_str(), line_number, assign_symbol->identifier);
-				return nullptr;
-			}
-			//if there is a value symbol load it and then store it
-			if (val_symbol)
-			{
-				llvm::Value *val_ir = val->EmitIR(state);
-				llvm::Value *load_val = state.builder.CreateLoad(val_ir, "load_val");
-				llvm::Value *gep_load = state.builder.CreateLoad(gep_assign, "load_gep_val");
-				return state.builder.CreateStore(load_val, gep_load);
-			}
-			//otherwise just do a straight store
-			else
-				return state.builder.CreateStore(val->EmitIR(state), gep_assign);
-		}
-    }
     return nullptr;
 }
