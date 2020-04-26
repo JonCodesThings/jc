@@ -1,10 +1,14 @@
+i32 getElementAt(i32 *f)
+{
+	i32 q = f[0];
+	return q;
+}
+
 i32 main()
 {
     i32 x mut[10];
-	for (mut i32 i = 0; i < 10; i++)
-    {
-        x[i] = i;
-    }
-	i32 n = x[9];
+	x[0] = 10;
+	i32 n = x[0];
+	i32 n1 = getElementAt(x);
 	return n;
 }

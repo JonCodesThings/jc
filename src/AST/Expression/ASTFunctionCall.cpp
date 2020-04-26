@@ -25,17 +25,24 @@ llvm::Value *ASTFunctionCall::EmitIR(IREmitter::EmitterState &state)
 		{
 			if (arg->GetNodeType() == ASTNode::IDENTIFIER)
 			{
-				const Symbol *s = arg->GetSymbol(state);
-				if (s->array_size > 1)
+				const Symbol *sy = arg->GetSymbol(state);
+				if (sy->array_size > 1)
 				{
-					llvm::Value *v = state.builder.CreateGEP(state.typeRegistry.GetType(s->type), s->alloc_inst, { llvm::ConstantInt::get(state.typeRegistry.GetType("i32"), 0) });
-					argvals.push_back(state.builder.CreateLoad(v, "load_var_value"));
+					llvm::Value *v = state.builder.CreateGEP(state.typeRegistry.GetArrayType(sy->type.substr(0, sy->type.length() - 1), sy->array_size), sy->alloc_inst, { llvm::ConstantInt::get(state.typeRegistry.GetType("i32"), 0), llvm::ConstantInt::get(state.typeRegistry.GetType("i32"), 0) });
+					argvals.push_back(v);
+					//printf("Adding symbol %s with type %s to function %s's argument values.\n", sy->identifier.c_str(), sy->type.c_str(), s->identifier.c_str());
 				}
 				else
+				{
 					argvals.push_back(state.builder.CreateLoad(arg->EmitIR(state), "load_var_value"));
+					//printf("Adding symbol %s with type %s to function %s's argument values.\n", sy->identifier.c_str(), sy->type.c_str(), s->identifier.c_str());
+				}
 			}
 			else
+			{
 				argvals.push_back(arg->EmitIR(state));
+				//printf("Adding an argument with type %s to function %s's argument values.\n", arg->GetType(state)->c_str(), s->identifier.c_str());
+			}
 		}
 	}
 
@@ -61,6 +68,7 @@ llvm::Value *ASTFunctionCall::EmitIR(IREmitter::EmitterState &state)
 			if (!sym)
 				continue;
 			llvm::Value *v = sym->alloc_inst;
+			//printf("Adding symbol %s with type %s to nested function %s's argument values.\n", symname.c_str(), sym->type.c_str(), s->identifier.c_str());
 			argvals.push_back(state.builder.CreateLoad(v));
 		}
 	}
@@ -72,6 +80,8 @@ llvm::Value *ASTFunctionCall::EmitIR(IREmitter::EmitterState &state)
 
 		if (func->getReturnType() == state.typeRegistry.GetType("void"))
 		{
+			//state.module->print(llvm::errs(), nullptr);
+			//printf("Calling function %s with %d arguments!\n", s->identifier.c_str(), argvals.size());
 			return state.builder.CreateCall(func, argvals);
 		}
 

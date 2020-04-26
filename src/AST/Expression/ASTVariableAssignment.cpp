@@ -33,7 +33,7 @@ llvm::Value *ASTVariableAssignment::EmitIR(IREmitter::EmitterState &state)
                 return nullptr;
         }
         if (store_at_symbol)
-            return state.builder.CreateStore(emitted_ir, store_at_symbol->alloc_inst);
+			return state.builder.CreateStore(emitted_ir, store_at_symbol->alloc_inst);
         else
             return nullptr;
     };
@@ -73,8 +73,8 @@ llvm::Value *ASTVariableAssignment::EmitIR(IREmitter::EmitterState &state)
 		}
 		case ASTUnaryOperator::OP::ARRAY_INDEX:
 		{
-			store_at = state.builder.CreateLoad(downcast->EmitIR(state), "get_assign_to_arr_val");
-			//store_at = state.builder.CreateLoad(store_at, );
+			store_at = downcast->EmitIR(state);
+			//store_at = state.builder.CreateLoad(store_at, "get_assign_to_gep_load");
 			break;
 		}
 		}
@@ -132,7 +132,7 @@ llvm::Value *ASTVariableAssignment::EmitIR(IREmitter::EmitterState &state)
 		{
 			actual_value = val->EmitIR(state);
 			actual_value = state.builder.CreateLoad(actual_value, "load_gep_from_unary_op");
-			actual_value = state.builder.CreateLoad(actual_value, "load_val_from_unary_op_");
+			//actual_value = state.builder.CreateLoad(actual_value, "load_val_from_unary_op_");
 			break;
 		}
 		}

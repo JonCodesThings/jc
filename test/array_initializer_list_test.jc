@@ -2,8 +2,20 @@ import io;
 include "stdlib";
 link "libcmt.lib";
 
+void PrintArr(i32 *arr, i32 size)
+{
+	for (mut i32 i = 0; i < size; i++)
+	{
+		i32 ati = arr[i];
+		printf("arr[%d]: %d\n", i, ati);
+	}
+}
+
 i32 main()
 {
 	i32 x mut[10] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-	return x[6];
+
+	PrintArr(x, 10);
+
+	return 0;
 }

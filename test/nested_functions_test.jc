@@ -9,6 +9,12 @@ i32 main()
 	{
 		printf("Greetings!\n");
 		printf("%d\n", x);
+
+		void Bye(i8 *person)
+		{
+			printf("Farewell %s with value %d!\n", person, x);
+		}
+		Bye("Mark");
 	}
 	Greet();
 	return 0;

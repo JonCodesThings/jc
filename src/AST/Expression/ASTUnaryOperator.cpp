@@ -38,24 +38,29 @@ llvm::Value *ASTUnaryOperator::EmitIR(IREmitter::EmitterState &state)
         case ARRAY_INDEX:
         {
 			//if there is nothing in the identifier variable then we use GEP
-			// llvm::ConstantInt::get(llvm::Type::getInt64Ty(state.context), 0), index->EmitIR(state)
+			llvm::Value *gep_ptr = s->alloc_inst;
+
+			if (s->array_size == 1)
+			{
+				gep_ptr = state.builder.CreateLoad(s->alloc_inst, "load_arg");
+				llvm::Type *type = llvm::PointerType::get(state.typeRegistry.GetArrayType("i32", 10), 0);
+				gep_ptr = state.builder.CreateBitCast(gep_ptr, type);
+			}
+
 			if (!cast)
-				return state.builder.CreateGEP(state.typeRegistry.GetType(s->type), s->alloc_inst, { llvm::ConstantInt::get(llvm::Type::getInt32Ty(state.context), 2) }, "gep_index_constant");
+			{
+				llvm::Value *index_value = llvm::ConstantInt::get(llvm::Type::getInt64Ty(state.context), index->constant);
+				return state.builder.CreateInBoundsGEP(state.typeRegistry.GetType(s->type.substr(0, s->type.length() - 1)), gep_ptr, { index_value }, "gep_index_constant");
+			}
 
 			//otherwise we get the symbol, load it and then use GEP
 			Symbol *cs = state.symbolStack.GetSymbolByIdentifier(cast->identifier);
 
 			llvm::Value *v = state.builder.CreateLoad(cs->alloc_inst, "temp");
-			llvm::Value *sload = s->alloc_inst;
-
-			if (s->array_size == 1)
-				sload = state.builder.CreateLoad(sload, "loading_to_index");
-
-			//llvm::ConstantInt::get(llvm::Type::getInt32Ty(state.context), 0), llvm::ConstantInt::get(llvm::Type::getInt32Ty(state.context), 0)
 
 			//TODO: fix this awful hack
 			if (v->getType() == llvm::Type::getInt32Ty(state.context))
-				v = state.builder.CreateGEP(state.typeRegistry.GetType(s->type), s->alloc_inst, { llvm::ConstantInt::get(llvm::Type::getInt32Ty(state.context), 0) }, "gep_index_expr");
+				v = state.builder.CreateInBoundsGEP(state.typeRegistry.GetType(s->type.substr(0, s->type.length() - 1)), gep_ptr, { v }, "gep_index_expr");
 
             return v;
         }
