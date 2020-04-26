@@ -1,26 +1,26 @@
 import io;
 
-void sort(mut i32 mut *items, mut i32 size) 
+sort(mut i32 mut *items, mut i32 size) 
 {
-    void quickSort(i32 first, i32 last) 
+    quickSort(i32 first, i32 last) 
 	{
-	    void swap(i32 p, i32 q)
+	    swap(i32 p, i32 q)
 		{
-            i32 tmp = items[p];
-			i32 tmp2 = items[q];
+            tmp := items[p];
+			tmp2 := items[q];
 			items[p] = tmp2;
 			items[q] = tmp;
         }
 		        
-        i32 partition() 
+        partition() 
 		{
-            i32 pivot = items[first];
-			mut i32 index = first;
+            pivot := items[first];
+			index := first;
             swap(index, last);
 
-			for (mut i32 i = first; i < last; i++)
+			for (i := first; i < last; i++)
 			{
-				i32 items_at_i = items[i];
+				items_at_i := items[i];
 			    if (items_at_i < pivot)
 				{
 					swap(index, i);
@@ -35,7 +35,7 @@ void sort(mut i32 mut *items, mut i32 size)
 
 		if (first < last) 
 		{
-            i32 pivotIndex = partition();
+            pivotIndex := partition();
             quickSort(first, pivotIndex - 1);
             quickSort(pivotIndex + 1, last);
         }
@@ -48,9 +48,9 @@ main()
 	i32 mut arr mut[5] = { 25, 4, 5, 7, 1 };
 
 	printf("Original array values: \n");
-	for (mut i32 l = 0; l < 5; l++)
+	for (l := 0; l < 5; l++)
 	{
-		i32 k = arr[l];
+		k := arr[l];
 		printf("%d\n", k);
 	}
 	printf("\n");
@@ -59,9 +59,9 @@ main()
 	sort(arr, 5);
 
 	printf("Sorted array values: \n");
-	for (mut i32 i = 0; i < 5; i++)
+	for (i := 0; i < 5; i++)
 	{
-		i32 n = arr[i];
+		n := arr[i];
 		printf("%d\n", n);
 	}
 	printf("\n");

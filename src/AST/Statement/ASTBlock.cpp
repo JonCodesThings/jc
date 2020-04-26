@@ -27,7 +27,7 @@ bool ASTBlock::ContainsReturnStatement()
 const std::string * ASTBlock::GetType(IREmitter::EmitterState & state)
 {
 	if (!ContainsReturnStatement())
-		return nullptr;
+		return state.typeRegistry.GetLifetimeTypeString("void");
 
 	std::unordered_set<const std::string *>ret_types;
 
