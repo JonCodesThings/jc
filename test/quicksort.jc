@@ -20,8 +20,7 @@ sort(mut i32 mut *items, mut i32 size)
 
 			for (i := first; i < last; i++)
 			{
-				items_at_i := items[i];
-			    if (items_at_i < pivot)
+			    if (items[i] < pivot)
 				{
 					swap(index, i);
 					index++;

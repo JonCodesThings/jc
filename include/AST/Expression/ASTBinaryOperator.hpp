@@ -15,21 +15,21 @@ public:
 	// \brief Operator type enum
     enum OP
     {
-        ADD,
-        SUBTRACT,
-        MULTIPLY,
-        DIVIDE,
-        EQUALITY,
-        INEQUALITY,
-        LESSER,
-        GREATER,
-        LESSER_OR_EQUAL,
-        GREATER_OR_EQUAL,
-		BITWISE_AND,
-		BITWISE_OR,
-		BITWISE_LEFT_SHIFT,
-		BITWISE_RIGHT_SHIFT,
-		MODULO
+        ADD = 0,
+        SUBTRACT = 1,
+        MULTIPLY = 2,
+        DIVIDE = 3,
+        EQUALITY = 4,
+        INEQUALITY = 5,
+        LESSER = 6,
+        GREATER = 7,
+        LESSER_OR_EQUAL = 8,
+        GREATER_OR_EQUAL = 9,
+		BITWISE_AND = 10,
+		BITWISE_OR = 11,
+		BITWISE_LEFT_SHIFT = 12,
+		BITWISE_RIGHT_SHIFT = 13,
+		MODULO = 14
     } op;
 
     ASTBinaryOperator(ASTNode &left, ASTNode &right, OP op);

@@ -1,0 +1,20 @@
+struct vector2
+{
+	f32 x;
+	f32 y;
+}
+
+struct vector3
+{
+	f32 x;
+	f32 y;
+	f32 z;
+}
+
+struct vector4
+{
+	f32 x;
+	f32 y;
+	f32 z;
+	f32 w;
+}

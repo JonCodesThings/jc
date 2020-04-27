@@ -43,8 +43,6 @@ llvm::Value *ASTUnaryOperator::EmitIR(IREmitter::EmitterState &state)
 			if (s->array_size == 1)
 			{
 				gep_ptr = state.builder.CreateLoad(s->alloc_inst, "load_arg");
-				llvm::Type *type = llvm::PointerType::get(state.typeRegistry.GetArrayType("i32", 10), 0);
-				gep_ptr = state.builder.CreateBitCast(gep_ptr, type);
 			}
 
 			if (!cast)

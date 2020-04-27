@@ -126,6 +126,7 @@ int token;
 %type<function_definition> function_def
 %type<function_declaration> function_decl
 %type<statement> assignable_statement import
+%type<statement> binop
 %type<unary_operator> cast increment decrement address_of dereference array_index unary_plus unary_minus
 %type<function_args> arg_list 
 %type<struct_declarations> struct_list
@@ -135,7 +136,6 @@ int token;
 %type<string> IDENTIFIER TYPE
 %type<statement> return_statement flow_control
 %type<scope_block> statements scope semicoloned_statements
-%type<statement> add subtract multiply divide equality inequality lesser greater lesser_or_equal greater_or_equal bitwise_and bitwise_or bitwise_left_shift bitwise_right_shift modulo
 %type<struct_definition> struct_def
 %type<statement_list> statement_list
 %type<defer_statement> defer_statement
@@ -156,6 +156,7 @@ int token;
 %type<type_list> type_list
 %type<enum_val> constant_enum_value
 %type<struct_declaration> struct_decl
+%type<integer> binop_id
 
 
 %start module
@@ -209,9 +210,12 @@ unary_minus: MINUS id_or_constant { $$ = new ASTUnaryOperator(*$2, ASTUnaryOpera
 
 unary_plus: PLUS id_or_constant { $$ = new ASTUnaryOperator(*$2, ASTUnaryOperator::PLUS); }
 
-binary_op: add | subtract | multiply | divide | equality | inequality | lesser | greater | lesser_or_equal | greater_or_equal | bitwise_and | bitwise_or | bitwise_left_shift | bitwise_right_shift;
+binary_op: binop { $$ = $1};
 
 assign_op: variable_assign;
+
+array_index: id LEFT_SQUARE_BRACKET constant_int RIGHT_SQUARE_BRACKET { $$ = new ASTUnaryOperator(*$1, *$3, ASTUnaryOperator::ARRAY_INDEX); }
+    | id LEFT_SQUARE_BRACKET id RIGHT_SQUARE_BRACKET { $$ = new ASTUnaryOperator(*$1, $3, ASTUnaryOperator::ARRAY_INDEX);} ;
 
 member_op: id FSTOP id { $$ = new ASTMemberOperator(*$1, *$3, ASTMemberOperator::OP::DOT); } | id ARROW id { $$ = new ASTMemberOperator(*$1, *$3, ASTMemberOperator::OP::ARROW); };
 
@@ -229,52 +233,15 @@ address_of: AND id { $$ = new ASTUnaryOperator(*$2, ASTUnaryOperator::ADDRESS_OF
 
 dereference: ASTERISK id { $$ = new ASTUnaryOperator(*$2, ASTUnaryOperator::DEREFERENCE); };
 
-array_index: id LEFT_SQUARE_BRACKET constant_int RIGHT_SQUARE_BRACKET { $$ = new ASTUnaryOperator(*$1, *$3, ASTUnaryOperator::ARRAY_INDEX); }
-    | id LEFT_SQUARE_BRACKET id RIGHT_SQUARE_BRACKET { $$ = new ASTUnaryOperator(*$1, $3, ASTUnaryOperator::ARRAY_INDEX);} ;
+binop_id: PLUS { $$ = 0; } | MINUS { $$ = 1; } | ASTERISK { $$ = 2; } 
+	| FORWARD_SLASH { $$ = 3; } | EQUAL_EQUAL { $$ = 4; } | EXCLAMATION_EQUAL { $$ = 5; }
+	| LESSER { $$ = 6; }| GREATER  { $$ = 7; }| LESSER_EQUAL { $$ = 8; } 
+	| GREATER_EQUAL { $$ = 9; }| AND { $$ = 10; } | OR { $$ = 11; }
+	| LEFT_SHIFT { $$ = 12; } | RIGHT_SHIFT { $$ = 13; } | PERCENT { $$ = 14; }
 
-add: id_or_constant PLUS id_or_constant { $$ = new ASTBinaryOperator(*$1, *$3, ASTBinaryOperator::ADD);  }
-    | id_or_constant PLUS unary_op {$$ = new ASTBinaryOperator(*$1, *$3, ASTBinaryOperator::ADD); };
-
-subtract: id_or_constant MINUS id_or_constant { $$ = new ASTBinaryOperator(*$1, *$3, ASTBinaryOperator::SUBTRACT);  }
-    | id_or_constant MINUS unary_op { $$ = new ASTBinaryOperator(*$1, *$3, ASTBinaryOperator::SUBTRACT); };
-
-multiply: id_or_constant ASTERISK id_or_constant { $$ = new ASTBinaryOperator(*$1, *$3, ASTBinaryOperator::MULTIPLY);  }
-    | id_or_constant ASTERISK unary_op {$$ = new ASTBinaryOperator(*$1, *$3, ASTBinaryOperator::MULTIPLY); };
-
-divide: id_or_constant FORWARD_SLASH id_or_constant { $$ = new ASTBinaryOperator(*$1, *$3, ASTBinaryOperator::DIVIDE);  }
-    | id_or_constant FORWARD_SLASH unary_op {$$ = new ASTBinaryOperator(*$1, *$3, ASTBinaryOperator::DIVIDE); };
-
-equality: id_or_constant EQUAL_EQUAL id_or_constant { $$ = new ASTBinaryOperator(*$1, *$3, ASTBinaryOperator::EQUALITY);  }
-    | id_or_constant EQUAL_EQUAL unary_op {$$ = new ASTBinaryOperator(*$1, *$3, ASTBinaryOperator::EQUALITY); };
-
-inequality: id_or_constant EXCLAMATION_EQUAL id_or_constant { $$ = new ASTBinaryOperator(*$1, *$3, ASTBinaryOperator::INEQUALITY);  }
-    | id_or_constant EXCLAMATION_EQUAL unary_op {$$ = new ASTBinaryOperator(*$1, *$3, ASTBinaryOperator::INEQUALITY); };
-
-lesser: id_or_constant LESSER id_or_constant { $$ = new ASTBinaryOperator(*$1, *$3, ASTBinaryOperator::LESSER);  }
-    | id_or_constant LESSER unary_op {$$ = new ASTBinaryOperator(*$1, *$3, ASTBinaryOperator::LESSER); };
-
-greater: id_or_constant GREATER id_or_constant { $$ = new ASTBinaryOperator(*$1, *$3, ASTBinaryOperator::GREATER);  }
-    | id_or_constant GREATER unary_op {$$ = new ASTBinaryOperator(*$1, *$3, ASTBinaryOperator::GREATER); };
-
-lesser_or_equal: id_or_constant LESSER_EQUAL id_or_constant { $$ = new ASTBinaryOperator(*$1, *$3, ASTBinaryOperator::LESSER_OR_EQUAL);  }
-    | id_or_constant LESSER_EQUAL unary_op {$$ = new ASTBinaryOperator(*$1, *$3, ASTBinaryOperator::LESSER_OR_EQUAL); };
-
-greater_or_equal: id_or_constant GREATER_EQUAL id_or_constant { $$ = new ASTBinaryOperator(*$1, *$3, ASTBinaryOperator::GREATER_OR_EQUAL);  }
-    | id_or_constant GREATER_EQUAL unary_op {$$ = new ASTBinaryOperator(*$1, *$3, ASTBinaryOperator::GREATER_OR_EQUAL); };
-
-bitwise_and: id_or_constant AND id_or_constant { $$ = new ASTBinaryOperator(*$1, *$3, ASTBinaryOperator::BITWISE_AND);  }
-    | id_or_constant AND unary_op {$$ = new ASTBinaryOperator(*$1, *$3, ASTBinaryOperator::BITWISE_AND); };
-
-bitwise_or: id_or_constant OR id_or_constant { $$ = new ASTBinaryOperator(*$1, *$3, ASTBinaryOperator::BITWISE_OR);  }
-    | id_or_constant OR unary_op {$$ = new ASTBinaryOperator(*$1, *$3, ASTBinaryOperator::BITWISE_OR); };
-
-bitwise_left_shift: id_or_constant LEFT_SHIFT id_or_constant { $$ = new ASTBinaryOperator(*$1, *$3, ASTBinaryOperator::BITWISE_LEFT_SHIFT);  }
-    | id_or_constant LEFT_SHIFT unary_op {$$ = new ASTBinaryOperator(*$1, *$3, ASTBinaryOperator::BITWISE_LEFT_SHIFT); };
-
-bitwise_right_shift: id_or_constant RIGHT_SHIFT id_or_constant { $$ = new ASTBinaryOperator(*$1, *$3, ASTBinaryOperator::BITWISE_RIGHT_SHIFT);  }
-    | id_or_constant RIGHT_SHIFT unary_op {$$ = new ASTBinaryOperator(*$1, *$3, ASTBinaryOperator::BITWISE_RIGHT_SHIFT); };
-
-modulo: id_or_constant PERCENT id_or_constant { $$ = new ASTBinaryOperator(*$1, *$3, ASTBinaryOperator::MODULO);  }
+binop: id_or_constant binop_id id_or_constant { $$ = new ASTBinaryOperator(*$1, *$3, (ASTBinaryOperator::OP)$2); }
+	  | id_or_constant binop_id unary_op {$$ = new ASTBinaryOperator(*$1, *$3, (ASTBinaryOperator::OP)$2); };
+	  | unary_op binop_id id_or_constant {$$ = new ASTBinaryOperator(*$1, *$3, (ASTBinaryOperator::OP)$2); };
 
 function_def: composited_type id LEFT_BRACKET arg_list RIGHT_BRACKET scope {  $$ = new ASTFunctionDefinition(*$1, *$2, *$4, *$6);  }
     | composited_type id LEFT_BRACKET RIGHT_BRACKET scope {  $$ = new ASTFunctionDefinition(*$1, *$2, *new ASTFunctionArgs(), *$5);  };

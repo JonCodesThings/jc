@@ -1,5 +1,7 @@
 #include <include/AST/Expression/ASTBinaryOperator.hpp>
 
+#include <include/AST/Expression/ASTUnaryOperator.hpp>
+
 ASTBinaryOperator::ASTBinaryOperator(ASTNode &left, ASTNode &right, OP op) : left(&left), right(&right), op(op), ASTExpression(BINARY_OP) {}
 
 llvm::Value *ASTBinaryOperator::EmitIR(IREmitter::EmitterState &state)
@@ -29,6 +31,14 @@ llvm::Value *ASTBinaryOperator::EmitIR(IREmitter::EmitterState &state)
         tempr = state.builder.CreateLoad(r_inst, "tempr");
     else
         tempr = r_inst;
+
+	/*if (right->GetNodeType() == UNARY_OP)
+	{
+		ASTUnaryOperator *downcast = (ASTUnaryOperator*)right.get();
+
+		if (downcast->op == ASTUnaryOperator::OP::ARRAY_INDEX)
+			tempr = state.builder.CreateLoad(tempr);
+	}*/
 
 	// perform the operation
     switch (op)

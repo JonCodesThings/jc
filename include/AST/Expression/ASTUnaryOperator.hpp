@@ -18,14 +18,14 @@ public:
 
     enum OP
     {
-        CAST,
-        INCREMENT,
-        DECREMENT,
-        ADDRESS_OF,
-        DEREFERENCE,
-        ARRAY_INDEX,
-		MINUS,
-		PLUS
+        CAST = 0,
+        INCREMENT = 1,
+        DECREMENT = 2,
+        ADDRESS_OF = 3,
+        DEREFERENCE = 4,
+        ARRAY_INDEX = 5,
+		MINUS = 6,
+		PLUS = 7
     } op;
 
     ASTUnaryOperator(ASTNode &operatee, OP op);
