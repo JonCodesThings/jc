@@ -6,6 +6,14 @@ link "libcmt.lib";
 main()
 {
 	printf("big thunk\n");
+	defer printf("bigger thunk\n");
+
+	file := fopen("oof.txt", "r");
+	defer printf("%p\n", file);
+	defer fclose(file);
+	defer printf("%p\n", file); 
+
+	
 
 	byte := alloc(1);
 	printf("Allocated memory pointer: %p\n", byte);

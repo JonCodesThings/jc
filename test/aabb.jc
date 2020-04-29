@@ -1,0 +1,19 @@
+import vector;
+
+struct AABB
+{
+	vector2 position;
+	vector2 size;
+}
+
+struct testy
+{
+	i32 t;
+}
+
+main()
+{
+	testy oof[10];
+	oof[0].t = 1;
+	return 0;
+}

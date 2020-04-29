@@ -119,7 +119,7 @@ int token;
 
 %token UNKNOWN
 
-%type<statement> node_setup semicoloned_statement statement assign_op variable_assign unary_op binary_op member_op include_or_link
+%type<statement> node_setup semicoloned_statement statement assign_op variable_assign unary_op binary_op member_op include_or_link memberable
 %type<variable_declaration> array_decl
 %type<func_ptr> func_ptr
 %type<variable_declaration> variable_decl
@@ -210,14 +210,17 @@ unary_minus: MINUS id_or_constant { $$ = new ASTUnaryOperator(*$2, ASTUnaryOpera
 
 unary_plus: PLUS id_or_constant { $$ = new ASTUnaryOperator(*$2, ASTUnaryOperator::PLUS); }
 
-binary_op: binop { $$ = $1};
+binary_op: binop { $$ = $1; }
 
 assign_op: variable_assign;
+
+memberable: id | array_index
 
 array_index: id LEFT_SQUARE_BRACKET constant_int RIGHT_SQUARE_BRACKET { $$ = new ASTUnaryOperator(*$1, *$3, ASTUnaryOperator::ARRAY_INDEX); }
     | id LEFT_SQUARE_BRACKET id RIGHT_SQUARE_BRACKET { $$ = new ASTUnaryOperator(*$1, $3, ASTUnaryOperator::ARRAY_INDEX);} ;
 
-member_op: id FSTOP id { $$ = new ASTMemberOperator(*$1, *$3, ASTMemberOperator::OP::DOT); } | id ARROW id { $$ = new ASTMemberOperator(*$1, *$3, ASTMemberOperator::OP::ARROW); };
+member_op: memberable FSTOP memberable { $$ = new ASTMemberOperator(*$1, *$3, ASTMemberOperator::OP::DOT); }
+	| memberable FSTOP member_op { $$ = new ASTMemberOperator(*$1, *$3, ASTMemberOperator::OP::DOT); }
 
 variable_assign: id EQUAL assignable_statement { $$ = new ASTVariableAssignment(*$1, *$3);  }
     | array_index EQUAL assignable_statement { $$ = new ASTVariableAssignment(*$1, *$3); }

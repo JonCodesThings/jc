@@ -12,8 +12,10 @@
 class ASTMemberOperator : public ASTExpression
 {
 public:
-    std::unique_ptr<ASTIdentifier> id;
-    std::unique_ptr<ASTIdentifier> member_id;
+    std::unique_ptr<ASTNode> id;
+    std::unique_ptr<ASTNode> member;
+
+	llvm::Value *base_ptr = nullptr;
 
     enum OP
     {
@@ -21,7 +23,7 @@ public:
         ARROW
     } op;
 
-    ASTMemberOperator(ASTIdentifier &id, ASTIdentifier &member, OP op);
+    ASTMemberOperator(ASTNode &id, ASTNode &member, OP op);
     llvm::Value *EmitIR(IREmitter::EmitterState &state);
     const std::string *GetType(IREmitter::EmitterState &state);
 	const Symbol *GetSymbol(IREmitter::EmitterState &state);
