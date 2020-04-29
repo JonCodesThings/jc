@@ -6,20 +6,30 @@ llvm::Value *ASTMemberOperator::EmitIR(IREmitter::EmitterState &state)
 {
 	//get the struct's symbol and type
 	ASTIdentifier *inode = nullptr;
+	ASTMemberOperator *mnode = nullptr;
 
 	if (id->GetNodeType() == IDENTIFIER)
 		inode = (ASTIdentifier*)id.get();
 	if (id->GetNodeType() == UNARY_OP)
-	{
 		base_ptr = id->EmitIR(state);
-		//base_ptr = state.builder.CreateLoad(base_ptr, "load_struct_from_gep");
-	}
+
+	if (member->GetNodeType() == MEMBER_OP)
+		mnode = (ASTMemberOperator*)member.get();
+		
 
     const Symbol *symbol = id->GetSymbol(state);
-    const JCType *type = state.typeRegistry.GetTypeInfo(symbol->type);
+
+	const JCType *type = nullptr;
+	if (symbol)
+		type = state.typeRegistry.GetTypeInfo(symbol->type);
+
+	
+
 
 	if (!base_ptr)
 		base_ptr = symbol->alloc_inst;
+	else if (base_ptr && base_struct_typeinfo)
+		type = base_struct_typeinfo;
 	else
 		type = state.typeRegistry.GetTypeInfo(symbol->type.substr(0, symbol->type.length() - 1));
 
@@ -55,9 +65,29 @@ llvm::Value *ASTMemberOperator::EmitIR(IREmitter::EmitterState &state)
 					}
 				}
 			}
-			else
+			else if (mnode)
 			{
-
+				ASTIdentifier *idet = (ASTIdentifier*)mnode->id.get();
+				std::string id = idet->identifier;
+				//get the element using GEP if possible
+				for (int i = 0; i < type->MEMBER_NAMES.size(); i++)
+				{
+					if (type->MEMBER_NAMES[i] == id)
+					{
+						if (type->classification == JCType::TYPE_CLASSIFICATION::STRUCT)
+						{
+							llvm::Value *get_element = state.builder.CreateGEP(state.typeRegistry.GetType(type->MEMBER_TYPENAMES[i]), base_ptr, { llvm::ConstantInt::get(llvm::Type::getInt32Ty(state.context), i) });
+							mnode->base_ptr = get_element;
+							mnode->base_struct_typeinfo = state.typeRegistry.GetTypeInfo(type->MEMBER_TYPENAMES[i]);
+							return mnode->EmitIR(state);
+						}
+						else if (type->classification == JCType::TYPE_CLASSIFICATION::UNION)
+						{
+							llvm::Value *get_element = state.builder.CreateGEP(base_ptr, { llvm::ConstantInt::get(llvm::Type::getInt32Ty(state.context), 0),  llvm::ConstantInt::get(llvm::Type::getInt32Ty(state.context), 0) });
+							llvm::Value *get_union_element = state.builder.CreateBitCast(get_element, state.typeRegistry.GetType(type->MEMBER_TYPENAMES[i] + "*"));
+						}
+					}
+				}
 			}
         }
     }

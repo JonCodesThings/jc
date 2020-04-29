@@ -16,6 +16,7 @@ public:
     std::unique_ptr<ASTNode> member;
 
 	llvm::Value *base_ptr = nullptr;
+	const JCType *base_struct_typeinfo = nullptr;
 
     enum OP
     {

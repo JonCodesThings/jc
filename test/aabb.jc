@@ -2,8 +2,8 @@ import vector;
 
 struct AABB
 {
-	vector2 position;
-	vector2 size;
+	Vector2 position;
+	Vector2 size;
 }
 
 struct testy
@@ -13,7 +13,7 @@ struct testy
 
 main()
 {
-	testy oof[10];
-	oof[0].t = 1;
+	AABB oof[10];
+	oof[0].position.x = 1.0f;
 	return 0;
 }

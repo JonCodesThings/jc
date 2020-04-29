@@ -167,6 +167,7 @@ llvm::Value *ASTVariableAssignment::EmitIR(IREmitter::EmitterState &state)
 	{
 		if (val->GetNodeType() == UNARY_OP || assign_to->GetNodeType() == MEMBER_OP)
 		{
+			state.module->print(llvm::errs(), nullptr);
 			return state.builder.CreateStore(actual_value, store_at);
 		}
 		else
