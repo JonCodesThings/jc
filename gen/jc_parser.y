@@ -221,6 +221,8 @@ array_index: id LEFT_SQUARE_BRACKET constant_int RIGHT_SQUARE_BRACKET { $$ = new
 
 member_op: memberable FSTOP memberable { $$ = new ASTMemberOperator(*$1, *$3, ASTMemberOperator::OP::DOT); }
 	| memberable FSTOP member_op { $$ = new ASTMemberOperator(*$1, *$3, ASTMemberOperator::OP::DOT); }
+	| memberable ARROW memberable { $$ = new ASTMemberOperator(*$1, *$3, ASTMemberOperator::OP::ARROW); }
+	| memberable ARROW member_op { $$ = new ASTMemberOperator(*$1, *$3, ASTMemberOperator::OP::ARROW); }
 
 variable_assign: id EQUAL assignable_statement { $$ = new ASTVariableAssignment(*$1, *$3);  }
     | array_index EQUAL assignable_statement { $$ = new ASTVariableAssignment(*$1, *$3); }

@@ -1,45 +1,43 @@
 import io;
 
-sort(i32 *items, i32 size) 
+Sort(i32 *items, i32 size) 
 {
-    quickSort(i32 first, i32 last) 
+    QuickSort(i32 first, i32 last) 
 	{
-	    swap(i32 p, i32 q)
+	    Swap(i32 p, i32 q)
 		{
             tmp := items[p];
-			tmp2 := items[q];
-			items[p] = tmp2;
+			items[p] = items[q];
 			items[q] = tmp;
         }
 		        
-        partition() 
+        Partition() 
 		{
             pivot := items[first];
 			index := first;
-            swap(index, last);
+            Swap(index, last);
 
 			for (i := first; i < last; i++)
 			{
 			    if (items[i] < pivot)
 				{
-					swap(index, i);
-					index++;
+					Swap(index++, i);
 				}
 			}
 
-            swap(index, last);
+            Swap(index, last);
 
             return index;
         }
 
 		if (first < last) 
 		{
-            pivotIndex := partition();
-            quickSort(first, pivotIndex - 1);
-            quickSort(pivotIndex + 1, last);
+            pivotIndex := Partition();
+            QuickSort(first, pivotIndex - 1);
+            QuickSort(pivotIndex + 1, last);
         }
     }
-    quickSort(0, size - 1);
+    QuickSort(0, size - 1);
 }
 
 main()
@@ -55,7 +53,7 @@ main()
 	printf("\n");
 
 	printf("Sorting array using quicksort...\n\n");
-	sort(arr, 5);
+	Sort(arr, 5);
 
 	printf("Sorted array values: \n");
 	for (i := 0; i < 5; i++)

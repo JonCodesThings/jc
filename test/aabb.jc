@@ -1,9 +1,15 @@
 import vector;
+import io;
 
 struct AABB
 {
 	Vector2 position;
 	Vector2 size;
+}
+
+struct test
+{
+	i32 x;
 }
 
 IsColliding(AABB first, AABB second)
@@ -37,9 +43,20 @@ IsColliding(AABB first, AABB second)
 	return true;
 }
 
+Yikes(test *k)
+{
+	k->x = 10;
+
+}
+
 main()
 {
 	AABB oof[10];
+	test t;
+	Yikes(&t);
+	t.x = 10;
+	x := 10;
+	printf("%d\n",x);
 	IsColliding(oof[0], oof[1]);
 	return 0;
 }

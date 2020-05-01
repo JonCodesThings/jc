@@ -10,5 +10,5 @@ main()
     s.x = 5;
     s.f = 32.0f;
     i32 x = s.x;
-    return s.x;
+    return x;
 }

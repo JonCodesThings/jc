@@ -110,7 +110,7 @@ llvm::Value *ASTUnaryOperator::EmitIR(IREmitter::EmitterState &state)
             llvm::Value *temp = state.builder.CreateLoad(s->alloc_inst, "temp");
             llvm::Value *added = state.builder.CreateAdd(temp, llvm::ConstantInt::get(state.typeRegistry.GetType(*type), 1));
             state.builder.CreateStore(added, s->alloc_inst);
-			return s->alloc_inst;
+			return temp;
         }
 		//decrement
 		//TODO: allow this to support other types
@@ -124,7 +124,7 @@ llvm::Value *ASTUnaryOperator::EmitIR(IREmitter::EmitterState &state)
             llvm::Value *temp = state.builder.CreateLoad(s->alloc_inst, "temp");
             llvm::Value *added = state.builder.CreateSub(temp, llvm::ConstantInt::get(state.typeRegistry.GetType(*type), 1));
             state.builder.CreateStore(added, s->alloc_inst);
-			return s->alloc_inst;
+			return temp;
         }
 		case MINUS:
 		case PLUS:

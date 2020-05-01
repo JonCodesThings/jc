@@ -44,6 +44,12 @@ llvm::Value *ASTMemberOperator::EmitIR(IREmitter::EmitterState &state)
     {
         default:
             return nullptr;
+		case ARROW:
+		{
+			base_ptr = state.builder.CreateLoad(base_ptr, "loading_for_arrow_instruction");
+			type = state.typeRegistry.GetTypeInfo(symbol->type.substr(0, symbol->type.length() - 1));
+			//IREmitter::DebugOut(state);
+		}
         case DOT:
         {
 			if (member->GetNodeType() == IDENTIFIER)
@@ -109,9 +115,6 @@ const std::string *ASTMemberOperator::GetType(IREmitter::EmitterState &state)
 	//get the struct's symbol and type
     const Symbol *struct_symbol = id->GetSymbol(state);
 
-	if (!struct_symbol)
-		struct_symbol = id->GetSymbol(state);
-
 	//if (!struct_symbol)
 	//	return nullptr;
 
@@ -122,6 +125,12 @@ const std::string *ASTMemberOperator::GetType(IREmitter::EmitterState &state)
 		struct_type = base_struct_typeinfo;
 	else
 		struct_type = state.typeRegistry.GetTypeInfo(struct_symbol->type);
+
+	if (struct_symbol)
+	{
+		if (struct_symbol->type.find('*') != std::string::npos)
+			struct_type = state.typeRegistry.GetTypeInfo(struct_symbol->type.substr(0, struct_symbol->type.length() - 1));
+	}
 
 
 	ASTIdentifier *mid = nullptr;

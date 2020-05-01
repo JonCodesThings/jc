@@ -102,7 +102,7 @@ llvm::Value *ASTVariableAssignment::EmitIR(IREmitter::EmitterState &state)
 	{
 		//@Jon
 		//TODO: implement this!
-		actual_value = assign_to->EmitIR(state);
+		actual_value = val->EmitIR(state);
 		actual_value = state.builder.CreateLoad(actual_value, "load_val_from_gep_member_op");
 		break;
 	}
@@ -167,7 +167,7 @@ llvm::Value *ASTVariableAssignment::EmitIR(IREmitter::EmitterState &state)
 	{
 		if (val->GetNodeType() == UNARY_OP || assign_to->GetNodeType() == MEMBER_OP)
 		{
-			state.module->print(llvm::errs(), nullptr);
+			IREmitter::DebugOut(state);
 			return state.builder.CreateStore(actual_value, store_at);
 		}
 		else

@@ -1,0 +1,7 @@
+import io;
+import memory;
+
+main()
+{
+	return 0;
+}
