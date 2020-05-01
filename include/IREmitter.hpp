@@ -46,6 +46,7 @@ public:
     bool EmitIR(ASTBlock *root, const std::string &module_name, const std::vector<std::string> &module_imports);
 	EmitterState &GetEmitterState();
 	void SetModule(llvm::Module &module);
+	static void DebugOut(EmitterState &state);
 private:
     EmitterState state;
 };

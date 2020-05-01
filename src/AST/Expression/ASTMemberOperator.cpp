@@ -1,6 +1,9 @@
 #include <include/AST/Expression/ASTMemberOperator.hpp>
 
-ASTMemberOperator::ASTMemberOperator(ASTNode &id, ASTNode &member, OP op) : id(&id), member(&member), op(op), ASTExpression(MEMBER_OP) {}
+ASTMemberOperator::ASTMemberOperator(ASTNode &id, ASTNode &member, OP op) : id(&id), member(&member), op(op), ASTExpression(MEMBER_OP) 
+{
+
+}
 
 llvm::Value *ASTMemberOperator::EmitIR(IREmitter::EmitterState &state)
 {
@@ -109,17 +112,49 @@ const std::string *ASTMemberOperator::GetType(IREmitter::EmitterState &state)
 	if (!struct_symbol)
 		struct_symbol = id->GetSymbol(state);
 
-	if (!struct_symbol)
-		return nullptr;
+	//if (!struct_symbol)
+	//	return nullptr;
 
-    const JCType *struct_type = state.typeRegistry.GetTypeInfo(struct_symbol->type);
+	const JCType *struct_type = nullptr;
+	
+
+	if (!struct_symbol)
+		struct_type = base_struct_typeinfo;
+	else
+		struct_type = state.typeRegistry.GetTypeInfo(struct_symbol->type);
+
+
+	ASTIdentifier *mid = nullptr;
+	ASTMemberOperator *mmop = nullptr;
+
+	if (member->GetNodeType() == IDENTIFIER)
+		mid = (ASTIdentifier*)member.get();
+	
+	if (member->GetNodeType() == MEMBER_OP)
+		mmop = (ASTMemberOperator*)member.get();
+
 
 	//get the type of the member if possible, otherwise return nullptr
     for (unsigned int i = 0; i < struct_type->MEMBER_NAMES.size(); i++)
     {
-		ASTIdentifier *m = (ASTIdentifier*)member.get();
-        if (struct_type->MEMBER_NAMES[i] == m->identifier)
-            return state.typeRegistry.GetLifetimeTypeString(struct_type->MEMBER_TYPENAMES[i]);
+		if (mid)
+		{
+			if (struct_type->MEMBER_NAMES[i] == mid->identifier)
+				return state.typeRegistry.GetLifetimeTypeString(struct_type->MEMBER_TYPENAMES[i]);
+		}
+		if (mmop)
+		{
+			if (mmop->id->GetNodeType() == IDENTIFIER)
+			{
+				ASTIdentifier *ide = (ASTIdentifier*)mmop->id.get();
+				if (struct_type->MEMBER_NAMES[i] == ide->identifier)
+				{
+					mmop->base_struct_typeinfo = state.typeRegistry.GetTypeInfo(struct_type->MEMBER_TYPENAMES[i]);
+					return mmop->GetType(state);
+				}
+			}
+			
+		}
     }
     return nullptr;
 }

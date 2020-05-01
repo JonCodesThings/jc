@@ -45,6 +45,8 @@ llvm::Value *ASTBinaryOperator::EmitIR(IREmitter::EmitterState &state)
     {
         case ADD:
         {
+			if (*ltype == "f32" || *rtype == "f32")
+				return state.builder.CreateFAdd(templ, tempr);
             return state.builder.CreateAdd(templ, tempr);
         }
         case SUBTRACT:

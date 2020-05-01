@@ -38,6 +38,20 @@ llvm::Value *ASTFunctionCall::EmitIR(IREmitter::EmitterState &state)
 					//printf("Adding symbol %s with type %s to function %s's argument values.\n", sy->identifier.c_str(), sy->type.c_str(), s->identifier.c_str());
 				}
 			}
+			else if (arg->GetNodeType() == ASTNode::UNARY_OP)
+			{
+				ASTUnaryOperator *downcast = (ASTUnaryOperator*)arg.get();
+				llvm::Value *v = nullptr;
+				if (downcast->op == ASTUnaryOperator::OP::ARRAY_INDEX)
+				{
+					v = downcast->EmitIR(state);
+					argvals.push_back(state.builder.CreateLoad(v));
+				}
+				else
+					argvals.push_back(downcast->EmitIR(state));
+
+
+			}
 			else
 			{
 				argvals.push_back(arg->EmitIR(state));

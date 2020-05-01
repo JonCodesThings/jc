@@ -245,6 +245,9 @@ binop_id: PLUS { $$ = 0; } | MINUS { $$ = 1; } | ASTERISK { $$ = 2; }
 binop: id_or_constant binop_id id_or_constant { $$ = new ASTBinaryOperator(*$1, *$3, (ASTBinaryOperator::OP)$2); }
 	  | id_or_constant binop_id unary_op {$$ = new ASTBinaryOperator(*$1, *$3, (ASTBinaryOperator::OP)$2); };
 	  | unary_op binop_id id_or_constant {$$ = new ASTBinaryOperator(*$1, *$3, (ASTBinaryOperator::OP)$2); };
+	  | member_op binop_id member_op { $$ = new ASTBinaryOperator(*$1, *$3, (ASTBinaryOperator::OP)$2); }
+	  | id_or_constant binop_id member_op { $$ = new ASTBinaryOperator(*$1, *$3, (ASTBinaryOperator::OP)$2); }
+	  | member_op binop_id id_or_constant { $$ = new ASTBinaryOperator(*$1, *$3, (ASTBinaryOperator::OP)$2); }
 
 function_def: composited_type id LEFT_BRACKET arg_list RIGHT_BRACKET scope {  $$ = new ASTFunctionDefinition(*$1, *$2, *$4, *$6);  }
     | composited_type id LEFT_BRACKET RIGHT_BRACKET scope {  $$ = new ASTFunctionDefinition(*$1, *$2, *new ASTFunctionArgs(), *$5);  };

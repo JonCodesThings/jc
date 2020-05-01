@@ -6,14 +6,40 @@ struct AABB
 	Vector2 size;
 }
 
-struct testy
+IsColliding(AABB first, AABB second)
 {
-	i32 t;
+	f32 first_right = first.position.x + first.size.x;
+	f32 first_bottom = first.position.y + first.size.y;
+
+	f32 second_right = second.position.x + second.size.x;
+	f32 second_bottom = second.position.y + second.size.y;
+
+	if (first_right < second.position.x)
+	{
+		return false;
+	}
+
+    if (first.position.x > second_right)
+	{
+		return false;
+	}
+
+	if (first_bottom < second.position.y)
+	{
+		return false;
+	}
+
+	if (first.position.y > second_bottom)
+	{
+		return false;
+	}
+
+	return true;
 }
 
 main()
 {
 	AABB oof[10];
-	oof[0].position.x = 1.0f;
+	IsColliding(oof[0], oof[1]);
 	return 0;
 }

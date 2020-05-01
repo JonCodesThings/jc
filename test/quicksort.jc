@@ -1,6 +1,6 @@
 import io;
 
-sort(mut i32 mut *items, mut i32 size) 
+sort(i32 *items, i32 size) 
 {
     quickSort(i32 first, i32 last) 
 	{
@@ -44,7 +44,7 @@ sort(mut i32 mut *items, mut i32 size)
 
 main()
 {
-	i32 mut arr mut[5] = { 25, 4, 5, 7, 1 };
+	i32 arr[5] = { 25, 4, 5, 7, 1 };
 
 	printf("Original array values: \n");
 	for (l := 0; l < 5; l++)
