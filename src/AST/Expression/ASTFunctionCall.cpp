@@ -60,14 +60,6 @@ llvm::Value *ASTFunctionCall::EmitIR(IREmitter::EmitterState &state)
 		}
 	}
 
-	//if (state.symbolStack.Top().GetSymbolByIdentifier(identifier->identifier) == s && s->classification == Symbol::Classification::FUNCTION)
-	//{
-	//	for (auto arg : state.symbolStack.Top().GetSymbols())
-	//	{
-	//		if (arg.classification == Symbol::Classification::VARIABLE)
-	//			argvals.push_back(state.builder.CreateLoad(arg.alloc_inst, "load_var_value"));
-	//	}
-	//}
 	if (s->classification == Symbol::Classification::FUNCTION && s->nested_func)
 	{
 		//printf("Symbol stack size: %zd\n", state.symbolStack.Size());

@@ -55,6 +55,8 @@ llvm::Value *ASTBinaryOperator::EmitIR(IREmitter::EmitterState &state)
         }
         case MULTIPLY:
         {
+			if (*ltype == "f32" || *rtype == "f32")
+				return state.builder.CreateFMul(templ, tempr);
             return state.builder.CreateMul(templ, tempr);
         }
         case DIVIDE:

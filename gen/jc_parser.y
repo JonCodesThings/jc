@@ -234,7 +234,7 @@ increment: id_or_constant PLUS PLUS { $$ = new ASTUnaryOperator(*$1, ASTUnaryOpe
 
 decrement: id_or_constant MINUS MINUS { $$ = new ASTUnaryOperator(*$1, ASTUnaryOperator::DECREMENT);  };
 
-address_of: AND id { $$ = new ASTUnaryOperator(*$2, ASTUnaryOperator::ADDRESS_OF); };
+address_of: AND id { $$ = new ASTUnaryOperator(*$2, ASTUnaryOperator::ADDRESS_OF); } | AND unary_op { $$ = new ASTUnaryOperator(*$2, ASTUnaryOperator::ADDRESS_OF); };
 
 dereference: ASTERISK id { $$ = new ASTUnaryOperator(*$2, ASTUnaryOperator::DEREFERENCE); };
 

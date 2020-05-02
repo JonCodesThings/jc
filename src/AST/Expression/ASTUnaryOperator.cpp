@@ -21,6 +21,11 @@ llvm::Value *ASTUnaryOperator::EmitIR(IREmitter::EmitterState &state)
             return nullptr;
         case ADDRESS_OF:
         {
+			if (operatee->GetNodeType() == UNARY_OP)
+			{
+				llvm::Value *v = operatee->EmitIR(state);
+				return v;
+			}
 			if (s->classification == Symbol::Classification::FUNCTION)
 			{
 				return s->function;

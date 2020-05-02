@@ -7,35 +7,38 @@ struct AABB
 	Vector2 size;
 }
 
-struct test
+ConstructAABB(AABB *to_construct, f32 x, f32 y, f32 width, f32 height)
 {
-	i32 x;
+	to_construct->position.x = x;
+	to_construct->position.y = y;
+	to_construct->size.x = width;
+	to_construct->size.y = height;
 }
 
-IsColliding(AABB first, AABB second)
+IsColliding(AABB *first, AABB *second)
 {
-	f32 first_right = first.position.x + first.size.x;
-	f32 first_bottom = first.position.y + first.size.y;
+	f32 first_right = first->position.x + first->size.x;
+	f32 first_bottom = first->position.y + first->size.y;
 
-	f32 second_right = second.position.x + second.size.x;
-	f32 second_bottom = second.position.y + second.size.y;
+	f32 second_right = second->position.x + second->size.x;
+	f32 second_bottom = second->position.y + second->size.y;
 
-	if (first_right < second.position.x)
+	if (first_right < second->position.x)
 	{
 		return false;
 	}
 
-    if (first.position.x > second_right)
+    if (first->position.x > second_right)
 	{
 		return false;
 	}
 
-	if (first_bottom < second.position.y)
+	if (first_bottom < second->position.y)
 	{
 		return false;
 	}
 
-	if (first.position.y > second_bottom)
+	if (first->position.y > second_bottom)
 	{
 		return false;
 	}
@@ -43,20 +46,41 @@ IsColliding(AABB first, AABB second)
 	return true;
 }
 
-Yikes(test *k)
-{
-	k->x = 10;
-
-}
 
 main()
 {
 	AABB oof[10];
-	test t;
-	Yikes(&t);
-	t.x = 10;
-	x := 10;
-	printf("%d\n",x);
-	IsColliding(oof[0], oof[1]);
+
+	height := 16.0f;
+	width := 16.0f;
+
+	for (i := 0; i < 10; i++)
+	{
+		it := (f32)i;
+		x := it * 32.0f;
+		y := it * 32.0f;
+		
+		ConstructAABB(&oof[i], x, y, width, height);
+	}
+
+	for (j := 0; j < 10; j++)
+	{
+		for (k := 0; k < 10; k++)
+		{
+			if (j != k)
+			{
+				iscoll := IsColliding(&oof[j], &oof[k]);
+				
+				if (iscoll == true)
+				{
+					printf("AABB collision detected with boxes %d and %d!\n", j, k);
+				}
+			}
+		}
+	}
+
+	
+
+
 	return 0;
 }

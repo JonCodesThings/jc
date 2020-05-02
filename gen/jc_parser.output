@@ -16,8 +16,9 @@ Rules useless in parser due to conflicts
 State 25 conflicts: 19 reduce/reduce
 State 89 conflicts: 2 shift/reduce
 State 118 conflicts: 1 shift/reduce
-State 142 conflicts: 1 shift/reduce
-State 143 conflicts: 1 shift/reduce
+State 127 conflicts: 2 reduce/reduce
+State 145 conflicts: 1 shift/reduce
+State 146 conflicts: 1 shift/reduce
 
 
 Grammar
@@ -128,192 +129,193 @@ Grammar
    74 decrement: id_or_constant MINUS MINUS
 
    75 address_of: AND id
+   76           | AND unary_op
 
-   76 dereference: ASTERISK id
+   77 dereference: ASTERISK id
 
-   77 binop_id: PLUS
-   78         | MINUS
-   79         | ASTERISK
-   80         | FORWARD_SLASH
-   81         | EQUAL_EQUAL
-   82         | EXCLAMATION_EQUAL
-   83         | LESSER
-   84         | GREATER
-   85         | LESSER_EQUAL
-   86         | GREATER_EQUAL
-   87         | AND
-   88         | OR
-   89         | LEFT_SHIFT
-   90         | RIGHT_SHIFT
-   91         | PERCENT
+   78 binop_id: PLUS
+   79         | MINUS
+   80         | ASTERISK
+   81         | FORWARD_SLASH
+   82         | EQUAL_EQUAL
+   83         | EXCLAMATION_EQUAL
+   84         | LESSER
+   85         | GREATER
+   86         | LESSER_EQUAL
+   87         | GREATER_EQUAL
+   88         | AND
+   89         | OR
+   90         | LEFT_SHIFT
+   91         | RIGHT_SHIFT
+   92         | PERCENT
 
-   92 binop: id_or_constant binop_id id_or_constant
-   93      | id_or_constant binop_id unary_op
-   94      | unary_op binop_id id_or_constant
-   95      | member_op binop_id member_op
-   96      | id_or_constant binop_id member_op
-   97      | member_op binop_id id_or_constant
+   93 binop: id_or_constant binop_id id_or_constant
+   94      | id_or_constant binop_id unary_op
+   95      | unary_op binop_id id_or_constant
+   96      | member_op binop_id member_op
+   97      | id_or_constant binop_id member_op
+   98      | member_op binop_id id_or_constant
 
-   98 function_def: composited_type id LEFT_BRACKET arg_list RIGHT_BRACKET scope
-   99             | composited_type id LEFT_BRACKET RIGHT_BRACKET scope
-  100             | id LEFT_BRACKET arg_list RIGHT_BRACKET scope
-  101             | id LEFT_BRACKET RIGHT_BRACKET scope
-  102             | EXPORT function_def
+   99 function_def: composited_type id LEFT_BRACKET arg_list RIGHT_BRACKET scope
+  100             | composited_type id LEFT_BRACKET RIGHT_BRACKET scope
+  101             | id LEFT_BRACKET arg_list RIGHT_BRACKET scope
+  102             | id LEFT_BRACKET RIGHT_BRACKET scope
+  103             | EXPORT function_def
 
-  103 function_decl: composited_type id LEFT_BRACKET RIGHT_BRACKET SEMICOLON
-  104              | composited_type id LEFT_BRACKET arg_list RIGHT_BRACKET SEMICOLON
-  105              | EXPORT function_decl
+  104 function_decl: composited_type id LEFT_BRACKET RIGHT_BRACKET SEMICOLON
+  105              | composited_type id LEFT_BRACKET arg_list RIGHT_BRACKET SEMICOLON
+  106              | EXPORT function_decl
 
-  106 function_call: id LEFT_BRACKET RIGHT_BRACKET
-  107              | id LEFT_BRACKET statement_list RIGHT_BRACKET
+  107 function_call: id LEFT_BRACKET RIGHT_BRACKET
+  108              | id LEFT_BRACKET statement_list RIGHT_BRACKET
 
-  108 variable_decl: composited_type id
-  109              | id COLON EQUAL assignable_statement
-  110              | composited_type id EQUAL assignable_statement
-  111              | array_decl
-  112              | EXPORT variable_decl
+  109 variable_decl: composited_type id
+  110              | id COLON EQUAL assignable_statement
+  111              | composited_type id EQUAL assignable_statement
+  112              | array_decl
+  113              | EXPORT variable_decl
 
-  113 array_decl: composited_type id LEFT_SQUARE_BRACKET constant_int RIGHT_SQUARE_BRACKET
-  114           | composited_type id LEFT_SQUARE_BRACKET constant_int RIGHT_SQUARE_BRACKET EQUAL LEFT_BRACE init_list RIGHT_BRACE
-  115           | composited_type id MUT LEFT_SQUARE_BRACKET constant_int RIGHT_SQUARE_BRACKET
-  116           | composited_type id MUT LEFT_SQUARE_BRACKET constant_int RIGHT_SQUARE_BRACKET EQUAL LEFT_BRACE init_list RIGHT_BRACE
+  114 array_decl: composited_type id LEFT_SQUARE_BRACKET constant_int RIGHT_SQUARE_BRACKET
+  115           | composited_type id LEFT_SQUARE_BRACKET constant_int RIGHT_SQUARE_BRACKET EQUAL LEFT_BRACE init_list RIGHT_BRACE
+  116           | composited_type id MUT LEFT_SQUARE_BRACKET constant_int RIGHT_SQUARE_BRACKET
+  117           | composited_type id MUT LEFT_SQUARE_BRACKET constant_int RIGHT_SQUARE_BRACKET EQUAL LEFT_BRACE init_list RIGHT_BRACE
 
-  117 init_list: id_or_constant
-  118          | init_list COMMA id_or_constant
+  118 init_list: id_or_constant
+  119          | init_list COMMA id_or_constant
 
-  119 return_statement: RETURN assignable_statement
+  120 return_statement: RETURN assignable_statement
 
-  120 if_statement: cond_block
-  121             | cond_block ELSE scope
+  121 if_statement: cond_block
+  122             | cond_block ELSE scope
 
-  122 cond_block: IF LEFT_BRACKET assignable_statement RIGHT_BRACKET scope
-  123           | cond_block ELSE IF LEFT_BRACKET assignable_statement RIGHT_BRACKET scope
+  123 cond_block: IF LEFT_BRACKET assignable_statement RIGHT_BRACKET scope
+  124           | cond_block ELSE IF LEFT_BRACKET assignable_statement RIGHT_BRACKET scope
 
-  124 while_loop: WHILE LEFT_BRACKET assignable_statement RIGHT_BRACKET scope
+  125 while_loop: WHILE LEFT_BRACKET assignable_statement RIGHT_BRACKET scope
 
-  125 for_loop: FOR LEFT_BRACKET statement SEMICOLON assignable_statement SEMICOLON assignable_statement RIGHT_BRACKET scope
+  126 for_loop: FOR LEFT_BRACKET statement SEMICOLON assignable_statement SEMICOLON assignable_statement RIGHT_BRACKET scope
 
-  126 struct_list: struct_list struct_pair
-  127            | struct_pair
+  127 struct_list: struct_list struct_pair
+  128            | struct_pair
 
-  128 struct_pair: composited_type id SEMICOLON
-  129            | composited_type id EQUAL assignable_statement SEMICOLON
+  129 struct_pair: composited_type id SEMICOLON
+  130            | composited_type id EQUAL assignable_statement SEMICOLON
 
-  130 arg_list: arg_list COMMA arg_pair
-  131         | arg_pair
+  131 arg_list: arg_list COMMA arg_pair
+  132         | arg_pair
 
-  132 statement_list: statement_list COMMA assignable_statement
-  133               | assignable_statement
+  133 statement_list: statement_list COMMA assignable_statement
+  134               | assignable_statement
 
-  134 func_ptr: FUNC_PTR type type LEFT_BRACKET type_list RIGHT_BRACKET
-  135         | EXPORT func_ptr
+  135 func_ptr: FUNC_PTR type type LEFT_BRACKET type_list RIGHT_BRACKET
+  136         | EXPORT func_ptr
 
-  136 arg_pair: composited_type id
-  137         | FSTOP FSTOP FSTOP
+  137 arg_pair: composited_type id
+  138         | FSTOP FSTOP FSTOP
 
-  138 enum_def: ENUM type LEFT_BRACE enum_parts RIGHT_BRACE
-  139         | EXPORT enum_def
+  139 enum_def: ENUM type LEFT_BRACE enum_parts RIGHT_BRACE
+  140         | EXPORT enum_def
 
-  140 enum_parts: enum_part
-  141           | enum_parts COMMA enum_part
+  141 enum_parts: enum_part
+  142           | enum_parts COMMA enum_part
 
-  142 enum_part: id
-  143          | id EQUAL constant_int
+  143 enum_part: id
+  144          | id EQUAL constant_int
 
-  144 id_or_constant: id
-  145               | constant
+  145 id_or_constant: id
+  146               | constant
 
-  146 include_or_link: INCLUDE STRING
-  147                | LINK STRING
+  147 include_or_link: INCLUDE STRING
+  148                | LINK STRING
 
-  148 constant: constant_int
-  149         | constant_enum_value
-  150         | constant_bool
-  151         | FLOAT
-  152         | STRING
-  153         | NULLPTR
+  149 constant: constant_int
+  150         | constant_enum_value
+  151         | constant_bool
+  152         | FLOAT
+  153         | STRING
+  154         | NULLPTR
 
-  154 constant_int: INTEGER
+  155 constant_int: INTEGER
 
-  155 constant_bool: TRUE
-  156              | FALSE
+  156 constant_bool: TRUE
+  157              | FALSE
 
-  157 constant_enum_value: type COLON COLON id
+  158 constant_enum_value: type COLON COLON id
 
-  158 id: IDENTIFIER
+  159 id: IDENTIFIER
 
-  159 type: TYPE
+  160 type: TYPE
 
-  160 composited_type: type
-  161                | MUT composited_type
-  162                | composited_type ASTERISK
-  163                | composited_type MUT
+  161 composited_type: type
+  162                | MUT composited_type
+  163                | composited_type ASTERISK
+  164                | composited_type MUT
 
-  164 type_list: composited_type
-  165          | type_list COMMA composited_type
+  165 type_list: composited_type
+  166          | type_list COMMA composited_type
 
 
 Terminals, with rules where they appear
 
 $end (0) 0
 error (256)
-IDENTIFIER (258) 158
-STRING (259) 146 147 152
-INTEGER (260) 154
-FLOAT (261) 151
-TYPE (262) 29 30 159
-LEFT_BRACKET (263) 72 98 99 100 101 103 104 106 107 122 123 124 125
-    134
-RIGHT_BRACKET (264) 72 98 99 100 101 103 104 106 107 122 123 124 125
-    134
-LEFT_BRACE (265) 31 34 46 47 114 116 138
-RIGHT_BRACE (266) 31 34 46 47 114 116 138
-LEFT_SQUARE_BRACKET (267) 63 64 113 114 115 116
-RIGHT_SQUARE_BRACKET (268) 63 64 113 114 115 116
-COMMA (269) 118 130 132 141 165
-FSTOP (270) 65 66 137
-SEMICOLON (271) 5 8 9 11 103 104 125 128 129
-COLON (272) 109 157
-PLUS (273) 58 73 77
-MINUS (274) 57 74 78
-ASTERISK (275) 76 79 162
-FORWARD_SLASH (276) 80
-PERCENT (277) 91
-EQUAL (278) 69 70 71 109 110 114 116 129 143
-EQUAL_EQUAL (279) 81
+IDENTIFIER (258) 159
+STRING (259) 147 148 153
+INTEGER (260) 155
+FLOAT (261) 152
+TYPE (262) 29 30 160
+LEFT_BRACKET (263) 72 99 100 101 102 104 105 107 108 123 124 125 126
+    135
+RIGHT_BRACKET (264) 72 99 100 101 102 104 105 107 108 123 124 125 126
+    135
+LEFT_BRACE (265) 31 34 46 47 115 117 139
+RIGHT_BRACE (266) 31 34 46 47 115 117 139
+LEFT_SQUARE_BRACKET (267) 63 64 114 115 116 117
+RIGHT_SQUARE_BRACKET (268) 63 64 114 115 116 117
+COMMA (269) 119 131 133 142 166
+FSTOP (270) 65 66 138
+SEMICOLON (271) 5 8 9 11 104 105 126 129 130
+COLON (272) 110 158
+PLUS (273) 58 73 78
+MINUS (274) 57 74 79
+ASTERISK (275) 77 80 163
+FORWARD_SLASH (276) 81
+PERCENT (277) 92
+EQUAL (278) 69 70 71 110 111 115 117 130 144
+EQUAL_EQUAL (279) 82
 EXCLAMATION (280)
-EXCLAMATION_EQUAL (281) 82
-GREATER (282) 84
-GREATER_EQUAL (283) 86
-LESSER (284) 83
-LESSER_EQUAL (285) 85
-AND (286) 75 87
+EXCLAMATION_EQUAL (281) 83
+GREATER (282) 85
+GREATER_EQUAL (283) 87
+LESSER (284) 84
+LESSER_EQUAL (285) 86
+AND (286) 75 76 88
 AND_AND (287)
-OR (288) 88
+OR (288) 89
 OR_OR (289)
-LEFT_SHIFT (290) 89
-RIGHT_SHIFT (291) 90
-RETURN (292) 119
+LEFT_SHIFT (290) 90
+RIGHT_SHIFT (291) 91
+RETURN (292) 120
 DEFER (293) 36
-IF (294) 122 123
-ELSE (295) 121 123
-FOR (296) 125
-WHILE (297) 124
+IF (294) 123 124
+ELSE (295) 122 124
+FOR (296) 126
+WHILE (297) 125
 TYPEDEF (298) 30
 ALIAS (299) 29
 AUTO (300)
-ENUM (301) 138
+ENUM (301) 139
 UNION (302) 34
-TRUE (303) 155
-FALSE (304) 156
-MUT (305) 115 116 161 163
+TRUE (303) 156
+FALSE (304) 157
+MUT (305) 116 117 162 164
 EXTERN (306)
 IMPORT (307) 48
-EXPORT (308) 32 35 102 105 112 135 139
-INCLUDE (309) 146
-LINK (310) 147
-FUNC_PTR (311) 134
-NULLPTR (312) 153
+EXPORT (308) 32 35 103 106 113 136 140
+INCLUDE (309) 147
+LINK (310) 148
+FUNC_PTR (311) 135
+NULLPTR (312) 154
 STRUCT (313) 31 33
 ARROW (314) 67 68
 UNKNOWN (315)
@@ -335,7 +337,7 @@ semicoloned_statement (66)
     on left: 8 9 10 11 12, on right: 6 7
 statement (67)
     on left: 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28, on right:
-    4 5 8 125
+    4 5 8 126
 alias_statement (68)
     on left: 29, on right: 17
 typedef_statement (69)
@@ -349,18 +351,18 @@ union_def (72)
 defer_statement (73)
     on left: 36, on right: 11
 assignable_statement (74)
-    on left: 37 38 39 40 41, on right: 9 36 69 70 71 109 110 119 122
-    123 124 125 129 132 133
+    on left: 37 38 39 40 41, on right: 9 36 69 70 71 110 111 120 123
+    124 125 126 130 133 134
 flow_control (75)
     on left: 42 43, on right: 10 26
 loop (76)
     on left: 44 45, on right: 43
 scope (77)
-    on left: 46 47, on right: 98 99 100 101 121 122 123 124 125
+    on left: 46 47, on right: 99 100 101 102 122 123 124 125 126
 import (78)
     on left: 48, on right: 21
 unary_op (79)
-    on left: 49 50 51 52 53 54 55 56, on right: 38 93 94
+    on left: 49 50 51 52 53 54 55 56, on right: 38 76 94 95
 unary_minus (80)
     on left: 57, on right: 55
 unary_plus (81)
@@ -374,7 +376,7 @@ memberable (84)
 array_index (85)
     on left: 63 64, on right: 54 62 70
 member_op (86)
-    on left: 65 66 67 68, on right: 40 66 68 71 95 96 97
+    on left: 65 66 67 68, on right: 40 66 68 71 96 97 98
 variable_assign (87)
     on left: 69 70 71, on right: 60
 cast (88)
@@ -384,78 +386,78 @@ increment (89)
 decrement (90)
     on left: 74, on right: 51
 address_of (91)
-    on left: 75, on right: 52
+    on left: 75 76, on right: 52
 dereference (92)
-    on left: 76, on right: 53
+    on left: 77, on right: 53
 binop_id (93)
-    on left: 77 78 79 80 81 82 83 84 85 86 87 88 89 90 91, on right:
-    92 93 94 95 96 97
+    on left: 78 79 80 81 82 83 84 85 86 87 88 89 90 91 92, on right:
+    93 94 95 96 97 98
 binop (94)
-    on left: 92 93 94 95 96 97, on right: 59
+    on left: 93 94 95 96 97 98, on right: 59
 function_def (95)
-    on left: 98 99 100 101 102, on right: 12 27 102
+    on left: 99 100 101 102 103, on right: 12 27 103
 function_decl (96)
-    on left: 103 104 105, on right: 14 105
+    on left: 104 105 106, on right: 14 106
 function_call (97)
-    on left: 106 107, on right: 37
+    on left: 107 108, on right: 37
 variable_decl (98)
-    on left: 108 109 110 111 112, on right: 15 112
+    on left: 109 110 111 112 113, on right: 15 113
 array_decl (99)
-    on left: 113 114 115 116, on right: 111
+    on left: 114 115 116 117, on right: 112
 init_list (100)
-    on left: 117 118, on right: 114 116 118
+    on left: 118 119, on right: 115 117 119
 return_statement (101)
-    on left: 119, on right: 13
+    on left: 120, on right: 13
 if_statement (102)
-    on left: 120 121, on right: 42
+    on left: 121 122, on right: 42
 cond_block (103)
-    on left: 122 123, on right: 120 121 123
+    on left: 123 124, on right: 121 122 124
 while_loop (104)
-    on left: 124, on right: 44
+    on left: 125, on right: 44
 for_loop (105)
-    on left: 125, on right: 45
+    on left: 126, on right: 45
 struct_list (106)
-    on left: 126 127, on right: 31 34 126
+    on left: 127 128, on right: 31 34 127
 struct_pair (107)
-    on left: 128 129, on right: 126 127
+    on left: 129 130, on right: 127 128
 arg_list (108)
-    on left: 130 131, on right: 98 100 104 130
+    on left: 131 132, on right: 99 101 105 131
 statement_list (109)
-    on left: 132 133, on right: 107 132
+    on left: 133 134, on right: 108 133
 func_ptr (110)
-    on left: 134 135, on right: 23 135
+    on left: 135 136, on right: 23 136
 arg_pair (111)
-    on left: 136 137, on right: 130 131
+    on left: 137 138, on right: 131 132
 enum_def (112)
-    on left: 138 139, on right: 24 139
+    on left: 139 140, on right: 24 140
 enum_parts (113)
-    on left: 140 141, on right: 138 141
+    on left: 141 142, on right: 139 142
 enum_part (114)
-    on left: 142 143, on right: 140 141
+    on left: 143 144, on right: 141 142
 id_or_constant (115)
-    on left: 144 145, on right: 41 57 58 72 73 74 92 93 94 96 97 117
-    118
+    on left: 145 146, on right: 41 57 58 72 73 74 93 94 95 97 98 118
+    119
 include_or_link (116)
-    on left: 146 147, on right: 22
+    on left: 147 148, on right: 22
 constant (117)
-    on left: 148 149 150 151 152 153, on right: 145
+    on left: 149 150 151 152 153 154, on right: 146
 constant_int (118)
-    on left: 154, on right: 63 113 114 115 116 143 148
+    on left: 155, on right: 63 114 115 116 117 144 149
 constant_bool (119)
-    on left: 155 156, on right: 150
+    on left: 156 157, on right: 151
 constant_enum_value (120)
-    on left: 157, on right: 149
+    on left: 158, on right: 150
 id (121)
-    on left: 158, on right: 48 61 63 64 69 75 76 98 99 100 101 103
-    104 106 107 108 109 110 113 114 115 116 128 129 136 142 143 144
-    157
+    on left: 159, on right: 48 61 63 64 69 75 77 99 100 101 102 104
+    105 107 108 109 110 111 114 115 116 117 129 130 137 143 144 145
+    158
 type (122)
-    on left: 159, on right: 31 33 34 134 138 157 160
+    on left: 160, on right: 31 33 34 135 139 158 161
 composited_type (123)
-    on left: 160 161 162 163, on right: 72 98 99 103 104 108 110 113
-    114 115 116 128 129 136 161 162 163 164 165
+    on left: 161 162 163 164, on right: 72 99 100 104 105 109 111 114
+    115 116 117 129 130 137 162 163 164 165 166
 type_list (124)
-    on left: 164 165, on right: 134 165
+    on left: 165 166, on right: 135 166
 
 
 State 0
@@ -516,21 +518,21 @@ State 0
 
 State 1
 
-  158 id: IDENTIFIER .
+  159 id: IDENTIFIER .
 
-    $default  reduce using rule 158 (id)
+    $default  reduce using rule 159 (id)
 
 
 State 2
 
-  159 type: TYPE .
+  160 type: TYPE .
 
-    $default  reduce using rule 159 (type)
+    $default  reduce using rule 160 (type)
 
 
 State 3
 
-  119 return_statement: RETURN . assignable_statement
+  120 return_statement: RETURN . assignable_statement
 
     IDENTIFIER    shift, and go to state 1
     STRING        shift, and go to state 50
@@ -572,21 +574,21 @@ State 3
 
 State 4
 
-  122 cond_block: IF . LEFT_BRACKET assignable_statement RIGHT_BRACKET scope
+  123 cond_block: IF . LEFT_BRACKET assignable_statement RIGHT_BRACKET scope
 
     LEFT_BRACKET  shift, and go to state 82
 
 
 State 5
 
-  125 for_loop: FOR . LEFT_BRACKET statement SEMICOLON assignable_statement SEMICOLON assignable_statement RIGHT_BRACKET scope
+  126 for_loop: FOR . LEFT_BRACKET statement SEMICOLON assignable_statement SEMICOLON assignable_statement RIGHT_BRACKET scope
 
     LEFT_BRACKET  shift, and go to state 83
 
 
 State 6
 
-  124 while_loop: WHILE . LEFT_BRACKET assignable_statement RIGHT_BRACKET scope
+  125 while_loop: WHILE . LEFT_BRACKET assignable_statement RIGHT_BRACKET scope
 
     LEFT_BRACKET  shift, and go to state 84
 
@@ -607,7 +609,7 @@ State 8
 
 State 9
 
-  138 enum_def: ENUM . type LEFT_BRACE enum_parts RIGHT_BRACE
+  139 enum_def: ENUM . type LEFT_BRACE enum_parts RIGHT_BRACE
 
     TYPE  shift, and go to state 2
 
@@ -625,7 +627,7 @@ State 10
 
 State 11
 
-  161 composited_type: MUT . composited_type
+  162 composited_type: MUT . composited_type
 
     TYPE  shift, and go to state 2
     MUT   shift, and go to state 11
@@ -647,11 +649,11 @@ State 13
 
    32 struct_def: EXPORT . struct_def
    35 union_def: EXPORT . union_def
-  102 function_def: EXPORT . function_def
-  105 function_decl: EXPORT . function_decl
-  112 variable_decl: EXPORT . variable_decl
-  135 func_ptr: EXPORT . func_ptr
-  139 enum_def: EXPORT . enum_def
+  103 function_def: EXPORT . function_def
+  106 function_decl: EXPORT . function_decl
+  113 variable_decl: EXPORT . variable_decl
+  136 func_ptr: EXPORT . func_ptr
+  140 enum_def: EXPORT . enum_def
 
     IDENTIFIER  shift, and go to state 1
     TYPE        shift, and go to state 2
@@ -677,21 +679,21 @@ State 13
 
 State 14
 
-  146 include_or_link: INCLUDE . STRING
+  147 include_or_link: INCLUDE . STRING
 
     STRING  shift, and go to state 100
 
 
 State 15
 
-  147 include_or_link: LINK . STRING
+  148 include_or_link: LINK . STRING
 
     STRING  shift, and go to state 101
 
 
 State 16
 
-  134 func_ptr: FUNC_PTR . type type LEFT_BRACKET type_list RIGHT_BRACKET
+  135 func_ptr: FUNC_PTR . type type LEFT_BRACKET type_list RIGHT_BRACKET
 
     TYPE  shift, and go to state 2
 
@@ -949,9 +951,9 @@ State 37
 
 State 38
 
-  111 variable_decl: array_decl .
+  112 variable_decl: array_decl .
 
-    $default  reduce using rule 111 (variable_decl)
+    $default  reduce using rule 112 (variable_decl)
 
 
 State 39
@@ -970,13 +972,13 @@ State 40
 
 State 41
 
-  120 if_statement: cond_block .
-  121             | cond_block . ELSE scope
-  123 cond_block: cond_block . ELSE IF LEFT_BRACKET assignable_statement RIGHT_BRACKET scope
+  121 if_statement: cond_block .
+  122             | cond_block . ELSE scope
+  124 cond_block: cond_block . ELSE IF LEFT_BRACKET assignable_statement RIGHT_BRACKET scope
 
     ELSE  shift, and go to state 111
 
-    $default  reduce using rule 120 (if_statement)
+    $default  reduce using rule 121 (if_statement)
 
 
 State 42
@@ -1020,9 +1022,9 @@ State 47
    63 array_index: id . LEFT_SQUARE_BRACKET constant_int RIGHT_SQUARE_BRACKET
    64            | id . LEFT_SQUARE_BRACKET id RIGHT_SQUARE_BRACKET
    69 variable_assign: id . EQUAL assignable_statement
-  100 function_def: id . LEFT_BRACKET arg_list RIGHT_BRACKET scope
-  101             | id . LEFT_BRACKET RIGHT_BRACKET scope
-  109 variable_decl: id . COLON EQUAL assignable_statement
+  101 function_def: id . LEFT_BRACKET arg_list RIGHT_BRACKET scope
+  102             | id . LEFT_BRACKET RIGHT_BRACKET scope
+  110 variable_decl: id . COLON EQUAL assignable_statement
 
     LEFT_BRACKET         shift, and go to state 112
     LEFT_SQUARE_BRACKET  shift, and go to state 113
@@ -1034,25 +1036,25 @@ State 47
 
 State 48
 
-  160 composited_type: type .
+  161 composited_type: type .
 
-    $default  reduce using rule 160 (composited_type)
+    $default  reduce using rule 161 (composited_type)
 
 
 State 49
 
-   98 function_def: composited_type . id LEFT_BRACKET arg_list RIGHT_BRACKET scope
-   99             | composited_type . id LEFT_BRACKET RIGHT_BRACKET scope
-  103 function_decl: composited_type . id LEFT_BRACKET RIGHT_BRACKET SEMICOLON
-  104              | composited_type . id LEFT_BRACKET arg_list RIGHT_BRACKET SEMICOLON
-  108 variable_decl: composited_type . id
-  110              | composited_type . id EQUAL assignable_statement
-  113 array_decl: composited_type . id LEFT_SQUARE_BRACKET constant_int RIGHT_SQUARE_BRACKET
-  114           | composited_type . id LEFT_SQUARE_BRACKET constant_int RIGHT_SQUARE_BRACKET EQUAL LEFT_BRACE init_list RIGHT_BRACE
-  115           | composited_type . id MUT LEFT_SQUARE_BRACKET constant_int RIGHT_SQUARE_BRACKET
-  116           | composited_type . id MUT LEFT_SQUARE_BRACKET constant_int RIGHT_SQUARE_BRACKET EQUAL LEFT_BRACE init_list RIGHT_BRACE
-  162 composited_type: composited_type . ASTERISK
-  163                | composited_type . MUT
+   99 function_def: composited_type . id LEFT_BRACKET arg_list RIGHT_BRACKET scope
+  100             | composited_type . id LEFT_BRACKET RIGHT_BRACKET scope
+  104 function_decl: composited_type . id LEFT_BRACKET RIGHT_BRACKET SEMICOLON
+  105              | composited_type . id LEFT_BRACKET arg_list RIGHT_BRACKET SEMICOLON
+  109 variable_decl: composited_type . id
+  111              | composited_type . id EQUAL assignable_statement
+  114 array_decl: composited_type . id LEFT_SQUARE_BRACKET constant_int RIGHT_SQUARE_BRACKET
+  115           | composited_type . id LEFT_SQUARE_BRACKET constant_int RIGHT_SQUARE_BRACKET EQUAL LEFT_BRACE init_list RIGHT_BRACE
+  116           | composited_type . id MUT LEFT_SQUARE_BRACKET constant_int RIGHT_SQUARE_BRACKET
+  117           | composited_type . id MUT LEFT_SQUARE_BRACKET constant_int RIGHT_SQUARE_BRACKET EQUAL LEFT_BRACE init_list RIGHT_BRACE
+  163 composited_type: composited_type . ASTERISK
+  164                | composited_type . MUT
 
     IDENTIFIER  shift, and go to state 1
     ASTERISK    shift, and go to state 116
@@ -1063,23 +1065,23 @@ State 49
 
 State 50
 
-  152 constant: STRING .
+  153 constant: STRING .
 
-    $default  reduce using rule 152 (constant)
+    $default  reduce using rule 153 (constant)
 
 
 State 51
 
-  154 constant_int: INTEGER .
+  155 constant_int: INTEGER .
 
-    $default  reduce using rule 154 (constant_int)
+    $default  reduce using rule 155 (constant_int)
 
 
 State 52
 
-  151 constant: FLOAT .
+  152 constant: FLOAT .
 
-    $default  reduce using rule 151 (constant)
+    $default  reduce using rule 152 (constant)
 
 
 State 53
@@ -1139,7 +1141,7 @@ State 55
 
 State 56
 
-   76 dereference: ASTERISK . id
+   77 dereference: ASTERISK . id
 
     IDENTIFIER  shift, and go to state 1
 
@@ -1149,64 +1151,92 @@ State 56
 State 57
 
    75 address_of: AND . id
+   76           | AND . unary_op
 
-    IDENTIFIER  shift, and go to state 1
+    IDENTIFIER    shift, and go to state 1
+    STRING        shift, and go to state 50
+    INTEGER       shift, and go to state 51
+    FLOAT         shift, and go to state 52
+    TYPE          shift, and go to state 2
+    LEFT_BRACKET  shift, and go to state 53
+    PLUS          shift, and go to state 54
+    MINUS         shift, and go to state 55
+    ASTERISK      shift, and go to state 56
+    AND           shift, and go to state 57
+    TRUE          shift, and go to state 58
+    FALSE         shift, and go to state 59
+    NULLPTR       shift, and go to state 60
 
-    id  go to state 124
+    unary_op             go to state 124
+    unary_minus          go to state 63
+    unary_plus           go to state 64
+    array_index          go to state 125
+    cast                 go to state 68
+    increment            go to state 69
+    decrement            go to state 70
+    address_of           go to state 71
+    dereference          go to state 72
+    id_or_constant       go to state 126
+    constant             go to state 76
+    constant_int         go to state 77
+    constant_bool        go to state 78
+    constant_enum_value  go to state 79
+    id                   go to state 127
+    type                 go to state 81
 
 
 State 58
 
-  155 constant_bool: TRUE .
-
-    $default  reduce using rule 155 (constant_bool)
-
-
-State 59
-
-  156 constant_bool: FALSE .
+  156 constant_bool: TRUE .
 
     $default  reduce using rule 156 (constant_bool)
 
 
+State 59
+
+  157 constant_bool: FALSE .
+
+    $default  reduce using rule 157 (constant_bool)
+
+
 State 60
 
-  153 constant: NULLPTR .
+  154 constant: NULLPTR .
 
-    $default  reduce using rule 153 (constant)
+    $default  reduce using rule 154 (constant)
 
 
 State 61
 
-  119 return_statement: RETURN assignable_statement .
+  120 return_statement: RETURN assignable_statement .
 
-    $default  reduce using rule 119 (return_statement)
+    $default  reduce using rule 120 (return_statement)
 
 
 State 62
 
    38 assignable_statement: unary_op .
-   94 binop: unary_op . binop_id id_or_constant
+   95 binop: unary_op . binop_id id_or_constant
 
-    PLUS               shift, and go to state 125
-    MINUS              shift, and go to state 126
-    ASTERISK           shift, and go to state 127
-    FORWARD_SLASH      shift, and go to state 128
-    PERCENT            shift, and go to state 129
-    EQUAL_EQUAL        shift, and go to state 130
-    EXCLAMATION_EQUAL  shift, and go to state 131
-    GREATER            shift, and go to state 132
-    GREATER_EQUAL      shift, and go to state 133
-    LESSER             shift, and go to state 134
-    LESSER_EQUAL       shift, and go to state 135
-    AND                shift, and go to state 136
-    OR                 shift, and go to state 137
-    LEFT_SHIFT         shift, and go to state 138
-    RIGHT_SHIFT        shift, and go to state 139
+    PLUS               shift, and go to state 128
+    MINUS              shift, and go to state 129
+    ASTERISK           shift, and go to state 130
+    FORWARD_SLASH      shift, and go to state 131
+    PERCENT            shift, and go to state 132
+    EQUAL_EQUAL        shift, and go to state 133
+    EXCLAMATION_EQUAL  shift, and go to state 134
+    GREATER            shift, and go to state 135
+    GREATER_EQUAL      shift, and go to state 136
+    LESSER             shift, and go to state 137
+    LESSER_EQUAL       shift, and go to state 138
+    AND                shift, and go to state 139
+    OR                 shift, and go to state 140
+    LEFT_SHIFT         shift, and go to state 141
+    RIGHT_SHIFT        shift, and go to state 142
 
     $default  reduce using rule 38 (assignable_statement)
 
-    binop_id  go to state 140
+    binop_id  go to state 143
 
 
 State 63
@@ -1243,28 +1273,28 @@ State 66
 State 67
 
    40 assignable_statement: member_op .
-   95 binop: member_op . binop_id member_op
-   97      | member_op . binop_id id_or_constant
+   96 binop: member_op . binop_id member_op
+   98      | member_op . binop_id id_or_constant
 
-    PLUS               shift, and go to state 125
-    MINUS              shift, and go to state 126
-    ASTERISK           shift, and go to state 127
-    FORWARD_SLASH      shift, and go to state 128
-    PERCENT            shift, and go to state 129
-    EQUAL_EQUAL        shift, and go to state 130
-    EXCLAMATION_EQUAL  shift, and go to state 131
-    GREATER            shift, and go to state 132
-    GREATER_EQUAL      shift, and go to state 133
-    LESSER             shift, and go to state 134
-    LESSER_EQUAL       shift, and go to state 135
-    AND                shift, and go to state 136
-    OR                 shift, and go to state 137
-    LEFT_SHIFT         shift, and go to state 138
-    RIGHT_SHIFT        shift, and go to state 139
+    PLUS               shift, and go to state 128
+    MINUS              shift, and go to state 129
+    ASTERISK           shift, and go to state 130
+    FORWARD_SLASH      shift, and go to state 131
+    PERCENT            shift, and go to state 132
+    EQUAL_EQUAL        shift, and go to state 133
+    EXCLAMATION_EQUAL  shift, and go to state 134
+    GREATER            shift, and go to state 135
+    GREATER_EQUAL      shift, and go to state 136
+    LESSER             shift, and go to state 137
+    LESSER_EQUAL       shift, and go to state 138
+    AND                shift, and go to state 139
+    OR                 shift, and go to state 140
+    LEFT_SHIFT         shift, and go to state 141
+    RIGHT_SHIFT        shift, and go to state 142
 
     $default  reduce using rule 40 (assignable_statement)
 
-    binop_id  go to state 141
+    binop_id  go to state 144
 
 
 State 68
@@ -1321,57 +1351,57 @@ State 75
    41 assignable_statement: id_or_constant .
    73 increment: id_or_constant . PLUS PLUS
    74 decrement: id_or_constant . MINUS MINUS
-   92 binop: id_or_constant . binop_id id_or_constant
-   93      | id_or_constant . binop_id unary_op
-   96      | id_or_constant . binop_id member_op
+   93 binop: id_or_constant . binop_id id_or_constant
+   94      | id_or_constant . binop_id unary_op
+   97      | id_or_constant . binop_id member_op
 
-    PLUS               shift, and go to state 142
-    MINUS              shift, and go to state 143
-    ASTERISK           shift, and go to state 127
-    FORWARD_SLASH      shift, and go to state 128
-    PERCENT            shift, and go to state 129
-    EQUAL_EQUAL        shift, and go to state 130
-    EXCLAMATION_EQUAL  shift, and go to state 131
-    GREATER            shift, and go to state 132
-    GREATER_EQUAL      shift, and go to state 133
-    LESSER             shift, and go to state 134
-    LESSER_EQUAL       shift, and go to state 135
-    AND                shift, and go to state 136
-    OR                 shift, and go to state 137
-    LEFT_SHIFT         shift, and go to state 138
-    RIGHT_SHIFT        shift, and go to state 139
+    PLUS               shift, and go to state 145
+    MINUS              shift, and go to state 146
+    ASTERISK           shift, and go to state 130
+    FORWARD_SLASH      shift, and go to state 131
+    PERCENT            shift, and go to state 132
+    EQUAL_EQUAL        shift, and go to state 133
+    EXCLAMATION_EQUAL  shift, and go to state 134
+    GREATER            shift, and go to state 135
+    GREATER_EQUAL      shift, and go to state 136
+    LESSER             shift, and go to state 137
+    LESSER_EQUAL       shift, and go to state 138
+    AND                shift, and go to state 139
+    OR                 shift, and go to state 140
+    LEFT_SHIFT         shift, and go to state 141
+    RIGHT_SHIFT        shift, and go to state 142
 
     $default  reduce using rule 41 (assignable_statement)
 
-    binop_id  go to state 144
+    binop_id  go to state 147
 
 
 State 76
 
-  145 id_or_constant: constant .
+  146 id_or_constant: constant .
 
-    $default  reduce using rule 145 (id_or_constant)
+    $default  reduce using rule 146 (id_or_constant)
 
 
 State 77
 
-  148 constant: constant_int .
+  149 constant: constant_int .
 
-    $default  reduce using rule 148 (constant)
+    $default  reduce using rule 149 (constant)
 
 
 State 78
 
-  150 constant: constant_bool .
+  151 constant: constant_bool .
 
-    $default  reduce using rule 150 (constant)
+    $default  reduce using rule 151 (constant)
 
 
 State 79
 
-  149 constant: constant_enum_value .
+  150 constant: constant_enum_value .
 
-    $default  reduce using rule 149 (constant)
+    $default  reduce using rule 150 (constant)
 
 
 State 80
@@ -1379,28 +1409,28 @@ State 80
    61 memberable: id .
    63 array_index: id . LEFT_SQUARE_BRACKET constant_int RIGHT_SQUARE_BRACKET
    64            | id . LEFT_SQUARE_BRACKET id RIGHT_SQUARE_BRACKET
-  106 function_call: id . LEFT_BRACKET RIGHT_BRACKET
-  107              | id . LEFT_BRACKET statement_list RIGHT_BRACKET
-  144 id_or_constant: id .
+  107 function_call: id . LEFT_BRACKET RIGHT_BRACKET
+  108              | id . LEFT_BRACKET statement_list RIGHT_BRACKET
+  145 id_or_constant: id .
 
-    LEFT_BRACKET         shift, and go to state 145
+    LEFT_BRACKET         shift, and go to state 148
     LEFT_SQUARE_BRACKET  shift, and go to state 113
 
     FSTOP     reduce using rule 61 (memberable)
     ARROW     reduce using rule 61 (memberable)
-    $default  reduce using rule 144 (id_or_constant)
+    $default  reduce using rule 145 (id_or_constant)
 
 
 State 81
 
-  157 constant_enum_value: type . COLON COLON id
+  158 constant_enum_value: type . COLON COLON id
 
-    COLON  shift, and go to state 146
+    COLON  shift, and go to state 149
 
 
 State 82
 
-  122 cond_block: IF LEFT_BRACKET . assignable_statement RIGHT_BRACKET scope
+  123 cond_block: IF LEFT_BRACKET . assignable_statement RIGHT_BRACKET scope
 
     IDENTIFIER    shift, and go to state 1
     STRING        shift, and go to state 50
@@ -1416,7 +1446,7 @@ State 82
     FALSE         shift, and go to state 59
     NULLPTR       shift, and go to state 60
 
-    assignable_statement  go to state 147
+    assignable_statement  go to state 150
     unary_op              go to state 62
     unary_minus           go to state 63
     unary_plus            go to state 64
@@ -1442,7 +1472,7 @@ State 82
 
 State 83
 
-  125 for_loop: FOR LEFT_BRACKET . statement SEMICOLON assignable_statement SEMICOLON assignable_statement RIGHT_BRACKET scope
+  126 for_loop: FOR LEFT_BRACKET . statement SEMICOLON assignable_statement SEMICOLON assignable_statement RIGHT_BRACKET scope
 
     IDENTIFIER  shift, and go to state 1
     TYPE        shift, and go to state 2
@@ -1462,7 +1492,7 @@ State 83
     FUNC_PTR    shift, and go to state 16
     STRUCT      shift, and go to state 17
 
-    statement          go to state 148
+    statement          go to state 151
     alias_statement    go to state 22
     typedef_statement  go to state 23
     struct_def         go to state 24
@@ -1495,7 +1525,7 @@ State 83
 
 State 84
 
-  124 while_loop: WHILE LEFT_BRACKET . assignable_statement RIGHT_BRACKET scope
+  125 while_loop: WHILE LEFT_BRACKET . assignable_statement RIGHT_BRACKET scope
 
     IDENTIFIER    shift, and go to state 1
     STRING        shift, and go to state 50
@@ -1511,7 +1541,7 @@ State 84
     FALSE         shift, and go to state 59
     NULLPTR       shift, and go to state 60
 
-    assignable_statement  go to state 149
+    assignable_statement  go to state 152
     unary_op              go to state 62
     unary_minus           go to state 63
     unary_plus            go to state 64
@@ -1539,42 +1569,42 @@ State 85
 
    30 typedef_statement: TYPEDEF TYPE . TYPE
 
-    TYPE  shift, and go to state 150
+    TYPE  shift, and go to state 153
 
 
 State 86
 
    29 alias_statement: ALIAS TYPE . TYPE
 
-    TYPE  shift, and go to state 151
+    TYPE  shift, and go to state 154
 
 
 State 87
 
-  138 enum_def: ENUM type . LEFT_BRACE enum_parts RIGHT_BRACE
+  139 enum_def: ENUM type . LEFT_BRACE enum_parts RIGHT_BRACE
 
-    LEFT_BRACE  shift, and go to state 152
+    LEFT_BRACE  shift, and go to state 155
 
 
 State 88
 
    34 union_def: UNION type . LEFT_BRACE struct_list RIGHT_BRACE
 
-    LEFT_BRACE  shift, and go to state 153
+    LEFT_BRACE  shift, and go to state 156
 
 
 State 89
 
-  161 composited_type: MUT composited_type .
-  162                | composited_type . ASTERISK
-  163                | composited_type . MUT
+  162 composited_type: MUT composited_type .
+  163                | composited_type . ASTERISK
+  164                | composited_type . MUT
 
     ASTERISK  shift, and go to state 116
     MUT       shift, and go to state 117
 
-    ASTERISK  [reduce using rule 161 (composited_type)]
-    MUT       [reduce using rule 161 (composited_type)]
-    $default  reduce using rule 161 (composited_type)
+    ASTERISK  [reduce using rule 162 (composited_type)]
+    MUT       [reduce using rule 162 (composited_type)]
+    $default  reduce using rule 162 (composited_type)
 
 
 State 90
@@ -1590,7 +1620,7 @@ State 91
 
     TYPE  shift, and go to state 2
 
-    type  go to state 154
+    type  go to state 157
 
 
 State 92
@@ -1609,44 +1639,44 @@ State 93
 
 State 94
 
-  102 function_def: EXPORT function_def .
+  103 function_def: EXPORT function_def .
 
-    $default  reduce using rule 102 (function_def)
+    $default  reduce using rule 103 (function_def)
 
 
 State 95
 
-  105 function_decl: EXPORT function_decl .
+  106 function_decl: EXPORT function_decl .
 
-    $default  reduce using rule 105 (function_decl)
+    $default  reduce using rule 106 (function_decl)
 
 
 State 96
 
-  112 variable_decl: EXPORT variable_decl .
+  113 variable_decl: EXPORT variable_decl .
 
-    $default  reduce using rule 112 (variable_decl)
+    $default  reduce using rule 113 (variable_decl)
 
 
 State 97
 
-  135 func_ptr: EXPORT func_ptr .
+  136 func_ptr: EXPORT func_ptr .
 
-    $default  reduce using rule 135 (func_ptr)
+    $default  reduce using rule 136 (func_ptr)
 
 
 State 98
 
-  139 enum_def: EXPORT enum_def .
+  140 enum_def: EXPORT enum_def .
 
-    $default  reduce using rule 139 (enum_def)
+    $default  reduce using rule 140 (enum_def)
 
 
 State 99
 
-  100 function_def: id . LEFT_BRACKET arg_list RIGHT_BRACKET scope
-  101             | id . LEFT_BRACKET RIGHT_BRACKET scope
-  109 variable_decl: id . COLON EQUAL assignable_statement
+  101 function_def: id . LEFT_BRACKET arg_list RIGHT_BRACKET scope
+  102             | id . LEFT_BRACKET RIGHT_BRACKET scope
+  110 variable_decl: id . COLON EQUAL assignable_statement
 
     LEFT_BRACKET  shift, and go to state 112
     COLON         shift, and go to state 114
@@ -1654,25 +1684,25 @@ State 99
 
 State 100
 
-  146 include_or_link: INCLUDE STRING .
-
-    $default  reduce using rule 146 (include_or_link)
-
-
-State 101
-
-  147 include_or_link: LINK STRING .
+  147 include_or_link: INCLUDE STRING .
 
     $default  reduce using rule 147 (include_or_link)
 
 
+State 101
+
+  148 include_or_link: LINK STRING .
+
+    $default  reduce using rule 148 (include_or_link)
+
+
 State 102
 
-  134 func_ptr: FUNC_PTR type . type LEFT_BRACKET type_list RIGHT_BRACKET
+  135 func_ptr: FUNC_PTR type . type LEFT_BRACKET type_list RIGHT_BRACKET
 
     TYPE  shift, and go to state 2
 
-    type  go to state 155
+    type  go to state 158
 
 
 State 103
@@ -1680,7 +1710,7 @@ State 103
    31 struct_def: STRUCT type . LEFT_BRACE struct_list RIGHT_BRACE
    33 struct_decl: STRUCT type .
 
-    LEFT_BRACE  shift, and go to state 156
+    LEFT_BRACE  shift, and go to state 159
 
     $default  reduce using rule 33 (struct_decl)
 
@@ -1713,10 +1743,10 @@ State 107
 
     IDENTIFIER  shift, and go to state 1
 
-    memberable   go to state 157
-    array_index  go to state 158
-    member_op    go to state 159
-    id           go to state 160
+    memberable   go to state 160
+    array_index  go to state 161
+    member_op    go to state 162
+    id           go to state 163
 
 
 State 108
@@ -1726,10 +1756,10 @@ State 108
 
     IDENTIFIER  shift, and go to state 1
 
-    memberable   go to state 161
-    array_index  go to state 158
-    member_op    go to state 162
-    id           go to state 160
+    memberable   go to state 164
+    array_index  go to state 161
+    member_op    go to state 165
+    id           go to state 163
 
 
 State 109
@@ -1750,7 +1780,7 @@ State 109
     FALSE         shift, and go to state 59
     NULLPTR       shift, and go to state 60
 
-    assignable_statement  go to state 163
+    assignable_statement  go to state 166
     unary_op              go to state 62
     unary_minus           go to state 63
     unary_plus            go to state 64
@@ -1792,7 +1822,7 @@ State 110
     FALSE         shift, and go to state 59
     NULLPTR       shift, and go to state 60
 
-    assignable_statement  go to state 164
+    assignable_statement  go to state 167
     unary_op              go to state 62
     unary_minus           go to state 63
     unary_plus            go to state 64
@@ -1818,29 +1848,29 @@ State 110
 
 State 111
 
-  121 if_statement: cond_block ELSE . scope
-  123 cond_block: cond_block ELSE . IF LEFT_BRACKET assignable_statement RIGHT_BRACKET scope
+  122 if_statement: cond_block ELSE . scope
+  124 cond_block: cond_block ELSE . IF LEFT_BRACKET assignable_statement RIGHT_BRACKET scope
 
-    LEFT_BRACE  shift, and go to state 165
-    IF          shift, and go to state 166
+    LEFT_BRACE  shift, and go to state 168
+    IF          shift, and go to state 169
 
-    scope  go to state 167
+    scope  go to state 170
 
 
 State 112
 
-  100 function_def: id LEFT_BRACKET . arg_list RIGHT_BRACKET scope
-  101             | id LEFT_BRACKET . RIGHT_BRACKET scope
+  101 function_def: id LEFT_BRACKET . arg_list RIGHT_BRACKET scope
+  102             | id LEFT_BRACKET . RIGHT_BRACKET scope
 
     TYPE           shift, and go to state 2
-    RIGHT_BRACKET  shift, and go to state 168
-    FSTOP          shift, and go to state 169
+    RIGHT_BRACKET  shift, and go to state 171
+    FSTOP          shift, and go to state 172
     MUT            shift, and go to state 11
 
-    arg_list         go to state 170
-    arg_pair         go to state 171
+    arg_list         go to state 173
+    arg_pair         go to state 174
     type             go to state 48
-    composited_type  go to state 172
+    composited_type  go to state 175
 
 
 State 113
@@ -1851,15 +1881,15 @@ State 113
     IDENTIFIER  shift, and go to state 1
     INTEGER     shift, and go to state 51
 
-    constant_int  go to state 173
-    id            go to state 174
+    constant_int  go to state 176
+    id            go to state 177
 
 
 State 114
 
-  109 variable_decl: id COLON . EQUAL assignable_statement
+  110 variable_decl: id COLON . EQUAL assignable_statement
 
-    EQUAL  shift, and go to state 175
+    EQUAL  shift, and go to state 178
 
 
 State 115
@@ -1880,7 +1910,7 @@ State 115
     FALSE         shift, and go to state 59
     NULLPTR       shift, and go to state 60
 
-    assignable_statement  go to state 176
+    assignable_statement  go to state 179
     unary_op              go to state 62
     unary_minus           go to state 63
     unary_plus            go to state 64
@@ -1906,47 +1936,47 @@ State 115
 
 State 116
 
-  162 composited_type: composited_type ASTERISK .
-
-    $default  reduce using rule 162 (composited_type)
-
-
-State 117
-
-  163 composited_type: composited_type MUT .
+  163 composited_type: composited_type ASTERISK .
 
     $default  reduce using rule 163 (composited_type)
 
 
+State 117
+
+  164 composited_type: composited_type MUT .
+
+    $default  reduce using rule 164 (composited_type)
+
+
 State 118
 
-   98 function_def: composited_type id . LEFT_BRACKET arg_list RIGHT_BRACKET scope
-   99             | composited_type id . LEFT_BRACKET RIGHT_BRACKET scope
-  103 function_decl: composited_type id . LEFT_BRACKET RIGHT_BRACKET SEMICOLON
-  104              | composited_type id . LEFT_BRACKET arg_list RIGHT_BRACKET SEMICOLON
-  108 variable_decl: composited_type id .
-  110              | composited_type id . EQUAL assignable_statement
-  113 array_decl: composited_type id . LEFT_SQUARE_BRACKET constant_int RIGHT_SQUARE_BRACKET
-  114           | composited_type id . LEFT_SQUARE_BRACKET constant_int RIGHT_SQUARE_BRACKET EQUAL LEFT_BRACE init_list RIGHT_BRACE
-  115           | composited_type id . MUT LEFT_SQUARE_BRACKET constant_int RIGHT_SQUARE_BRACKET
-  116           | composited_type id . MUT LEFT_SQUARE_BRACKET constant_int RIGHT_SQUARE_BRACKET EQUAL LEFT_BRACE init_list RIGHT_BRACE
+   99 function_def: composited_type id . LEFT_BRACKET arg_list RIGHT_BRACKET scope
+  100             | composited_type id . LEFT_BRACKET RIGHT_BRACKET scope
+  104 function_decl: composited_type id . LEFT_BRACKET RIGHT_BRACKET SEMICOLON
+  105              | composited_type id . LEFT_BRACKET arg_list RIGHT_BRACKET SEMICOLON
+  109 variable_decl: composited_type id .
+  111              | composited_type id . EQUAL assignable_statement
+  114 array_decl: composited_type id . LEFT_SQUARE_BRACKET constant_int RIGHT_SQUARE_BRACKET
+  115           | composited_type id . LEFT_SQUARE_BRACKET constant_int RIGHT_SQUARE_BRACKET EQUAL LEFT_BRACE init_list RIGHT_BRACE
+  116           | composited_type id . MUT LEFT_SQUARE_BRACKET constant_int RIGHT_SQUARE_BRACKET
+  117           | composited_type id . MUT LEFT_SQUARE_BRACKET constant_int RIGHT_SQUARE_BRACKET EQUAL LEFT_BRACE init_list RIGHT_BRACE
 
-    LEFT_BRACKET         shift, and go to state 177
-    LEFT_SQUARE_BRACKET  shift, and go to state 178
-    EQUAL                shift, and go to state 179
-    MUT                  shift, and go to state 180
+    LEFT_BRACKET         shift, and go to state 180
+    LEFT_SQUARE_BRACKET  shift, and go to state 181
+    EQUAL                shift, and go to state 182
+    MUT                  shift, and go to state 183
 
-    MUT       [reduce using rule 108 (variable_decl)]
-    $default  reduce using rule 108 (variable_decl)
+    MUT       [reduce using rule 109 (variable_decl)]
+    $default  reduce using rule 109 (variable_decl)
 
 
 State 119
 
    72 cast: LEFT_BRACKET composited_type . RIGHT_BRACKET id_or_constant
-  162 composited_type: composited_type . ASTERISK
-  163                | composited_type . MUT
+  163 composited_type: composited_type . ASTERISK
+  164                | composited_type . MUT
 
-    RIGHT_BRACKET  shift, and go to state 181
+    RIGHT_BRACKET  shift, and go to state 184
     ASTERISK       shift, and go to state 116
     MUT            shift, and go to state 117
 
@@ -1960,9 +1990,9 @@ State 120
 
 State 121
 
-  144 id_or_constant: id .
+  145 id_or_constant: id .
 
-    $default  reduce using rule 144 (id_or_constant)
+    $default  reduce using rule 145 (id_or_constant)
 
 
 State 122
@@ -1974,126 +2004,158 @@ State 122
 
 State 123
 
-   76 dereference: ASTERISK id .
+   77 dereference: ASTERISK id .
 
-    $default  reduce using rule 76 (dereference)
+    $default  reduce using rule 77 (dereference)
 
 
 State 124
 
-   75 address_of: AND id .
+   76 address_of: AND unary_op .
 
-    $default  reduce using rule 75 (address_of)
+    $default  reduce using rule 76 (address_of)
 
 
 State 125
 
-   77 binop_id: PLUS .
+   54 unary_op: array_index .
 
-    $default  reduce using rule 77 (binop_id)
+    $default  reduce using rule 54 (unary_op)
 
 
 State 126
 
-   78 binop_id: MINUS .
+   73 increment: id_or_constant . PLUS PLUS
+   74 decrement: id_or_constant . MINUS MINUS
 
-    $default  reduce using rule 78 (binop_id)
+    PLUS   shift, and go to state 185
+    MINUS  shift, and go to state 186
 
 
 State 127
 
-   79 binop_id: ASTERISK .
+   63 array_index: id . LEFT_SQUARE_BRACKET constant_int RIGHT_SQUARE_BRACKET
+   64            | id . LEFT_SQUARE_BRACKET id RIGHT_SQUARE_BRACKET
+   75 address_of: AND id .
+  145 id_or_constant: id .
 
-    $default  reduce using rule 79 (binop_id)
+    LEFT_SQUARE_BRACKET  shift, and go to state 113
+
+    PLUS      reduce using rule 75 (address_of)
+    PLUS      [reduce using rule 145 (id_or_constant)]
+    MINUS     reduce using rule 75 (address_of)
+    MINUS     [reduce using rule 145 (id_or_constant)]
+    $default  reduce using rule 75 (address_of)
 
 
 State 128
 
-   80 binop_id: FORWARD_SLASH .
+   78 binop_id: PLUS .
 
-    $default  reduce using rule 80 (binop_id)
+    $default  reduce using rule 78 (binop_id)
 
 
 State 129
 
-   91 binop_id: PERCENT .
+   79 binop_id: MINUS .
 
-    $default  reduce using rule 91 (binop_id)
+    $default  reduce using rule 79 (binop_id)
 
 
 State 130
 
-   81 binop_id: EQUAL_EQUAL .
+   80 binop_id: ASTERISK .
 
-    $default  reduce using rule 81 (binop_id)
+    $default  reduce using rule 80 (binop_id)
 
 
 State 131
 
-   82 binop_id: EXCLAMATION_EQUAL .
+   81 binop_id: FORWARD_SLASH .
 
-    $default  reduce using rule 82 (binop_id)
+    $default  reduce using rule 81 (binop_id)
 
 
 State 132
 
-   84 binop_id: GREATER .
+   92 binop_id: PERCENT .
 
-    $default  reduce using rule 84 (binop_id)
+    $default  reduce using rule 92 (binop_id)
 
 
 State 133
 
-   86 binop_id: GREATER_EQUAL .
+   82 binop_id: EQUAL_EQUAL .
 
-    $default  reduce using rule 86 (binop_id)
+    $default  reduce using rule 82 (binop_id)
 
 
 State 134
 
-   83 binop_id: LESSER .
+   83 binop_id: EXCLAMATION_EQUAL .
 
     $default  reduce using rule 83 (binop_id)
 
 
 State 135
 
-   85 binop_id: LESSER_EQUAL .
+   85 binop_id: GREATER .
 
     $default  reduce using rule 85 (binop_id)
 
 
 State 136
 
-   87 binop_id: AND .
+   87 binop_id: GREATER_EQUAL .
 
     $default  reduce using rule 87 (binop_id)
 
 
 State 137
 
-   88 binop_id: OR .
+   84 binop_id: LESSER .
 
-    $default  reduce using rule 88 (binop_id)
+    $default  reduce using rule 84 (binop_id)
 
 
 State 138
 
-   89 binop_id: LEFT_SHIFT .
+   86 binop_id: LESSER_EQUAL .
 
-    $default  reduce using rule 89 (binop_id)
+    $default  reduce using rule 86 (binop_id)
 
 
 State 139
 
-   90 binop_id: RIGHT_SHIFT .
+   88 binop_id: AND .
 
-    $default  reduce using rule 90 (binop_id)
+    $default  reduce using rule 88 (binop_id)
 
 
 State 140
 
-   94 binop: unary_op binop_id . id_or_constant
+   89 binop_id: OR .
+
+    $default  reduce using rule 89 (binop_id)
+
+
+State 141
+
+   90 binop_id: LEFT_SHIFT .
+
+    $default  reduce using rule 90 (binop_id)
+
+
+State 142
+
+   91 binop_id: RIGHT_SHIFT .
+
+    $default  reduce using rule 91 (binop_id)
+
+
+State 143
+
+   95 binop: unary_op binop_id . id_or_constant
 
     IDENTIFIER  shift, and go to state 1
     STRING      shift, and go to state 50
@@ -2104,7 +2166,7 @@ State 140
     FALSE       shift, and go to state 59
     NULLPTR     shift, and go to state 60
 
-    id_or_constant       go to state 182
+    id_or_constant       go to state 187
     constant             go to state 76
     constant_int         go to state 77
     constant_bool        go to state 78
@@ -2113,10 +2175,10 @@ State 140
     type                 go to state 81
 
 
-State 141
+State 144
 
-   95 binop: member_op binop_id . member_op
-   97      | member_op binop_id . id_or_constant
+   96 binop: member_op binop_id . member_op
+   98      | member_op binop_id . id_or_constant
 
     IDENTIFIER  shift, and go to state 1
     STRING      shift, and go to state 50
@@ -2128,44 +2190,44 @@ State 141
     NULLPTR     shift, and go to state 60
 
     memberable           go to state 31
-    array_index          go to state 158
-    member_op            go to state 183
-    id_or_constant       go to state 184
+    array_index          go to state 161
+    member_op            go to state 188
+    id_or_constant       go to state 189
     constant             go to state 76
     constant_int         go to state 77
     constant_bool        go to state 78
     constant_enum_value  go to state 79
-    id                   go to state 185
+    id                   go to state 190
     type                 go to state 81
 
 
-State 142
+State 145
 
    73 increment: id_or_constant PLUS . PLUS
-   77 binop_id: PLUS .
+   78 binop_id: PLUS .
 
-    PLUS  shift, and go to state 186
+    PLUS  shift, and go to state 191
 
-    PLUS      [reduce using rule 77 (binop_id)]
-    $default  reduce using rule 77 (binop_id)
-
-
-State 143
-
-   74 decrement: id_or_constant MINUS . MINUS
-   78 binop_id: MINUS .
-
-    MINUS  shift, and go to state 187
-
-    MINUS     [reduce using rule 78 (binop_id)]
+    PLUS      [reduce using rule 78 (binop_id)]
     $default  reduce using rule 78 (binop_id)
 
 
-State 144
+State 146
 
-   92 binop: id_or_constant binop_id . id_or_constant
-   93      | id_or_constant binop_id . unary_op
-   96      | id_or_constant binop_id . member_op
+   74 decrement: id_or_constant MINUS . MINUS
+   79 binop_id: MINUS .
+
+    MINUS  shift, and go to state 192
+
+    MINUS     [reduce using rule 79 (binop_id)]
+    $default  reduce using rule 79 (binop_id)
+
+
+State 147
+
+   93 binop: id_or_constant binop_id . id_or_constant
+   94      | id_or_constant binop_id . unary_op
+   97      | id_or_constant binop_id . member_op
 
     IDENTIFIER    shift, and go to state 1
     STRING        shift, and go to state 50
@@ -2181,30 +2243,30 @@ State 144
     FALSE         shift, and go to state 59
     NULLPTR       shift, and go to state 60
 
-    unary_op             go to state 188
+    unary_op             go to state 193
     unary_minus          go to state 63
     unary_plus           go to state 64
     memberable           go to state 31
     array_index          go to state 66
-    member_op            go to state 189
+    member_op            go to state 194
     cast                 go to state 68
     increment            go to state 69
     decrement            go to state 70
     address_of           go to state 71
     dereference          go to state 72
-    id_or_constant       go to state 190
+    id_or_constant       go to state 195
     constant             go to state 76
     constant_int         go to state 77
     constant_bool        go to state 78
     constant_enum_value  go to state 79
-    id                   go to state 185
+    id                   go to state 190
     type                 go to state 81
 
 
-State 145
+State 148
 
-  106 function_call: id LEFT_BRACKET . RIGHT_BRACKET
-  107              | id LEFT_BRACKET . statement_list RIGHT_BRACKET
+  107 function_call: id LEFT_BRACKET . RIGHT_BRACKET
+  108              | id LEFT_BRACKET . statement_list RIGHT_BRACKET
 
     IDENTIFIER     shift, and go to state 1
     STRING         shift, and go to state 50
@@ -2212,7 +2274,7 @@ State 145
     FLOAT          shift, and go to state 52
     TYPE           shift, and go to state 2
     LEFT_BRACKET   shift, and go to state 53
-    RIGHT_BRACKET  shift, and go to state 191
+    RIGHT_BRACKET  shift, and go to state 196
     PLUS           shift, and go to state 54
     MINUS          shift, and go to state 55
     ASTERISK       shift, and go to state 56
@@ -2221,7 +2283,7 @@ State 145
     FALSE          shift, and go to state 59
     NULLPTR        shift, and go to state 60
 
-    assignable_statement  go to state 192
+    assignable_statement  go to state 197
     unary_op              go to state 62
     unary_minus           go to state 63
     unary_plus            go to state 64
@@ -2236,7 +2298,7 @@ State 145
     dereference           go to state 72
     binop                 go to state 73
     function_call         go to state 74
-    statement_list        go to state 193
+    statement_list        go to state 198
     id_or_constant        go to state 75
     constant              go to state 76
     constant_int          go to state 77
@@ -2246,100 +2308,100 @@ State 145
     type                  go to state 81
 
 
-State 146
-
-  157 constant_enum_value: type COLON . COLON id
-
-    COLON  shift, and go to state 194
-
-
-State 147
-
-  122 cond_block: IF LEFT_BRACKET assignable_statement . RIGHT_BRACKET scope
-
-    RIGHT_BRACKET  shift, and go to state 195
-
-
-State 148
-
-  125 for_loop: FOR LEFT_BRACKET statement . SEMICOLON assignable_statement SEMICOLON assignable_statement RIGHT_BRACKET scope
-
-    SEMICOLON  shift, and go to state 196
-
-
 State 149
 
-  124 while_loop: WHILE LEFT_BRACKET assignable_statement . RIGHT_BRACKET scope
+  158 constant_enum_value: type COLON . COLON id
 
-    RIGHT_BRACKET  shift, and go to state 197
+    COLON  shift, and go to state 199
 
 
 State 150
+
+  123 cond_block: IF LEFT_BRACKET assignable_statement . RIGHT_BRACKET scope
+
+    RIGHT_BRACKET  shift, and go to state 200
+
+
+State 151
+
+  126 for_loop: FOR LEFT_BRACKET statement . SEMICOLON assignable_statement SEMICOLON assignable_statement RIGHT_BRACKET scope
+
+    SEMICOLON  shift, and go to state 201
+
+
+State 152
+
+  125 while_loop: WHILE LEFT_BRACKET assignable_statement . RIGHT_BRACKET scope
+
+    RIGHT_BRACKET  shift, and go to state 202
+
+
+State 153
 
    30 typedef_statement: TYPEDEF TYPE TYPE .
 
     $default  reduce using rule 30 (typedef_statement)
 
 
-State 151
+State 154
 
    29 alias_statement: ALIAS TYPE TYPE .
 
     $default  reduce using rule 29 (alias_statement)
 
 
-State 152
+State 155
 
-  138 enum_def: ENUM type LEFT_BRACE . enum_parts RIGHT_BRACE
+  139 enum_def: ENUM type LEFT_BRACE . enum_parts RIGHT_BRACE
 
     IDENTIFIER  shift, and go to state 1
 
-    enum_parts  go to state 198
-    enum_part   go to state 199
-    id          go to state 200
+    enum_parts  go to state 203
+    enum_part   go to state 204
+    id          go to state 205
 
 
-State 153
+State 156
 
    34 union_def: UNION type LEFT_BRACE . struct_list RIGHT_BRACE
 
     TYPE  shift, and go to state 2
     MUT   shift, and go to state 11
 
-    struct_list      go to state 201
-    struct_pair      go to state 202
+    struct_list      go to state 206
+    struct_pair      go to state 207
     type             go to state 48
-    composited_type  go to state 203
+    composited_type  go to state 208
 
 
-State 154
+State 157
 
    31 struct_def: STRUCT type . LEFT_BRACE struct_list RIGHT_BRACE
 
-    LEFT_BRACE  shift, and go to state 156
+    LEFT_BRACE  shift, and go to state 159
 
 
-State 155
+State 158
 
-  134 func_ptr: FUNC_PTR type type . LEFT_BRACKET type_list RIGHT_BRACKET
+  135 func_ptr: FUNC_PTR type type . LEFT_BRACKET type_list RIGHT_BRACKET
 
-    LEFT_BRACKET  shift, and go to state 204
+    LEFT_BRACKET  shift, and go to state 209
 
 
-State 156
+State 159
 
    31 struct_def: STRUCT type LEFT_BRACE . struct_list RIGHT_BRACE
 
     TYPE  shift, and go to state 2
     MUT   shift, and go to state 11
 
-    struct_list      go to state 205
-    struct_pair      go to state 202
+    struct_list      go to state 210
+    struct_pair      go to state 207
     type             go to state 48
-    composited_type  go to state 203
+    composited_type  go to state 208
 
 
-State 157
+State 160
 
    65 member_op: memberable . FSTOP memberable
    65          | memberable FSTOP memberable .
@@ -2353,21 +2415,21 @@ State 157
     $default  reduce using rule 65 (member_op)
 
 
-State 158
+State 161
 
    62 memberable: array_index .
 
     $default  reduce using rule 62 (memberable)
 
 
-State 159
+State 162
 
    66 member_op: memberable FSTOP member_op .
 
     $default  reduce using rule 66 (member_op)
 
 
-State 160
+State 163
 
    61 memberable: id .
    63 array_index: id . LEFT_SQUARE_BRACKET constant_int RIGHT_SQUARE_BRACKET
@@ -2378,7 +2440,7 @@ State 160
     $default  reduce using rule 61 (memberable)
 
 
-State 161
+State 164
 
    65 member_op: memberable . FSTOP memberable
    66          | memberable . FSTOP member_op
@@ -2392,28 +2454,28 @@ State 161
     $default  reduce using rule 67 (member_op)
 
 
-State 162
+State 165
 
    68 member_op: memberable ARROW member_op .
 
     $default  reduce using rule 68 (member_op)
 
 
-State 163
+State 166
 
    70 variable_assign: array_index EQUAL assignable_statement .
 
     $default  reduce using rule 70 (variable_assign)
 
 
-State 164
+State 167
 
    71 variable_assign: member_op EQUAL assignable_statement .
 
     $default  reduce using rule 71 (variable_assign)
 
 
-State 165
+State 168
 
    46 scope: LEFT_BRACE . semicoloned_statements RIGHT_BRACE
    47      | LEFT_BRACE . RIGHT_BRACE
@@ -2424,13 +2486,13 @@ State 165
     FLOAT         shift, and go to state 52
     TYPE          shift, and go to state 2
     LEFT_BRACKET  shift, and go to state 53
-    RIGHT_BRACE   shift, and go to state 206
+    RIGHT_BRACE   shift, and go to state 211
     PLUS          shift, and go to state 54
     MINUS         shift, and go to state 55
     ASTERISK      shift, and go to state 56
     AND           shift, and go to state 57
     RETURN        shift, and go to state 3
-    DEFER         shift, and go to state 207
+    DEFER         shift, and go to state 212
     IF            shift, and go to state 4
     FOR           shift, and go to state 5
     WHILE         shift, and go to state 6
@@ -2449,17 +2511,17 @@ State 165
     NULLPTR       shift, and go to state 60
     STRUCT        shift, and go to state 17
 
-    semicoloned_statements  go to state 208
-    semicoloned_statement   go to state 209
-    statement               go to state 210
+    semicoloned_statements  go to state 213
+    semicoloned_statement   go to state 214
+    statement               go to state 215
     alias_statement         go to state 22
     typedef_statement       go to state 23
     struct_def              go to state 24
     struct_decl             go to state 25
     union_def               go to state 26
-    defer_statement         go to state 211
-    assignable_statement    go to state 212
-    flow_control            go to state 213
+    defer_statement         go to state 216
+    assignable_statement    go to state 217
+    flow_control            go to state 218
     loop                    go to state 28
     import                  go to state 29
     unary_op                go to state 62
@@ -2468,8 +2530,8 @@ State 165
     binary_op               go to state 65
     assign_op               go to state 30
     memberable              go to state 31
-    array_index             go to state 214
-    member_op               go to state 215
+    array_index             go to state 219
+    member_op               go to state 220
     variable_assign         go to state 34
     cast                    go to state 68
     increment               go to state 69
@@ -2477,7 +2539,7 @@ State 165
     address_of              go to state 71
     dereference             go to state 72
     binop                   go to state 73
-    function_def            go to state 216
+    function_def            go to state 221
     function_decl           go to state 36
     function_call           go to state 74
     variable_decl           go to state 37
@@ -2495,87 +2557,87 @@ State 165
     constant_int            go to state 77
     constant_bool           go to state 78
     constant_enum_value     go to state 79
-    id                      go to state 217
-    type                    go to state 218
+    id                      go to state 222
+    type                    go to state 223
     composited_type         go to state 49
-
-
-State 166
-
-  123 cond_block: cond_block ELSE IF . LEFT_BRACKET assignable_statement RIGHT_BRACKET scope
-
-    LEFT_BRACKET  shift, and go to state 219
-
-
-State 167
-
-  121 if_statement: cond_block ELSE scope .
-
-    $default  reduce using rule 121 (if_statement)
-
-
-State 168
-
-  101 function_def: id LEFT_BRACKET RIGHT_BRACKET . scope
-
-    LEFT_BRACE  shift, and go to state 165
-
-    scope  go to state 220
 
 
 State 169
 
-  137 arg_pair: FSTOP . FSTOP FSTOP
+  124 cond_block: cond_block ELSE IF . LEFT_BRACKET assignable_statement RIGHT_BRACKET scope
 
-    FSTOP  shift, and go to state 221
+    LEFT_BRACKET  shift, and go to state 224
 
 
 State 170
 
-  100 function_def: id LEFT_BRACKET arg_list . RIGHT_BRACKET scope
-  130 arg_list: arg_list . COMMA arg_pair
+  122 if_statement: cond_block ELSE scope .
 
-    RIGHT_BRACKET  shift, and go to state 222
-    COMMA          shift, and go to state 223
+    $default  reduce using rule 122 (if_statement)
 
 
 State 171
 
-  131 arg_list: arg_pair .
+  102 function_def: id LEFT_BRACKET RIGHT_BRACKET . scope
 
-    $default  reduce using rule 131 (arg_list)
+    LEFT_BRACE  shift, and go to state 168
+
+    scope  go to state 225
 
 
 State 172
 
-  136 arg_pair: composited_type . id
-  162 composited_type: composited_type . ASTERISK
-  163                | composited_type . MUT
+  138 arg_pair: FSTOP . FSTOP FSTOP
+
+    FSTOP  shift, and go to state 226
+
+
+State 173
+
+  101 function_def: id LEFT_BRACKET arg_list . RIGHT_BRACKET scope
+  131 arg_list: arg_list . COMMA arg_pair
+
+    RIGHT_BRACKET  shift, and go to state 227
+    COMMA          shift, and go to state 228
+
+
+State 174
+
+  132 arg_list: arg_pair .
+
+    $default  reduce using rule 132 (arg_list)
+
+
+State 175
+
+  137 arg_pair: composited_type . id
+  163 composited_type: composited_type . ASTERISK
+  164                | composited_type . MUT
 
     IDENTIFIER  shift, and go to state 1
     ASTERISK    shift, and go to state 116
     MUT         shift, and go to state 117
 
-    id  go to state 224
+    id  go to state 229
 
 
-State 173
+State 176
 
    63 array_index: id LEFT_SQUARE_BRACKET constant_int . RIGHT_SQUARE_BRACKET
 
-    RIGHT_SQUARE_BRACKET  shift, and go to state 225
+    RIGHT_SQUARE_BRACKET  shift, and go to state 230
 
 
-State 174
+State 177
 
    64 array_index: id LEFT_SQUARE_BRACKET id . RIGHT_SQUARE_BRACKET
 
-    RIGHT_SQUARE_BRACKET  shift, and go to state 226
+    RIGHT_SQUARE_BRACKET  shift, and go to state 231
 
 
-State 175
+State 178
 
-  109 variable_decl: id COLON EQUAL . assignable_statement
+  110 variable_decl: id COLON EQUAL . assignable_statement
 
     IDENTIFIER    shift, and go to state 1
     STRING        shift, and go to state 50
@@ -2591,7 +2653,7 @@ State 175
     FALSE         shift, and go to state 59
     NULLPTR       shift, and go to state 60
 
-    assignable_statement  go to state 227
+    assignable_statement  go to state 232
     unary_op              go to state 62
     unary_minus           go to state 63
     unary_plus            go to state 64
@@ -2615,44 +2677,44 @@ State 175
     type                  go to state 81
 
 
-State 176
+State 179
 
    69 variable_assign: id EQUAL assignable_statement .
 
     $default  reduce using rule 69 (variable_assign)
 
 
-State 177
+State 180
 
-   98 function_def: composited_type id LEFT_BRACKET . arg_list RIGHT_BRACKET scope
-   99             | composited_type id LEFT_BRACKET . RIGHT_BRACKET scope
-  103 function_decl: composited_type id LEFT_BRACKET . RIGHT_BRACKET SEMICOLON
-  104              | composited_type id LEFT_BRACKET . arg_list RIGHT_BRACKET SEMICOLON
+   99 function_def: composited_type id LEFT_BRACKET . arg_list RIGHT_BRACKET scope
+  100             | composited_type id LEFT_BRACKET . RIGHT_BRACKET scope
+  104 function_decl: composited_type id LEFT_BRACKET . RIGHT_BRACKET SEMICOLON
+  105              | composited_type id LEFT_BRACKET . arg_list RIGHT_BRACKET SEMICOLON
 
     TYPE           shift, and go to state 2
-    RIGHT_BRACKET  shift, and go to state 228
-    FSTOP          shift, and go to state 169
+    RIGHT_BRACKET  shift, and go to state 233
+    FSTOP          shift, and go to state 172
     MUT            shift, and go to state 11
 
-    arg_list         go to state 229
-    arg_pair         go to state 171
+    arg_list         go to state 234
+    arg_pair         go to state 174
     type             go to state 48
-    composited_type  go to state 172
+    composited_type  go to state 175
 
 
-State 178
+State 181
 
-  113 array_decl: composited_type id LEFT_SQUARE_BRACKET . constant_int RIGHT_SQUARE_BRACKET
-  114           | composited_type id LEFT_SQUARE_BRACKET . constant_int RIGHT_SQUARE_BRACKET EQUAL LEFT_BRACE init_list RIGHT_BRACE
+  114 array_decl: composited_type id LEFT_SQUARE_BRACKET . constant_int RIGHT_SQUARE_BRACKET
+  115           | composited_type id LEFT_SQUARE_BRACKET . constant_int RIGHT_SQUARE_BRACKET EQUAL LEFT_BRACE init_list RIGHT_BRACE
 
     INTEGER  shift, and go to state 51
 
-    constant_int  go to state 230
+    constant_int  go to state 235
 
 
-State 179
+State 182
 
-  110 variable_decl: composited_type id EQUAL . assignable_statement
+  111 variable_decl: composited_type id EQUAL . assignable_statement
 
     IDENTIFIER    shift, and go to state 1
     STRING        shift, and go to state 50
@@ -2668,7 +2730,7 @@ State 179
     FALSE         shift, and go to state 59
     NULLPTR       shift, and go to state 60
 
-    assignable_statement  go to state 231
+    assignable_statement  go to state 236
     unary_op              go to state 62
     unary_minus           go to state 63
     unary_plus            go to state 64
@@ -2692,15 +2754,15 @@ State 179
     type                  go to state 81
 
 
-State 180
+State 183
 
-  115 array_decl: composited_type id MUT . LEFT_SQUARE_BRACKET constant_int RIGHT_SQUARE_BRACKET
-  116           | composited_type id MUT . LEFT_SQUARE_BRACKET constant_int RIGHT_SQUARE_BRACKET EQUAL LEFT_BRACE init_list RIGHT_BRACE
+  116 array_decl: composited_type id MUT . LEFT_SQUARE_BRACKET constant_int RIGHT_SQUARE_BRACKET
+  117           | composited_type id MUT . LEFT_SQUARE_BRACKET constant_int RIGHT_SQUARE_BRACKET EQUAL LEFT_BRACE init_list RIGHT_BRACE
 
-    LEFT_SQUARE_BRACKET  shift, and go to state 232
+    LEFT_SQUARE_BRACKET  shift, and go to state 237
 
 
-State 181
+State 184
 
    72 cast: LEFT_BRACKET composited_type RIGHT_BRACKET . id_or_constant
 
@@ -2713,7 +2775,7 @@ State 181
     FALSE       shift, and go to state 59
     NULLPTR     shift, and go to state 60
 
-    id_or_constant       go to state 233
+    id_or_constant       go to state 238
     constant             go to state 76
     constant_int         go to state 77
     constant_bool        go to state 78
@@ -2722,125 +2784,139 @@ State 181
     type                 go to state 81
 
 
-State 182
+State 185
 
-   94 binop: unary_op binop_id id_or_constant .
+   73 increment: id_or_constant PLUS . PLUS
 
-    $default  reduce using rule 94 (binop)
+    PLUS  shift, and go to state 191
 
 
-State 183
+State 186
 
-   95 binop: member_op binop_id member_op .
+   74 decrement: id_or_constant MINUS . MINUS
+
+    MINUS  shift, and go to state 192
+
+
+State 187
+
+   95 binop: unary_op binop_id id_or_constant .
 
     $default  reduce using rule 95 (binop)
 
 
-State 184
+State 188
 
-   97 binop: member_op binop_id id_or_constant .
+   96 binop: member_op binop_id member_op .
 
-    $default  reduce using rule 97 (binop)
+    $default  reduce using rule 96 (binop)
 
 
-State 185
+State 189
+
+   98 binop: member_op binop_id id_or_constant .
+
+    $default  reduce using rule 98 (binop)
+
+
+State 190
 
    61 memberable: id .
    63 array_index: id . LEFT_SQUARE_BRACKET constant_int RIGHT_SQUARE_BRACKET
    64            | id . LEFT_SQUARE_BRACKET id RIGHT_SQUARE_BRACKET
-  144 id_or_constant: id .
+  145 id_or_constant: id .
 
     LEFT_SQUARE_BRACKET  shift, and go to state 113
 
     FSTOP     reduce using rule 61 (memberable)
     ARROW     reduce using rule 61 (memberable)
-    $default  reduce using rule 144 (id_or_constant)
+    $default  reduce using rule 145 (id_or_constant)
 
 
-State 186
+State 191
 
    73 increment: id_or_constant PLUS PLUS .
 
     $default  reduce using rule 73 (increment)
 
 
-State 187
+State 192
 
    74 decrement: id_or_constant MINUS MINUS .
 
     $default  reduce using rule 74 (decrement)
 
 
-State 188
-
-   93 binop: id_or_constant binop_id unary_op .
-
-    $default  reduce using rule 93 (binop)
-
-
-State 189
-
-   96 binop: id_or_constant binop_id member_op .
-
-    $default  reduce using rule 96 (binop)
-
-
-State 190
-
-   73 increment: id_or_constant . PLUS PLUS
-   74 decrement: id_or_constant . MINUS MINUS
-   92 binop: id_or_constant binop_id id_or_constant .
-
-    PLUS   shift, and go to state 234
-    MINUS  shift, and go to state 235
-
-    $default  reduce using rule 92 (binop)
-
-
-State 191
-
-  106 function_call: id LEFT_BRACKET RIGHT_BRACKET .
-
-    $default  reduce using rule 106 (function_call)
-
-
-State 192
-
-  133 statement_list: assignable_statement .
-
-    $default  reduce using rule 133 (statement_list)
-
-
 State 193
 
-  107 function_call: id LEFT_BRACKET statement_list . RIGHT_BRACKET
-  132 statement_list: statement_list . COMMA assignable_statement
+   94 binop: id_or_constant binop_id unary_op .
 
-    RIGHT_BRACKET  shift, and go to state 236
-    COMMA          shift, and go to state 237
+    $default  reduce using rule 94 (binop)
 
 
 State 194
 
-  157 constant_enum_value: type COLON COLON . id
+   97 binop: id_or_constant binop_id member_op .
 
-    IDENTIFIER  shift, and go to state 1
-
-    id  go to state 238
+    $default  reduce using rule 97 (binop)
 
 
 State 195
 
-  122 cond_block: IF LEFT_BRACKET assignable_statement RIGHT_BRACKET . scope
+   73 increment: id_or_constant . PLUS PLUS
+   74 decrement: id_or_constant . MINUS MINUS
+   93 binop: id_or_constant binop_id id_or_constant .
 
-    LEFT_BRACE  shift, and go to state 165
+    PLUS   shift, and go to state 185
+    MINUS  shift, and go to state 186
 
-    scope  go to state 239
+    $default  reduce using rule 93 (binop)
 
 
 State 196
 
-  125 for_loop: FOR LEFT_BRACKET statement SEMICOLON . assignable_statement SEMICOLON assignable_statement RIGHT_BRACKET scope
+  107 function_call: id LEFT_BRACKET RIGHT_BRACKET .
+
+    $default  reduce using rule 107 (function_call)
+
+
+State 197
+
+  134 statement_list: assignable_statement .
+
+    $default  reduce using rule 134 (statement_list)
+
+
+State 198
+
+  108 function_call: id LEFT_BRACKET statement_list . RIGHT_BRACKET
+  133 statement_list: statement_list . COMMA assignable_statement
+
+    RIGHT_BRACKET  shift, and go to state 239
+    COMMA          shift, and go to state 240
+
+
+State 199
+
+  158 constant_enum_value: type COLON COLON . id
+
+    IDENTIFIER  shift, and go to state 1
+
+    id  go to state 241
+
+
+State 200
+
+  123 cond_block: IF LEFT_BRACKET assignable_statement RIGHT_BRACKET . scope
+
+    LEFT_BRACE  shift, and go to state 168
+
+    scope  go to state 242
+
+
+State 201
+
+  126 for_loop: FOR LEFT_BRACKET statement SEMICOLON . assignable_statement SEMICOLON assignable_statement RIGHT_BRACKET scope
 
     IDENTIFIER    shift, and go to state 1
     STRING        shift, and go to state 50
@@ -2856,7 +2932,7 @@ State 196
     FALSE         shift, and go to state 59
     NULLPTR       shift, and go to state 60
 
-    assignable_statement  go to state 240
+    assignable_statement  go to state 243
     unary_op              go to state 62
     unary_minus           go to state 63
     unary_plus            go to state 64
@@ -2880,110 +2956,110 @@ State 196
     type                  go to state 81
 
 
-State 197
-
-  124 while_loop: WHILE LEFT_BRACKET assignable_statement RIGHT_BRACKET . scope
-
-    LEFT_BRACE  shift, and go to state 165
-
-    scope  go to state 241
-
-
-State 198
-
-  138 enum_def: ENUM type LEFT_BRACE enum_parts . RIGHT_BRACE
-  141 enum_parts: enum_parts . COMMA enum_part
-
-    RIGHT_BRACE  shift, and go to state 242
-    COMMA        shift, and go to state 243
-
-
-State 199
-
-  140 enum_parts: enum_part .
-
-    $default  reduce using rule 140 (enum_parts)
-
-
-State 200
-
-  142 enum_part: id .
-  143          | id . EQUAL constant_int
-
-    EQUAL  shift, and go to state 244
-
-    $default  reduce using rule 142 (enum_part)
-
-
-State 201
-
-   34 union_def: UNION type LEFT_BRACE struct_list . RIGHT_BRACE
-  126 struct_list: struct_list . struct_pair
-
-    TYPE         shift, and go to state 2
-    RIGHT_BRACE  shift, and go to state 245
-    MUT          shift, and go to state 11
-
-    struct_pair      go to state 246
-    type             go to state 48
-    composited_type  go to state 203
-
-
 State 202
 
-  127 struct_list: struct_pair .
+  125 while_loop: WHILE LEFT_BRACKET assignable_statement RIGHT_BRACKET . scope
 
-    $default  reduce using rule 127 (struct_list)
+    LEFT_BRACE  shift, and go to state 168
+
+    scope  go to state 244
 
 
 State 203
 
-  128 struct_pair: composited_type . id SEMICOLON
-  129            | composited_type . id EQUAL assignable_statement SEMICOLON
-  162 composited_type: composited_type . ASTERISK
-  163                | composited_type . MUT
+  139 enum_def: ENUM type LEFT_BRACE enum_parts . RIGHT_BRACE
+  142 enum_parts: enum_parts . COMMA enum_part
+
+    RIGHT_BRACE  shift, and go to state 245
+    COMMA        shift, and go to state 246
+
+
+State 204
+
+  141 enum_parts: enum_part .
+
+    $default  reduce using rule 141 (enum_parts)
+
+
+State 205
+
+  143 enum_part: id .
+  144          | id . EQUAL constant_int
+
+    EQUAL  shift, and go to state 247
+
+    $default  reduce using rule 143 (enum_part)
+
+
+State 206
+
+   34 union_def: UNION type LEFT_BRACE struct_list . RIGHT_BRACE
+  127 struct_list: struct_list . struct_pair
+
+    TYPE         shift, and go to state 2
+    RIGHT_BRACE  shift, and go to state 248
+    MUT          shift, and go to state 11
+
+    struct_pair      go to state 249
+    type             go to state 48
+    composited_type  go to state 208
+
+
+State 207
+
+  128 struct_list: struct_pair .
+
+    $default  reduce using rule 128 (struct_list)
+
+
+State 208
+
+  129 struct_pair: composited_type . id SEMICOLON
+  130            | composited_type . id EQUAL assignable_statement SEMICOLON
+  163 composited_type: composited_type . ASTERISK
+  164                | composited_type . MUT
 
     IDENTIFIER  shift, and go to state 1
     ASTERISK    shift, and go to state 116
     MUT         shift, and go to state 117
 
-    id  go to state 247
+    id  go to state 250
 
 
-State 204
+State 209
 
-  134 func_ptr: FUNC_PTR type type LEFT_BRACKET . type_list RIGHT_BRACKET
+  135 func_ptr: FUNC_PTR type type LEFT_BRACKET . type_list RIGHT_BRACKET
 
     TYPE  shift, and go to state 2
     MUT   shift, and go to state 11
 
     type             go to state 48
-    composited_type  go to state 248
-    type_list        go to state 249
+    composited_type  go to state 251
+    type_list        go to state 252
 
 
-State 205
+State 210
 
    31 struct_def: STRUCT type LEFT_BRACE struct_list . RIGHT_BRACE
-  126 struct_list: struct_list . struct_pair
+  127 struct_list: struct_list . struct_pair
 
     TYPE         shift, and go to state 2
-    RIGHT_BRACE  shift, and go to state 250
+    RIGHT_BRACE  shift, and go to state 253
     MUT          shift, and go to state 11
 
-    struct_pair      go to state 246
+    struct_pair      go to state 249
     type             go to state 48
-    composited_type  go to state 203
+    composited_type  go to state 208
 
 
-State 206
+State 211
 
    47 scope: LEFT_BRACE RIGHT_BRACE .
 
     $default  reduce using rule 47 (scope)
 
 
-State 207
+State 212
 
    36 defer_statement: DEFER . assignable_statement
 
@@ -3001,7 +3077,7 @@ State 207
     FALSE         shift, and go to state 59
     NULLPTR       shift, and go to state 60
 
-    assignable_statement  go to state 251
+    assignable_statement  go to state 254
     unary_op              go to state 62
     unary_minus           go to state 63
     unary_plus            go to state 64
@@ -3025,7 +3101,7 @@ State 207
     type                  go to state 81
 
 
-State 208
+State 213
 
     7 semicoloned_statements: semicoloned_statements . semicoloned_statement
    46 scope: LEFT_BRACE semicoloned_statements . RIGHT_BRACE
@@ -3036,13 +3112,13 @@ State 208
     FLOAT         shift, and go to state 52
     TYPE          shift, and go to state 2
     LEFT_BRACKET  shift, and go to state 53
-    RIGHT_BRACE   shift, and go to state 252
+    RIGHT_BRACE   shift, and go to state 255
     PLUS          shift, and go to state 54
     MINUS         shift, and go to state 55
     ASTERISK      shift, and go to state 56
     AND           shift, and go to state 57
     RETURN        shift, and go to state 3
-    DEFER         shift, and go to state 207
+    DEFER         shift, and go to state 212
     IF            shift, and go to state 4
     FOR           shift, and go to state 5
     WHILE         shift, and go to state 6
@@ -3061,16 +3137,16 @@ State 208
     NULLPTR       shift, and go to state 60
     STRUCT        shift, and go to state 17
 
-    semicoloned_statement  go to state 253
-    statement              go to state 210
+    semicoloned_statement  go to state 256
+    statement              go to state 215
     alias_statement        go to state 22
     typedef_statement      go to state 23
     struct_def             go to state 24
     struct_decl            go to state 25
     union_def              go to state 26
-    defer_statement        go to state 211
-    assignable_statement   go to state 212
-    flow_control           go to state 213
+    defer_statement        go to state 216
+    assignable_statement   go to state 217
+    flow_control           go to state 218
     loop                   go to state 28
     import                 go to state 29
     unary_op               go to state 62
@@ -3079,8 +3155,8 @@ State 208
     binary_op              go to state 65
     assign_op              go to state 30
     memberable             go to state 31
-    array_index            go to state 214
-    member_op              go to state 215
+    array_index            go to state 219
+    member_op              go to state 220
     variable_assign        go to state 34
     cast                   go to state 68
     increment              go to state 69
@@ -3088,7 +3164,7 @@ State 208
     address_of             go to state 71
     dereference            go to state 72
     binop                  go to state 73
-    function_def           go to state 216
+    function_def           go to state 221
     function_decl          go to state 36
     function_call          go to state 74
     variable_decl          go to state 37
@@ -3106,40 +3182,40 @@ State 208
     constant_int           go to state 77
     constant_bool          go to state 78
     constant_enum_value    go to state 79
-    id                     go to state 217
-    type                   go to state 218
+    id                     go to state 222
+    type                   go to state 223
     composited_type        go to state 49
 
 
-State 209
+State 214
 
     6 semicoloned_statements: semicoloned_statement .
 
     $default  reduce using rule 6 (semicoloned_statements)
 
 
-State 210
+State 215
 
     8 semicoloned_statement: statement . SEMICOLON
 
-    SEMICOLON  shift, and go to state 254
+    SEMICOLON  shift, and go to state 257
 
 
-State 211
+State 216
 
    11 semicoloned_statement: defer_statement . SEMICOLON
 
-    SEMICOLON  shift, and go to state 255
+    SEMICOLON  shift, and go to state 258
 
 
-State 212
+State 217
 
     9 semicoloned_statement: assignable_statement . SEMICOLON
 
-    SEMICOLON  shift, and go to state 256
+    SEMICOLON  shift, and go to state 259
 
 
-State 213
+State 218
 
    10 semicoloned_statement: flow_control .
    26 statement: flow_control .
@@ -3148,7 +3224,7 @@ State 213
     $default   reduce using rule 10 (semicoloned_statement)
 
 
-State 214
+State 219
 
    54 unary_op: array_index .
    62 memberable: array_index .
@@ -3161,36 +3237,36 @@ State 214
     $default  reduce using rule 54 (unary_op)
 
 
-State 215
+State 220
 
    40 assignable_statement: member_op .
    71 variable_assign: member_op . EQUAL assignable_statement
-   95 binop: member_op . binop_id member_op
-   97      | member_op . binop_id id_or_constant
+   96 binop: member_op . binop_id member_op
+   98      | member_op . binop_id id_or_constant
 
-    PLUS               shift, and go to state 125
-    MINUS              shift, and go to state 126
-    ASTERISK           shift, and go to state 127
-    FORWARD_SLASH      shift, and go to state 128
-    PERCENT            shift, and go to state 129
+    PLUS               shift, and go to state 128
+    MINUS              shift, and go to state 129
+    ASTERISK           shift, and go to state 130
+    FORWARD_SLASH      shift, and go to state 131
+    PERCENT            shift, and go to state 132
     EQUAL              shift, and go to state 110
-    EQUAL_EQUAL        shift, and go to state 130
-    EXCLAMATION_EQUAL  shift, and go to state 131
-    GREATER            shift, and go to state 132
-    GREATER_EQUAL      shift, and go to state 133
-    LESSER             shift, and go to state 134
-    LESSER_EQUAL       shift, and go to state 135
-    AND                shift, and go to state 136
-    OR                 shift, and go to state 137
-    LEFT_SHIFT         shift, and go to state 138
-    RIGHT_SHIFT        shift, and go to state 139
+    EQUAL_EQUAL        shift, and go to state 133
+    EXCLAMATION_EQUAL  shift, and go to state 134
+    GREATER            shift, and go to state 135
+    GREATER_EQUAL      shift, and go to state 136
+    LESSER             shift, and go to state 137
+    LESSER_EQUAL       shift, and go to state 138
+    AND                shift, and go to state 139
+    OR                 shift, and go to state 140
+    LEFT_SHIFT         shift, and go to state 141
+    RIGHT_SHIFT        shift, and go to state 142
 
     $default  reduce using rule 40 (assignable_statement)
 
-    binop_id  go to state 141
+    binop_id  go to state 144
 
 
-State 216
+State 221
 
    12 semicoloned_statement: function_def .
    27 statement: function_def .
@@ -3199,42 +3275,42 @@ State 216
     $default   reduce using rule 12 (semicoloned_statement)
 
 
-State 217
+State 222
 
    61 memberable: id .
    63 array_index: id . LEFT_SQUARE_BRACKET constant_int RIGHT_SQUARE_BRACKET
    64            | id . LEFT_SQUARE_BRACKET id RIGHT_SQUARE_BRACKET
    69 variable_assign: id . EQUAL assignable_statement
-  100 function_def: id . LEFT_BRACKET arg_list RIGHT_BRACKET scope
-  101             | id . LEFT_BRACKET RIGHT_BRACKET scope
-  106 function_call: id . LEFT_BRACKET RIGHT_BRACKET
-  107              | id . LEFT_BRACKET statement_list RIGHT_BRACKET
-  109 variable_decl: id . COLON EQUAL assignable_statement
-  144 id_or_constant: id .
+  101 function_def: id . LEFT_BRACKET arg_list RIGHT_BRACKET scope
+  102             | id . LEFT_BRACKET RIGHT_BRACKET scope
+  107 function_call: id . LEFT_BRACKET RIGHT_BRACKET
+  108              | id . LEFT_BRACKET statement_list RIGHT_BRACKET
+  110 variable_decl: id . COLON EQUAL assignable_statement
+  145 id_or_constant: id .
 
-    LEFT_BRACKET         shift, and go to state 257
+    LEFT_BRACKET         shift, and go to state 260
     LEFT_SQUARE_BRACKET  shift, and go to state 113
     COLON                shift, and go to state 114
     EQUAL                shift, and go to state 115
 
     FSTOP     reduce using rule 61 (memberable)
     ARROW     reduce using rule 61 (memberable)
-    $default  reduce using rule 144 (id_or_constant)
+    $default  reduce using rule 145 (id_or_constant)
 
 
-State 218
+State 223
 
-  157 constant_enum_value: type . COLON COLON id
-  160 composited_type: type .
+  158 constant_enum_value: type . COLON COLON id
+  161 composited_type: type .
 
-    COLON  shift, and go to state 146
+    COLON  shift, and go to state 149
 
-    $default  reduce using rule 160 (composited_type)
+    $default  reduce using rule 161 (composited_type)
 
 
-State 219
+State 224
 
-  123 cond_block: cond_block ELSE IF LEFT_BRACKET . assignable_statement RIGHT_BRACKET scope
+  124 cond_block: cond_block ELSE IF LEFT_BRACKET . assignable_statement RIGHT_BRACKET scope
 
     IDENTIFIER    shift, and go to state 1
     STRING        shift, and go to state 50
@@ -3250,7 +3326,7 @@ State 219
     FALSE         shift, and go to state 59
     NULLPTR       shift, and go to state 60
 
-    assignable_statement  go to state 258
+    assignable_statement  go to state 261
     unary_op              go to state 62
     unary_minus           go to state 63
     unary_plus            go to state 64
@@ -3274,147 +3350,133 @@ State 219
     type                  go to state 81
 
 
-State 220
+State 225
 
-  101 function_def: id LEFT_BRACKET RIGHT_BRACKET scope .
+  102 function_def: id LEFT_BRACKET RIGHT_BRACKET scope .
 
-    $default  reduce using rule 101 (function_def)
-
-
-State 221
-
-  137 arg_pair: FSTOP FSTOP . FSTOP
-
-    FSTOP  shift, and go to state 259
+    $default  reduce using rule 102 (function_def)
 
 
-State 222
+State 226
 
-  100 function_def: id LEFT_BRACKET arg_list RIGHT_BRACKET . scope
+  138 arg_pair: FSTOP FSTOP . FSTOP
 
-    LEFT_BRACE  shift, and go to state 165
-
-    scope  go to state 260
+    FSTOP  shift, and go to state 262
 
 
-State 223
+State 227
 
-  130 arg_list: arg_list COMMA . arg_pair
+  101 function_def: id LEFT_BRACKET arg_list RIGHT_BRACKET . scope
+
+    LEFT_BRACE  shift, and go to state 168
+
+    scope  go to state 263
+
+
+State 228
+
+  131 arg_list: arg_list COMMA . arg_pair
 
     TYPE   shift, and go to state 2
-    FSTOP  shift, and go to state 169
+    FSTOP  shift, and go to state 172
     MUT    shift, and go to state 11
 
-    arg_pair         go to state 261
+    arg_pair         go to state 264
     type             go to state 48
-    composited_type  go to state 172
+    composited_type  go to state 175
 
 
-State 224
+State 229
 
-  136 arg_pair: composited_type id .
+  137 arg_pair: composited_type id .
 
-    $default  reduce using rule 136 (arg_pair)
+    $default  reduce using rule 137 (arg_pair)
 
 
-State 225
+State 230
 
    63 array_index: id LEFT_SQUARE_BRACKET constant_int RIGHT_SQUARE_BRACKET .
 
     $default  reduce using rule 63 (array_index)
 
 
-State 226
+State 231
 
    64 array_index: id LEFT_SQUARE_BRACKET id RIGHT_SQUARE_BRACKET .
 
     $default  reduce using rule 64 (array_index)
 
 
-State 227
+State 232
 
-  109 variable_decl: id COLON EQUAL assignable_statement .
-
-    $default  reduce using rule 109 (variable_decl)
-
-
-State 228
-
-   99 function_def: composited_type id LEFT_BRACKET RIGHT_BRACKET . scope
-  103 function_decl: composited_type id LEFT_BRACKET RIGHT_BRACKET . SEMICOLON
-
-    LEFT_BRACE  shift, and go to state 165
-    SEMICOLON   shift, and go to state 262
-
-    scope  go to state 263
-
-
-State 229
-
-   98 function_def: composited_type id LEFT_BRACKET arg_list . RIGHT_BRACKET scope
-  104 function_decl: composited_type id LEFT_BRACKET arg_list . RIGHT_BRACKET SEMICOLON
-  130 arg_list: arg_list . COMMA arg_pair
-
-    RIGHT_BRACKET  shift, and go to state 264
-    COMMA          shift, and go to state 223
-
-
-State 230
-
-  113 array_decl: composited_type id LEFT_SQUARE_BRACKET constant_int . RIGHT_SQUARE_BRACKET
-  114           | composited_type id LEFT_SQUARE_BRACKET constant_int . RIGHT_SQUARE_BRACKET EQUAL LEFT_BRACE init_list RIGHT_BRACE
-
-    RIGHT_SQUARE_BRACKET  shift, and go to state 265
-
-
-State 231
-
-  110 variable_decl: composited_type id EQUAL assignable_statement .
+  110 variable_decl: id COLON EQUAL assignable_statement .
 
     $default  reduce using rule 110 (variable_decl)
 
 
-State 232
+State 233
 
-  115 array_decl: composited_type id MUT LEFT_SQUARE_BRACKET . constant_int RIGHT_SQUARE_BRACKET
-  116           | composited_type id MUT LEFT_SQUARE_BRACKET . constant_int RIGHT_SQUARE_BRACKET EQUAL LEFT_BRACE init_list RIGHT_BRACE
+  100 function_def: composited_type id LEFT_BRACKET RIGHT_BRACKET . scope
+  104 function_decl: composited_type id LEFT_BRACKET RIGHT_BRACKET . SEMICOLON
+
+    LEFT_BRACE  shift, and go to state 168
+    SEMICOLON   shift, and go to state 265
+
+    scope  go to state 266
+
+
+State 234
+
+   99 function_def: composited_type id LEFT_BRACKET arg_list . RIGHT_BRACKET scope
+  105 function_decl: composited_type id LEFT_BRACKET arg_list . RIGHT_BRACKET SEMICOLON
+  131 arg_list: arg_list . COMMA arg_pair
+
+    RIGHT_BRACKET  shift, and go to state 267
+    COMMA          shift, and go to state 228
+
+
+State 235
+
+  114 array_decl: composited_type id LEFT_SQUARE_BRACKET constant_int . RIGHT_SQUARE_BRACKET
+  115           | composited_type id LEFT_SQUARE_BRACKET constant_int . RIGHT_SQUARE_BRACKET EQUAL LEFT_BRACE init_list RIGHT_BRACE
+
+    RIGHT_SQUARE_BRACKET  shift, and go to state 268
+
+
+State 236
+
+  111 variable_decl: composited_type id EQUAL assignable_statement .
+
+    $default  reduce using rule 111 (variable_decl)
+
+
+State 237
+
+  116 array_decl: composited_type id MUT LEFT_SQUARE_BRACKET . constant_int RIGHT_SQUARE_BRACKET
+  117           | composited_type id MUT LEFT_SQUARE_BRACKET . constant_int RIGHT_SQUARE_BRACKET EQUAL LEFT_BRACE init_list RIGHT_BRACE
 
     INTEGER  shift, and go to state 51
 
-    constant_int  go to state 266
+    constant_int  go to state 269
 
 
-State 233
+State 238
 
    72 cast: LEFT_BRACKET composited_type RIGHT_BRACKET id_or_constant .
 
     $default  reduce using rule 72 (cast)
 
 
-State 234
+State 239
 
-   73 increment: id_or_constant PLUS . PLUS
+  108 function_call: id LEFT_BRACKET statement_list RIGHT_BRACKET .
 
-    PLUS  shift, and go to state 186
-
-
-State 235
-
-   74 decrement: id_or_constant MINUS . MINUS
-
-    MINUS  shift, and go to state 187
+    $default  reduce using rule 108 (function_call)
 
 
-State 236
+State 240
 
-  107 function_call: id LEFT_BRACKET statement_list RIGHT_BRACKET .
-
-    $default  reduce using rule 107 (function_call)
-
-
-State 237
-
-  132 statement_list: statement_list COMMA . assignable_statement
+  133 statement_list: statement_list COMMA . assignable_statement
 
     IDENTIFIER    shift, and go to state 1
     STRING        shift, and go to state 50
@@ -3430,7 +3492,7 @@ State 237
     FALSE         shift, and go to state 59
     NULLPTR       shift, and go to state 60
 
-    assignable_statement  go to state 267
+    assignable_statement  go to state 270
     unary_op              go to state 62
     unary_minus           go to state 63
     unary_plus            go to state 64
@@ -3454,159 +3516,159 @@ State 237
     type                  go to state 81
 
 
-State 238
-
-  157 constant_enum_value: type COLON COLON id .
-
-    $default  reduce using rule 157 (constant_enum_value)
-
-
-State 239
-
-  122 cond_block: IF LEFT_BRACKET assignable_statement RIGHT_BRACKET scope .
-
-    $default  reduce using rule 122 (cond_block)
-
-
-State 240
-
-  125 for_loop: FOR LEFT_BRACKET statement SEMICOLON assignable_statement . SEMICOLON assignable_statement RIGHT_BRACKET scope
-
-    SEMICOLON  shift, and go to state 268
-
-
 State 241
 
-  124 while_loop: WHILE LEFT_BRACKET assignable_statement RIGHT_BRACKET scope .
+  158 constant_enum_value: type COLON COLON id .
 
-    $default  reduce using rule 124 (while_loop)
+    $default  reduce using rule 158 (constant_enum_value)
 
 
 State 242
 
-  138 enum_def: ENUM type LEFT_BRACE enum_parts RIGHT_BRACE .
+  123 cond_block: IF LEFT_BRACKET assignable_statement RIGHT_BRACKET scope .
 
-    $default  reduce using rule 138 (enum_def)
+    $default  reduce using rule 123 (cond_block)
 
 
 State 243
 
-  141 enum_parts: enum_parts COMMA . enum_part
+  126 for_loop: FOR LEFT_BRACKET statement SEMICOLON assignable_statement . SEMICOLON assignable_statement RIGHT_BRACKET scope
 
-    IDENTIFIER  shift, and go to state 1
-
-    enum_part  go to state 269
-    id         go to state 200
+    SEMICOLON  shift, and go to state 271
 
 
 State 244
 
-  143 enum_part: id EQUAL . constant_int
+  125 while_loop: WHILE LEFT_BRACKET assignable_statement RIGHT_BRACKET scope .
 
-    INTEGER  shift, and go to state 51
-
-    constant_int  go to state 270
+    $default  reduce using rule 125 (while_loop)
 
 
 State 245
+
+  139 enum_def: ENUM type LEFT_BRACE enum_parts RIGHT_BRACE .
+
+    $default  reduce using rule 139 (enum_def)
+
+
+State 246
+
+  142 enum_parts: enum_parts COMMA . enum_part
+
+    IDENTIFIER  shift, and go to state 1
+
+    enum_part  go to state 272
+    id         go to state 205
+
+
+State 247
+
+  144 enum_part: id EQUAL . constant_int
+
+    INTEGER  shift, and go to state 51
+
+    constant_int  go to state 273
+
+
+State 248
 
    34 union_def: UNION type LEFT_BRACE struct_list RIGHT_BRACE .
 
     $default  reduce using rule 34 (union_def)
 
 
-State 246
+State 249
 
-  126 struct_list: struct_list struct_pair .
+  127 struct_list: struct_list struct_pair .
 
-    $default  reduce using rule 126 (struct_list)
-
-
-State 247
-
-  128 struct_pair: composited_type id . SEMICOLON
-  129            | composited_type id . EQUAL assignable_statement SEMICOLON
-
-    SEMICOLON  shift, and go to state 271
-    EQUAL      shift, and go to state 272
+    $default  reduce using rule 127 (struct_list)
 
 
-State 248
+State 250
 
-  162 composited_type: composited_type . ASTERISK
-  163                | composited_type . MUT
-  164 type_list: composited_type .
+  129 struct_pair: composited_type id . SEMICOLON
+  130            | composited_type id . EQUAL assignable_statement SEMICOLON
+
+    SEMICOLON  shift, and go to state 274
+    EQUAL      shift, and go to state 275
+
+
+State 251
+
+  163 composited_type: composited_type . ASTERISK
+  164                | composited_type . MUT
+  165 type_list: composited_type .
 
     ASTERISK  shift, and go to state 116
     MUT       shift, and go to state 117
 
-    $default  reduce using rule 164 (type_list)
+    $default  reduce using rule 165 (type_list)
 
 
-State 249
+State 252
 
-  134 func_ptr: FUNC_PTR type type LEFT_BRACKET type_list . RIGHT_BRACKET
-  165 type_list: type_list . COMMA composited_type
+  135 func_ptr: FUNC_PTR type type LEFT_BRACKET type_list . RIGHT_BRACKET
+  166 type_list: type_list . COMMA composited_type
 
-    RIGHT_BRACKET  shift, and go to state 273
-    COMMA          shift, and go to state 274
+    RIGHT_BRACKET  shift, and go to state 276
+    COMMA          shift, and go to state 277
 
 
-State 250
+State 253
 
    31 struct_def: STRUCT type LEFT_BRACE struct_list RIGHT_BRACE .
 
     $default  reduce using rule 31 (struct_def)
 
 
-State 251
+State 254
 
    36 defer_statement: DEFER assignable_statement .
 
     $default  reduce using rule 36 (defer_statement)
 
 
-State 252
+State 255
 
    46 scope: LEFT_BRACE semicoloned_statements RIGHT_BRACE .
 
     $default  reduce using rule 46 (scope)
 
 
-State 253
+State 256
 
     7 semicoloned_statements: semicoloned_statements semicoloned_statement .
 
     $default  reduce using rule 7 (semicoloned_statements)
 
 
-State 254
+State 257
 
     8 semicoloned_statement: statement SEMICOLON .
 
     $default  reduce using rule 8 (semicoloned_statement)
 
 
-State 255
+State 258
 
    11 semicoloned_statement: defer_statement SEMICOLON .
 
     $default  reduce using rule 11 (semicoloned_statement)
 
 
-State 256
+State 259
 
     9 semicoloned_statement: assignable_statement SEMICOLON .
 
     $default  reduce using rule 9 (semicoloned_statement)
 
 
-State 257
+State 260
 
-  100 function_def: id LEFT_BRACKET . arg_list RIGHT_BRACKET scope
-  101             | id LEFT_BRACKET . RIGHT_BRACKET scope
-  106 function_call: id LEFT_BRACKET . RIGHT_BRACKET
-  107              | id LEFT_BRACKET . statement_list RIGHT_BRACKET
+  101 function_def: id LEFT_BRACKET . arg_list RIGHT_BRACKET scope
+  102             | id LEFT_BRACKET . RIGHT_BRACKET scope
+  107 function_call: id LEFT_BRACKET . RIGHT_BRACKET
+  108              | id LEFT_BRACKET . statement_list RIGHT_BRACKET
 
     IDENTIFIER     shift, and go to state 1
     STRING         shift, and go to state 50
@@ -3614,8 +3676,8 @@ State 257
     FLOAT          shift, and go to state 52
     TYPE           shift, and go to state 2
     LEFT_BRACKET   shift, and go to state 53
-    RIGHT_BRACKET  shift, and go to state 275
-    FSTOP          shift, and go to state 169
+    RIGHT_BRACKET  shift, and go to state 278
+    FSTOP          shift, and go to state 172
     PLUS           shift, and go to state 54
     MINUS          shift, and go to state 55
     ASTERISK       shift, and go to state 56
@@ -3625,7 +3687,7 @@ State 257
     MUT            shift, and go to state 11
     NULLPTR        shift, and go to state 60
 
-    assignable_statement  go to state 192
+    assignable_statement  go to state 197
     unary_op              go to state 62
     unary_minus           go to state 63
     unary_plus            go to state 64
@@ -3640,163 +3702,100 @@ State 257
     dereference           go to state 72
     binop                 go to state 73
     function_call         go to state 74
-    arg_list              go to state 170
-    statement_list        go to state 193
-    arg_pair              go to state 171
+    arg_list              go to state 173
+    statement_list        go to state 198
+    arg_pair              go to state 174
     id_or_constant        go to state 75
     constant              go to state 76
     constant_int          go to state 77
     constant_bool         go to state 78
     constant_enum_value   go to state 79
     id                    go to state 80
-    type                  go to state 218
-    composited_type       go to state 172
-
-
-State 258
-
-  123 cond_block: cond_block ELSE IF LEFT_BRACKET assignable_statement . RIGHT_BRACKET scope
-
-    RIGHT_BRACKET  shift, and go to state 276
-
-
-State 259
-
-  137 arg_pair: FSTOP FSTOP FSTOP .
-
-    $default  reduce using rule 137 (arg_pair)
-
-
-State 260
-
-  100 function_def: id LEFT_BRACKET arg_list RIGHT_BRACKET scope .
-
-    $default  reduce using rule 100 (function_def)
+    type                  go to state 223
+    composited_type       go to state 175
 
 
 State 261
 
-  130 arg_list: arg_list COMMA arg_pair .
+  124 cond_block: cond_block ELSE IF LEFT_BRACKET assignable_statement . RIGHT_BRACKET scope
 
-    $default  reduce using rule 130 (arg_list)
+    RIGHT_BRACKET  shift, and go to state 279
 
 
 State 262
 
-  103 function_decl: composited_type id LEFT_BRACKET RIGHT_BRACKET SEMICOLON .
+  138 arg_pair: FSTOP FSTOP FSTOP .
 
-    $default  reduce using rule 103 (function_decl)
+    $default  reduce using rule 138 (arg_pair)
 
 
 State 263
 
-   99 function_def: composited_type id LEFT_BRACKET RIGHT_BRACKET scope .
+  101 function_def: id LEFT_BRACKET arg_list RIGHT_BRACKET scope .
 
-    $default  reduce using rule 99 (function_def)
+    $default  reduce using rule 101 (function_def)
 
 
 State 264
 
-   98 function_def: composited_type id LEFT_BRACKET arg_list RIGHT_BRACKET . scope
-  104 function_decl: composited_type id LEFT_BRACKET arg_list RIGHT_BRACKET . SEMICOLON
+  131 arg_list: arg_list COMMA arg_pair .
 
-    LEFT_BRACE  shift, and go to state 165
-    SEMICOLON   shift, and go to state 277
-
-    scope  go to state 278
+    $default  reduce using rule 131 (arg_list)
 
 
 State 265
 
-  113 array_decl: composited_type id LEFT_SQUARE_BRACKET constant_int RIGHT_SQUARE_BRACKET .
-  114           | composited_type id LEFT_SQUARE_BRACKET constant_int RIGHT_SQUARE_BRACKET . EQUAL LEFT_BRACE init_list RIGHT_BRACE
+  104 function_decl: composited_type id LEFT_BRACKET RIGHT_BRACKET SEMICOLON .
 
-    EQUAL  shift, and go to state 279
-
-    $default  reduce using rule 113 (array_decl)
+    $default  reduce using rule 104 (function_decl)
 
 
 State 266
 
-  115 array_decl: composited_type id MUT LEFT_SQUARE_BRACKET constant_int . RIGHT_SQUARE_BRACKET
-  116           | composited_type id MUT LEFT_SQUARE_BRACKET constant_int . RIGHT_SQUARE_BRACKET EQUAL LEFT_BRACE init_list RIGHT_BRACE
+  100 function_def: composited_type id LEFT_BRACKET RIGHT_BRACKET scope .
 
-    RIGHT_SQUARE_BRACKET  shift, and go to state 280
+    $default  reduce using rule 100 (function_def)
 
 
 State 267
 
-  132 statement_list: statement_list COMMA assignable_statement .
+   99 function_def: composited_type id LEFT_BRACKET arg_list RIGHT_BRACKET . scope
+  105 function_decl: composited_type id LEFT_BRACKET arg_list RIGHT_BRACKET . SEMICOLON
 
-    $default  reduce using rule 132 (statement_list)
+    LEFT_BRACE  shift, and go to state 168
+    SEMICOLON   shift, and go to state 280
+
+    scope  go to state 281
 
 
 State 268
 
-  125 for_loop: FOR LEFT_BRACKET statement SEMICOLON assignable_statement SEMICOLON . assignable_statement RIGHT_BRACKET scope
+  114 array_decl: composited_type id LEFT_SQUARE_BRACKET constant_int RIGHT_SQUARE_BRACKET .
+  115           | composited_type id LEFT_SQUARE_BRACKET constant_int RIGHT_SQUARE_BRACKET . EQUAL LEFT_BRACE init_list RIGHT_BRACE
 
-    IDENTIFIER    shift, and go to state 1
-    STRING        shift, and go to state 50
-    INTEGER       shift, and go to state 51
-    FLOAT         shift, and go to state 52
-    TYPE          shift, and go to state 2
-    LEFT_BRACKET  shift, and go to state 53
-    PLUS          shift, and go to state 54
-    MINUS         shift, and go to state 55
-    ASTERISK      shift, and go to state 56
-    AND           shift, and go to state 57
-    TRUE          shift, and go to state 58
-    FALSE         shift, and go to state 59
-    NULLPTR       shift, and go to state 60
+    EQUAL  shift, and go to state 282
 
-    assignable_statement  go to state 281
-    unary_op              go to state 62
-    unary_minus           go to state 63
-    unary_plus            go to state 64
-    binary_op             go to state 65
-    memberable            go to state 31
-    array_index           go to state 66
-    member_op             go to state 67
-    cast                  go to state 68
-    increment             go to state 69
-    decrement             go to state 70
-    address_of            go to state 71
-    dereference           go to state 72
-    binop                 go to state 73
-    function_call         go to state 74
-    id_or_constant        go to state 75
-    constant              go to state 76
-    constant_int          go to state 77
-    constant_bool         go to state 78
-    constant_enum_value   go to state 79
-    id                    go to state 80
-    type                  go to state 81
+    $default  reduce using rule 114 (array_decl)
 
 
 State 269
 
-  141 enum_parts: enum_parts COMMA enum_part .
+  116 array_decl: composited_type id MUT LEFT_SQUARE_BRACKET constant_int . RIGHT_SQUARE_BRACKET
+  117           | composited_type id MUT LEFT_SQUARE_BRACKET constant_int . RIGHT_SQUARE_BRACKET EQUAL LEFT_BRACE init_list RIGHT_BRACE
 
-    $default  reduce using rule 141 (enum_parts)
+    RIGHT_SQUARE_BRACKET  shift, and go to state 283
 
 
 State 270
 
-  143 enum_part: id EQUAL constant_int .
+  133 statement_list: statement_list COMMA assignable_statement .
 
-    $default  reduce using rule 143 (enum_part)
+    $default  reduce using rule 133 (statement_list)
 
 
 State 271
 
-  128 struct_pair: composited_type id SEMICOLON .
-
-    $default  reduce using rule 128 (struct_pair)
-
-
-State 272
-
-  129 struct_pair: composited_type id EQUAL . assignable_statement SEMICOLON
+  126 for_loop: FOR LEFT_BRACKET statement SEMICOLON assignable_statement SEMICOLON . assignable_statement RIGHT_BRACKET scope
 
     IDENTIFIER    shift, and go to state 1
     STRING        shift, and go to state 50
@@ -3812,7 +3811,7 @@ State 272
     FALSE         shift, and go to state 59
     NULLPTR       shift, and go to state 60
 
-    assignable_statement  go to state 282
+    assignable_statement  go to state 284
     unary_op              go to state 62
     unary_minus           go to state 63
     unary_plus            go to state 64
@@ -3836,174 +3835,175 @@ State 272
     type                  go to state 81
 
 
+State 272
+
+  142 enum_parts: enum_parts COMMA enum_part .
+
+    $default  reduce using rule 142 (enum_parts)
+
+
 State 273
 
-  134 func_ptr: FUNC_PTR type type LEFT_BRACKET type_list RIGHT_BRACKET .
+  144 enum_part: id EQUAL constant_int .
 
-    $default  reduce using rule 134 (func_ptr)
+    $default  reduce using rule 144 (enum_part)
 
 
 State 274
 
-  165 type_list: type_list COMMA . composited_type
+  129 struct_pair: composited_type id SEMICOLON .
+
+    $default  reduce using rule 129 (struct_pair)
+
+
+State 275
+
+  130 struct_pair: composited_type id EQUAL . assignable_statement SEMICOLON
+
+    IDENTIFIER    shift, and go to state 1
+    STRING        shift, and go to state 50
+    INTEGER       shift, and go to state 51
+    FLOAT         shift, and go to state 52
+    TYPE          shift, and go to state 2
+    LEFT_BRACKET  shift, and go to state 53
+    PLUS          shift, and go to state 54
+    MINUS         shift, and go to state 55
+    ASTERISK      shift, and go to state 56
+    AND           shift, and go to state 57
+    TRUE          shift, and go to state 58
+    FALSE         shift, and go to state 59
+    NULLPTR       shift, and go to state 60
+
+    assignable_statement  go to state 285
+    unary_op              go to state 62
+    unary_minus           go to state 63
+    unary_plus            go to state 64
+    binary_op             go to state 65
+    memberable            go to state 31
+    array_index           go to state 66
+    member_op             go to state 67
+    cast                  go to state 68
+    increment             go to state 69
+    decrement             go to state 70
+    address_of            go to state 71
+    dereference           go to state 72
+    binop                 go to state 73
+    function_call         go to state 74
+    id_or_constant        go to state 75
+    constant              go to state 76
+    constant_int          go to state 77
+    constant_bool         go to state 78
+    constant_enum_value   go to state 79
+    id                    go to state 80
+    type                  go to state 81
+
+
+State 276
+
+  135 func_ptr: FUNC_PTR type type LEFT_BRACKET type_list RIGHT_BRACKET .
+
+    $default  reduce using rule 135 (func_ptr)
+
+
+State 277
+
+  166 type_list: type_list COMMA . composited_type
 
     TYPE  shift, and go to state 2
     MUT   shift, and go to state 11
 
     type             go to state 48
-    composited_type  go to state 283
-
-
-State 275
-
-  101 function_def: id LEFT_BRACKET RIGHT_BRACKET . scope
-  106 function_call: id LEFT_BRACKET RIGHT_BRACKET .
-
-    LEFT_BRACE  shift, and go to state 165
-
-    $default  reduce using rule 106 (function_call)
-
-    scope  go to state 220
-
-
-State 276
-
-  123 cond_block: cond_block ELSE IF LEFT_BRACKET assignable_statement RIGHT_BRACKET . scope
-
-    LEFT_BRACE  shift, and go to state 165
-
-    scope  go to state 284
-
-
-State 277
-
-  104 function_decl: composited_type id LEFT_BRACKET arg_list RIGHT_BRACKET SEMICOLON .
-
-    $default  reduce using rule 104 (function_decl)
+    composited_type  go to state 286
 
 
 State 278
 
-   98 function_def: composited_type id LEFT_BRACKET arg_list RIGHT_BRACKET scope .
+  102 function_def: id LEFT_BRACKET RIGHT_BRACKET . scope
+  107 function_call: id LEFT_BRACKET RIGHT_BRACKET .
 
-    $default  reduce using rule 98 (function_def)
+    LEFT_BRACE  shift, and go to state 168
+
+    $default  reduce using rule 107 (function_call)
+
+    scope  go to state 225
 
 
 State 279
 
-  114 array_decl: composited_type id LEFT_SQUARE_BRACKET constant_int RIGHT_SQUARE_BRACKET EQUAL . LEFT_BRACE init_list RIGHT_BRACE
+  124 cond_block: cond_block ELSE IF LEFT_BRACKET assignable_statement RIGHT_BRACKET . scope
 
-    LEFT_BRACE  shift, and go to state 285
+    LEFT_BRACE  shift, and go to state 168
+
+    scope  go to state 287
 
 
 State 280
 
-  115 array_decl: composited_type id MUT LEFT_SQUARE_BRACKET constant_int RIGHT_SQUARE_BRACKET .
-  116           | composited_type id MUT LEFT_SQUARE_BRACKET constant_int RIGHT_SQUARE_BRACKET . EQUAL LEFT_BRACE init_list RIGHT_BRACE
+  105 function_decl: composited_type id LEFT_BRACKET arg_list RIGHT_BRACKET SEMICOLON .
 
-    EQUAL  shift, and go to state 286
-
-    $default  reduce using rule 115 (array_decl)
+    $default  reduce using rule 105 (function_decl)
 
 
 State 281
 
-  125 for_loop: FOR LEFT_BRACKET statement SEMICOLON assignable_statement SEMICOLON assignable_statement . RIGHT_BRACKET scope
+   99 function_def: composited_type id LEFT_BRACKET arg_list RIGHT_BRACKET scope .
 
-    RIGHT_BRACKET  shift, and go to state 287
+    $default  reduce using rule 99 (function_def)
 
 
 State 282
 
-  129 struct_pair: composited_type id EQUAL assignable_statement . SEMICOLON
+  115 array_decl: composited_type id LEFT_SQUARE_BRACKET constant_int RIGHT_SQUARE_BRACKET EQUAL . LEFT_BRACE init_list RIGHT_BRACE
 
-    SEMICOLON  shift, and go to state 288
+    LEFT_BRACE  shift, and go to state 288
 
 
 State 283
 
-  162 composited_type: composited_type . ASTERISK
-  163                | composited_type . MUT
-  165 type_list: type_list COMMA composited_type .
+  116 array_decl: composited_type id MUT LEFT_SQUARE_BRACKET constant_int RIGHT_SQUARE_BRACKET .
+  117           | composited_type id MUT LEFT_SQUARE_BRACKET constant_int RIGHT_SQUARE_BRACKET . EQUAL LEFT_BRACE init_list RIGHT_BRACE
 
-    ASTERISK  shift, and go to state 116
-    MUT       shift, and go to state 117
+    EQUAL  shift, and go to state 289
 
-    $default  reduce using rule 165 (type_list)
+    $default  reduce using rule 116 (array_decl)
 
 
 State 284
 
-  123 cond_block: cond_block ELSE IF LEFT_BRACKET assignable_statement RIGHT_BRACKET scope .
+  126 for_loop: FOR LEFT_BRACKET statement SEMICOLON assignable_statement SEMICOLON assignable_statement . RIGHT_BRACKET scope
 
-    $default  reduce using rule 123 (cond_block)
+    RIGHT_BRACKET  shift, and go to state 290
 
 
 State 285
 
-  114 array_decl: composited_type id LEFT_SQUARE_BRACKET constant_int RIGHT_SQUARE_BRACKET EQUAL LEFT_BRACE . init_list RIGHT_BRACE
+  130 struct_pair: composited_type id EQUAL assignable_statement . SEMICOLON
 
-    IDENTIFIER  shift, and go to state 1
-    STRING      shift, and go to state 50
-    INTEGER     shift, and go to state 51
-    FLOAT       shift, and go to state 52
-    TYPE        shift, and go to state 2
-    TRUE        shift, and go to state 58
-    FALSE       shift, and go to state 59
-    NULLPTR     shift, and go to state 60
-
-    init_list            go to state 289
-    id_or_constant       go to state 290
-    constant             go to state 76
-    constant_int         go to state 77
-    constant_bool        go to state 78
-    constant_enum_value  go to state 79
-    id                   go to state 121
-    type                 go to state 81
+    SEMICOLON  shift, and go to state 291
 
 
 State 286
 
-  116 array_decl: composited_type id MUT LEFT_SQUARE_BRACKET constant_int RIGHT_SQUARE_BRACKET EQUAL . LEFT_BRACE init_list RIGHT_BRACE
+  163 composited_type: composited_type . ASTERISK
+  164                | composited_type . MUT
+  166 type_list: type_list COMMA composited_type .
 
-    LEFT_BRACE  shift, and go to state 291
+    ASTERISK  shift, and go to state 116
+    MUT       shift, and go to state 117
+
+    $default  reduce using rule 166 (type_list)
 
 
 State 287
 
-  125 for_loop: FOR LEFT_BRACKET statement SEMICOLON assignable_statement SEMICOLON assignable_statement RIGHT_BRACKET . scope
+  124 cond_block: cond_block ELSE IF LEFT_BRACKET assignable_statement RIGHT_BRACKET scope .
 
-    LEFT_BRACE  shift, and go to state 165
-
-    scope  go to state 292
+    $default  reduce using rule 124 (cond_block)
 
 
 State 288
 
-  129 struct_pair: composited_type id EQUAL assignable_statement SEMICOLON .
-
-    $default  reduce using rule 129 (struct_pair)
-
-
-State 289
-
-  114 array_decl: composited_type id LEFT_SQUARE_BRACKET constant_int RIGHT_SQUARE_BRACKET EQUAL LEFT_BRACE init_list . RIGHT_BRACE
-  118 init_list: init_list . COMMA id_or_constant
-
-    RIGHT_BRACE  shift, and go to state 293
-    COMMA        shift, and go to state 294
-
-
-State 290
-
-  117 init_list: id_or_constant .
-
-    $default  reduce using rule 117 (init_list)
-
-
-State 291
-
-  116 array_decl: composited_type id MUT LEFT_SQUARE_BRACKET constant_int RIGHT_SQUARE_BRACKET EQUAL LEFT_BRACE . init_list RIGHT_BRACE
+  115 array_decl: composited_type id LEFT_SQUARE_BRACKET constant_int RIGHT_SQUARE_BRACKET EQUAL LEFT_BRACE . init_list RIGHT_BRACE
 
     IDENTIFIER  shift, and go to state 1
     STRING      shift, and go to state 50
@@ -4014,8 +4014,8 @@ State 291
     FALSE       shift, and go to state 59
     NULLPTR     shift, and go to state 60
 
-    init_list            go to state 295
-    id_or_constant       go to state 290
+    init_list            go to state 292
+    id_or_constant       go to state 293
     constant             go to state 76
     constant_int         go to state 77
     constant_bool        go to state 78
@@ -4024,23 +4024,48 @@ State 291
     type                 go to state 81
 
 
+State 289
+
+  117 array_decl: composited_type id MUT LEFT_SQUARE_BRACKET constant_int RIGHT_SQUARE_BRACKET EQUAL . LEFT_BRACE init_list RIGHT_BRACE
+
+    LEFT_BRACE  shift, and go to state 294
+
+
+State 290
+
+  126 for_loop: FOR LEFT_BRACKET statement SEMICOLON assignable_statement SEMICOLON assignable_statement RIGHT_BRACKET . scope
+
+    LEFT_BRACE  shift, and go to state 168
+
+    scope  go to state 295
+
+
+State 291
+
+  130 struct_pair: composited_type id EQUAL assignable_statement SEMICOLON .
+
+    $default  reduce using rule 130 (struct_pair)
+
+
 State 292
 
-  125 for_loop: FOR LEFT_BRACKET statement SEMICOLON assignable_statement SEMICOLON assignable_statement RIGHT_BRACKET scope .
+  115 array_decl: composited_type id LEFT_SQUARE_BRACKET constant_int RIGHT_SQUARE_BRACKET EQUAL LEFT_BRACE init_list . RIGHT_BRACE
+  119 init_list: init_list . COMMA id_or_constant
 
-    $default  reduce using rule 125 (for_loop)
+    RIGHT_BRACE  shift, and go to state 296
+    COMMA        shift, and go to state 297
 
 
 State 293
 
-  114 array_decl: composited_type id LEFT_SQUARE_BRACKET constant_int RIGHT_SQUARE_BRACKET EQUAL LEFT_BRACE init_list RIGHT_BRACE .
+  118 init_list: id_or_constant .
 
-    $default  reduce using rule 114 (array_decl)
+    $default  reduce using rule 118 (init_list)
 
 
 State 294
 
-  118 init_list: init_list COMMA . id_or_constant
+  117 array_decl: composited_type id MUT LEFT_SQUARE_BRACKET constant_int RIGHT_SQUARE_BRACKET EQUAL LEFT_BRACE . init_list RIGHT_BRACE
 
     IDENTIFIER  shift, and go to state 1
     STRING      shift, and go to state 50
@@ -4051,7 +4076,8 @@ State 294
     FALSE       shift, and go to state 59
     NULLPTR     shift, and go to state 60
 
-    id_or_constant       go to state 296
+    init_list            go to state 298
+    id_or_constant       go to state 293
     constant             go to state 76
     constant_int         go to state 77
     constant_bool        go to state 78
@@ -4062,22 +4088,58 @@ State 294
 
 State 295
 
-  116 array_decl: composited_type id MUT LEFT_SQUARE_BRACKET constant_int RIGHT_SQUARE_BRACKET EQUAL LEFT_BRACE init_list . RIGHT_BRACE
-  118 init_list: init_list . COMMA id_or_constant
+  126 for_loop: FOR LEFT_BRACKET statement SEMICOLON assignable_statement SEMICOLON assignable_statement RIGHT_BRACKET scope .
 
-    RIGHT_BRACE  shift, and go to state 297
-    COMMA        shift, and go to state 294
+    $default  reduce using rule 126 (for_loop)
 
 
 State 296
 
-  118 init_list: init_list COMMA id_or_constant .
+  115 array_decl: composited_type id LEFT_SQUARE_BRACKET constant_int RIGHT_SQUARE_BRACKET EQUAL LEFT_BRACE init_list RIGHT_BRACE .
 
-    $default  reduce using rule 118 (init_list)
+    $default  reduce using rule 115 (array_decl)
 
 
 State 297
 
-  116 array_decl: composited_type id MUT LEFT_SQUARE_BRACKET constant_int RIGHT_SQUARE_BRACKET EQUAL LEFT_BRACE init_list RIGHT_BRACE .
+  119 init_list: init_list COMMA . id_or_constant
 
-    $default  reduce using rule 116 (array_decl)
+    IDENTIFIER  shift, and go to state 1
+    STRING      shift, and go to state 50
+    INTEGER     shift, and go to state 51
+    FLOAT       shift, and go to state 52
+    TYPE        shift, and go to state 2
+    TRUE        shift, and go to state 58
+    FALSE       shift, and go to state 59
+    NULLPTR     shift, and go to state 60
+
+    id_or_constant       go to state 299
+    constant             go to state 76
+    constant_int         go to state 77
+    constant_bool        go to state 78
+    constant_enum_value  go to state 79
+    id                   go to state 121
+    type                 go to state 81
+
+
+State 298
+
+  117 array_decl: composited_type id MUT LEFT_SQUARE_BRACKET constant_int RIGHT_SQUARE_BRACKET EQUAL LEFT_BRACE init_list . RIGHT_BRACE
+  119 init_list: init_list . COMMA id_or_constant
+
+    RIGHT_BRACE  shift, and go to state 300
+    COMMA        shift, and go to state 297
+
+
+State 299
+
+  119 init_list: init_list COMMA id_or_constant .
+
+    $default  reduce using rule 119 (init_list)
+
+
+State 300
+
+  117 array_decl: composited_type id MUT LEFT_SQUARE_BRACKET constant_int RIGHT_SQUARE_BRACKET EQUAL LEFT_BRACE init_list RIGHT_BRACE .
+
+    $default  reduce using rule 117 (array_decl)
