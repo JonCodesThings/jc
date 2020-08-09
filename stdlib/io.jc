@@ -13,3 +13,16 @@ export i32 fclose(FILE *f);
 export FILE *fflush(FILE *f);
 
 export i32 fscanf(FILE *f, i8 *format, ...);
+
+export i32 fseek(FILE *f, i32 offset, i32 origin);
+
+export i32 ftell(FILE *f);
+
+export i32 fread(i8 *buffer, i32 size, i32 count, FILE *f);
+
+export enum SEEK_MODE
+{
+	SEEK_SET = 0,
+	SEEK_CUR = 1,
+	SEEK_END = 2
+}

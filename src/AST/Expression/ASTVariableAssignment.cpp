@@ -11,29 +11,44 @@ ASTVariableAssignment::ASTVariableAssignment(ASTNode &assign_to, ASTNode &val) :
 llvm::Value *ASTVariableAssignment::EmitIR(IREmitter::EmitterState &state)
 {
 	//handy lambda for doing implicit casting
-    auto implicit_cast = [&state, this](std::unique_ptr<ASTNode> &node, const Symbol *store_at_symbol) -> llvm::Value*
+    auto implicit_cast = [&state, this](std::unique_ptr<ASTNode> &node, const Symbol *store_at_symbol, llvm::Value *assign_to_val) -> llvm::Value*
     {
         std::unique_ptr<ASTUnaryOperator> cast;
 
         if (!state.typeRegistry.IsTypeNumeric(*node->GetType(state)))
             return nullptr;
 
-		if (!state.typeRegistry.IsTypeNumeric(store_at_symbol->type))
+		std::string store_at_type;
+		if (store_at_symbol->array_size > 1)
+			store_at_type = store_at_symbol->type.substr(0, store_at_symbol->type.length() - 1);
+		else if (assign_to->GetNodeType() == UNARY_OP)
+		{
+			ASTUnaryOperator *downcast = (ASTUnaryOperator*)assign_to.get();
+			if (downcast->op == ASTUnaryOperator::OP::ARRAY_INDEX)
+			{
+				store_at_type = store_at_symbol->type.substr(0, store_at_symbol->type.length() - 1);
+
+			}
+		}
+		else
+			store_at_type = store_at_symbol->type;
+
+		if (!state.typeRegistry.IsTypeNumeric(store_at_type))
 			return nullptr;
         
         if (store_at_symbol)
-            cast = std::make_unique<ASTUnaryOperator>(*node.release(), new ASTIdentifier(store_at_symbol->type), ASTUnaryOperator::OP::CAST);
+            cast = std::make_unique<ASTUnaryOperator>(*node.release(), new ASTIdentifier(store_at_type), ASTUnaryOperator::OP::CAST);
         else
             cast = std::make_unique<ASTUnaryOperator>(*node.release(), new ASTIdentifier(*val->GetType(state)), ASTUnaryOperator::OP::CAST);
         auto emitted_ir = cast->EmitIR(state);
         if (!emitted_ir)
         {
-                printf("Error in module %s line %d: types do not match for assignment (type %s expected, type %s given)\n",
-                yycurrentfilename, line_number, (*assign_to->GetType(state)).c_str(), (*node->GetType(state)).c_str());
+                //printf("Error in module %s line %d: types do not match for assignment (type %s expected, type %s given)\n",
+                //yycurrentfilename, line_number, (*assign_to->GetType(state)).c_str(), (*node->GetType(state)).c_str());
                 return nullptr;
         }
         if (store_at_symbol)
-			return state.builder.CreateStore(emitted_ir, store_at_symbol->alloc_inst);
+			return state.builder.CreateStore(emitted_ir, assign_to_val);
         else
             return nullptr;
     };
@@ -167,11 +182,11 @@ llvm::Value *ASTVariableAssignment::EmitIR(IREmitter::EmitterState &state)
 	{
 		if (val->GetNodeType() == UNARY_OP || assign_to->GetNodeType() == MEMBER_OP)
 		{
-			IREmitter::DebugOut(state);
+			//IREmitter::DebugOut(state);
 			return state.builder.CreateStore(actual_value, store_at);
 		}
 		else
-			return implicit_cast(val, assign_symbol);
+			return implicit_cast(val, assign_symbol, store_at);
 	}
 
     return nullptr;

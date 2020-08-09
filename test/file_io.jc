@@ -1,7 +1,31 @@
 import io;
 import memory;
 
+alias i8 char;
+
+LoadEntireFile(char *filename)
+{
+	f := fopen(filename, "r");
+	defer fclose(f);
+	fseek(f, 0, SEEK_MODE::SEEK_END);
+	size := ftell(f);
+	fseek(f, 0, SEEK_MODE::SEEK_SET);
+
+	buffer := alloc(size + 1);
+
+	fread(buffer, 1, size, f);
+	
+	buffer[size] = 0;
+
+	return buffer;
+}
+
 main()
 {
+	fullFile := LoadEntireFile("test.txt");
+	defer dealloc(fullFile);
+
+	printf("%s\n", fullFile);
+
 	return 0;
 }

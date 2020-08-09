@@ -57,8 +57,8 @@ main()
 	for (i := 0; i < 10; i++)
 	{
 		it := (f32)i;
-		x := it * 32.0f;
-		y := it * 32.0f;
+		x := it * 8.0f;
+		y := it * 8.0f;
 		
 		ConstructAABB(&oof[i], x, y, width, height);
 	}
@@ -78,9 +78,6 @@ main()
 			}
 		}
 	}
-
-	
-
 
 	return 0;
 }
