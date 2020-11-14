@@ -1,0 +1,78 @@
+#ifndef JC_ASTTOKENIZER_HPP
+#define JC_ASTTOEKNIZER_HPP
+
+#include <include/Tokenizers/Tokenizer.hpp>
+
+class ASTTokenizer : Tokenizer
+{
+public:
+	enum AST_TOKENS
+	{
+		IDENTIFIER, //DONE
+		STRING, //DONE
+		INTEGER, //DONE
+		FLOAT, //DONE
+		TYPE,
+		LEFT_BRACKET, //DONE
+		RIGHT_BRACKET, //DONE
+		LEFT_BRACE, //DONE
+		RIGHT_BRACE, //DONE
+		LEFT_SQUARE_BRACKET, //DONE
+		RIGHT_SQAURE_BRACKET, //DONE
+		COMMA, //DONE
+		FSTOP, //DONE
+		SEMICOLON, //DONE
+		COLON, //DONE
+		PLUS, //DONE
+		MINUS, //DONE
+		ASTERISK, //DONE
+		FORWARD_SLASH, //DONE
+		PERCENT, //DONE
+		EQUAL, //DONE
+		EQUAL_EQUAL, //DONE
+		EXCLAMATION, //DONE
+		EXCLAMATION_EQUAL, //DONE
+		GREATER, //DONE
+		GREATER_EQUAL, //DONE
+		LESSER, //DONE
+		LESSER_EQUAL, //DONE
+		AND, //DONE
+		AND_AND, //DONE
+		OR, //DONE
+		OR_OR, //DONE
+		LEFT_SHIFT, //DONE
+		RIGHT_SHIFT, //DONE
+		RETURN, //DONE
+		DEFER, //DONE
+		IF, //DONE
+		ELSE, //DONE
+		FOR, //DONE
+		WHILE, //DONE
+		TYPEDEF, //DONE
+		ALIAS, //DONE
+		AUTO, //DONE
+		ENUM, //DONE
+		UNION, //DONE
+		TRUE, //DONE
+		FALSE, //DONE
+		MUT, //DONE
+		EXTERN, //DONE
+		IMPORT, //DONE
+		EXPORT, //DONE
+		INCLUDE, //DONE
+		LINK, //DONE
+		FUNCPTR, //DONE
+		NULLPTR, //DONE
+		STRUCT, //DONE
+		ARROW, //DONE
+		UNKNOWN,
+		TOKEN_COUNT
+	};
+
+	ASTTokenizer();
+	~ASTTokenizer();
+
+	std::vector<Token> Tokenize(const std::string &in);
+};
+
+#endif

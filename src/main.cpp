@@ -1,6 +1,7 @@
 #define YY_NO_UNISTD_H 1
 
 #include <include/AST.hpp>
+#include <include/Tokenizers/ASTTokenizer.hpp>
 #include <gen/jc_lex.hpp>
 #include <gen/jc_parser.hpp>
 #include <include/IREmitter.hpp>
@@ -47,6 +48,8 @@ int main(int argc, const char **args)
 
     llvm::LLVMContext context;
     registry = new TypeRegistry(context);
+
+	ASTTokenizer astTokenizer;
 
 	TypeTokenizer type_tokenizer;
 	TypeParser type_parser(*registry);
@@ -164,7 +167,7 @@ int main(int argc, const char **args)
 
 	for (auto m : modules_to_build)
 	{
-
+		std::vector<Token> tokens = astTokenizer.Tokenize(m.raw_contents.c_str());
 		yycurrentfilename = m.name.c_str();
 		YY_BUFFER_STATE s = yy_scan_string(m.raw_contents.c_str());
 		yylineno = 1;

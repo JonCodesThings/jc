@@ -69,6 +69,7 @@ set(SOURCE_FILES src/main.cpp
     src/Parsers/TypeParser.cpp
 
     src/Tokenizers/Tokenizer.cpp
+	src/Tokenizers/ASTTokenizer.cpp
 	src/Tokenizers/BuildTokenizer.cpp
     src/Tokenizers/ModuleTokenizer.cpp
     src/Tokenizers/TypeTokenizer.cpp
@@ -132,6 +133,7 @@ set(HEADER_FILES  include/AST.hpp
     include/Parsers/TypeParser.hpp
 
     include/Tokenizers/Tokenizer.hpp
+	include/Tokenizers/ASTTokenizer.hpp
 	include/Tokenizers/BuildTokenizer.hpp
     include/Tokenizers/ModuleTokenizer.hpp
     include/Tokenizers/TypeTokenizer.hpp
