@@ -1,0 +1,21 @@
+link "lib/glue/RelWithDebInfo/glue.lib";
+link "OpenGL32.lib";
+link "kernel32.lib";
+link "user32.lib";
+link "gdi32.lib";
+link "winspool.lib";
+link "shell32.lib";
+link "ole32.lib";
+link "oleaut32.lib"
+link "uuid.lib";
+link "comdlg32.lib";
+link "advapi32.lib";
+link "legacy_stdio_definitions.lib";
+
+export void glInit();
+
+export void clear_render_target();
+
+export void draw_triangle();
+
+export void glShutdown();

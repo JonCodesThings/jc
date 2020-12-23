@@ -62,7 +62,7 @@ llvm::Value *ASTMemberOperator::EmitIR(IREmitter::EmitterState &state)
 					{
 						if (type->classification == JCType::TYPE_CLASSIFICATION::STRUCT)
 						{
-							llvm::Value *get_element = state.builder.CreateGEP(state.typeRegistry.GetType(type->MEMBER_TYPENAMES[i]), base_ptr, { llvm::ConstantInt::get(llvm::Type::getInt32Ty(state.context), i) });
+							llvm::Value *get_element = state.builder.CreateGEP(type->llvm_type, base_ptr, { llvm::ConstantInt::get(llvm::Type::getInt32Ty(state.context), 0), llvm::ConstantInt::get(llvm::Type::getInt32Ty(state.context), i) });
 							return get_element;
 						}
 						else if (type->classification == JCType::TYPE_CLASSIFICATION::UNION)

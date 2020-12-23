@@ -1,24 +1,40 @@
 include "lib";
 import gresslib;
+import glue;
 
 i32 main()
 {
-	mut window_descriptor wnd_desc;
+	window_descriptor wnd_desc;
 	wnd_desc.title = "hello jc";
 	wnd_desc.width = (u32)640;
 	wnd_desc.height = (u32)480;
 	wnd_desc.style = window_style::WINDOW_BORDERED;
 
-	wnd := create_window(&wnd_desc);
+	glcontext_descriptor cd;
+	cd.alpha_size = 8;
+	cd.blue_size = 8;
+	cd.green_size = 8;
+	cd.red_size = 8;
+	cd.depth_size = 24;
+	cd.stencil_size = 8;
 
-	x := -10;
+	wnd := create_window(&wnd_desc);
 
 	cont := process_os_events(wnd);
 
+	bootstrap_gl(wnd, &cd);
+
+	glInit();
+
 	while (cont == (i8)true)
 	{
+		clear_render_target();
+		draw_triangle();
+		swap_gl_buffers(wnd);
 		cont = process_os_events(wnd);
 	}
+
+	glShutdown();
 
 	destroy_window(wnd);
 
