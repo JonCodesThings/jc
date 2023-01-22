@@ -4,7 +4,14 @@ project(jc)
 find_package(BISON)
 find_package(FLEX)
 find_package(LLVM REQUIRED CONFIG)
+
+message(STATUS "Found LLVM ${LLVM_PACKAGE_VERSION}")
+message(STATUS "Using LLVMConfig.cmake in: ${LLVM_DIR}")
+message(STATUS "LLVM include dirs are in: ${LLVM_INCLUDE_DIRS}")
+message(STATUS "LLVM definitions list is: ${LLVM_DEFINITIONS_LIST}")
+
 include_directories(${LLVM_INCLUDE_DIRS})
+separate_arguments(LLVM_DEFINITIONS_LIST NATIVE_COMMAND ${LLVM_DEFINITIONS})
 add_definitions(${LLVM_DEFINITIONS})
 llvm_map_components_to_libnames(llvm_libs support core irreader 
 bitwriter AllTargetsAsmParsers AllTargetsCodeGens
